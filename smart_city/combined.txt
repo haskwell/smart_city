@@ -1,0 +1,260 @@
+
+
+--- Bus.h ---
+
+#pragma once
+#include <string>
+#include "PassengerQueue.h"
+#include "BusRouteList.h"
+using namespace std;
+class Bus {
+public:
+	string busNum;
+	string company;
+
+	int currentStop;
+
+	BusRouteList list;
+
+	PassengerQueue queue;
+
+	Bus(string n, string c, int s) : busNum(n), company(c), currentStop(s) {}
+};
+
+--- BusHashTable.h ---
+
+#pragma once
+#include "Bus.h"
+
+class BusNode {
+public:
+    Bus data;
+    BusNode* next;
+
+    BusNode(Bus b): data(b), next(nullptr) {}
+};
+
+class BusHashTable {
+public:
+    BusNode** table;
+    int tableSize;
+
+    BusHashTable(): table(nullptr), tableSize(0) {}
+
+    void setUptable(int size) {
+        tableSize = size;
+        table = new BusNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) {
+            table[i] = nullptr;
+        }
+    }
+
+    int hash(string busNo) { return 0; }
+
+    void insert(Bus b) {}
+
+    Bus* search(char* busNo) { return 0; }
+
+    ~BusHashTable() {
+        for (int i = 0; i < tableSize; i++) {
+            delete[]table[i];
+        }
+        delete[]table;
+    }
+};
+
+--- BusRouteList.h ---
+
+#pragma once
+
+class RouteNode {
+public:
+	int stopId;
+	RouteNode* next;
+
+	RouteNode(int id): stopId(id), next(nullptr) {}
+};
+
+class BusRouteList {
+public:
+    RouteNode* head;
+
+    BusRouteList(): head(nullptr) {}
+
+    void addStop(int stopID) {
+        // implement later
+    }
+
+    ~BusRouteList() {
+
+    }
+};
+
+--- BusStopGraph.h ---
+
+#pragma once
+#include "PassengerQueue.h"
+class Edge {
+public:
+	int to;
+	int weight;
+
+	Edge* next;
+
+	Edge(int t, int w) : to(t), weight(w), next(nullptr) {}
+};
+
+class Vertex { //this is the bus stop
+public:
+	int stopId;
+	string stopName;
+	float lat;
+	float lon;
+
+	Edge* edgesList;
+	Vertex* next;
+
+	PassengerQueue queue;
+
+	Vertex(string n, int id, float l, float o): stopName(n), lat(l), lon(o), edgesList(nullptr), next(nullptr), stopId(id) {}
+};
+
+class BusStopGraph {
+public:
+	Vertex* root;
+	int count;
+
+	BusStopGraph(): root(nullptr), count(0) {}
+
+	void addStop(int id, const char* name, float lat, float lon) {}
+	void addEdge(int from, int to, int weight) {}
+	void dijkstra(int start, int end) {}
+
+	~BusStopGraph() {
+
+	}
+};
+
+--- compile.py ---
+
+import os
+
+# Configuration
+input_folder = ".\\Transport"  # <-- change this to your folder
+output_file = "combined.txt"           # <-- name of the big file
+
+# Get all files in the folder
+files = [f for f in os.listdir(input_folder) if os.path.isfile(os.path.join(input_folder, f))]
+
+with open(output_file, "w", encoding="utf-8") as outfile:
+    for filename in files:
+        file_path = os.path.join(input_folder, filename)
+        with open(file_path, "r", encoding="utf-8") as infile:
+            outfile.write(f"\n\n--- {filename} ---\n\n")  # optional: separate files
+            outfile.write(infile.read())
+
+print(f"All files combined into {output_file}")
+
+
+--- PassengerQueue.h ---
+
+#pragma once
+#include <string>
+using namespace std;
+class PassengerQueue {
+	string* names;
+	int front;
+	int rear;
+	int count;
+	int capacity;
+
+public:
+	PassengerQueue() : capacity(50), front(0), rear(-1), count(0) {
+		names = new string[capacity];
+		for (int i = 0; i < capacity; i++) {
+			names[i] = "";
+		}
+	}
+	bool isFull() {
+		return count == capacity;
+	}
+
+	bool isEmpty() {
+		return count == 0;
+	}
+
+	void enqueue() {
+
+	}
+
+	string dequeue() {
+		return "";
+	}
+
+	~PassengerQueue() {
+
+	}
+};
+
+--- RouteHistoryStack.h ---
+
+#pragma once
+
+class RouteStackNode {
+public:
+	int stopId;
+	RouteStackNode* next;
+	
+	RouteStackNode(int id): stopId(id), next(nullptr) {}
+};
+
+class RouteHistoryStack {
+	RouteStackNode* top;
+
+public:
+	RouteHistoryStack(): top(nullptr){}
+
+	void push(int id) {
+
+	}
+
+	void clear() {
+
+	}
+
+	~RouteHistoryStack() {
+
+	}
+};
+
+--- TransportSystem.h ---
+
+#pragma once
+#include "BusStopGraph.h"
+#include "BusHashTable.h"
+#include "RouteHistoryStack.h"
+
+class TransportSystem {
+	BusStopGraph graph;
+	BusHashTable busTable;
+    RouteHistoryStack history;
+
+	TransportSystem() {}
+
+public:
+    void registerCompany(string companyName) {}
+    void registerBus(string busNo, string companyName, int stopId) {}
+    void addBusStopInRoute(string busNo, int stopId) {}
+    void addBusStop(string name, int stopId, float lat, float lon) {}
+    void connectStops(int fromId, int toId, int distance) {}
+    void shortestRoute(int startId, int endId) {}
+    Bus* nearestBus(int stopId) {}
+    Bus* searchBus(string busNum) {}
+
+    void busSimulation(){}
+
+    ~TransportSystem() {
+
+    }
+
+};

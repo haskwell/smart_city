@@ -13,5 +13,111 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Transport">
+      <UniqueIdentifier>{617cba6d-812b-4f02-986a-ca707a75a0a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Commercial">
+      <UniqueIdentifier>{9585eb60-28b8-4fc7-ad03-4cce203e2695}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Public">
+      <UniqueIdentifier>{4e463e2d-26b0-49ca-b9cc-2d0b3437ca61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Medicine">
+      <UniqueIdentifier>{b66dde54-c394-49ed-a0bb-20537a482d5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Education">
+      <UniqueIdentifier>{7e197089-552d-4e9a-a5c8-e6f25ca1b587}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Population">
+      <UniqueIdentifier>{4033ebfd-83b6-4ceb-af78-f808d74b2c48}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SmartCity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Commercial\MallGraph.h">
+      <Filter>Header Files\Commercial</Filter>
+    </ClInclude>
+    <ClInclude Include="Commercial\MallHashTable.h">
+      <Filter>Header Files\Commercial</Filter>
+    </ClInclude>
+    <ClInclude Include="Commercial\MallSystem.h">
+      <Filter>Header Files\Commercial</Filter>
+    </ClInclude>
+    <ClInclude Include="Education\SchoolHashTable.h">
+      <Filter>Header Files\Education</Filter>
+    </ClInclude>
+    <ClInclude Include="Education\SchoolMinHeap.h">
+      <Filter>Header Files\Education</Filter>
+    </ClInclude>
+    <ClInclude Include="Education\SchoolTree.h">
+      <Filter>Header Files\Education</Filter>
+    </ClInclude>
+    <ClInclude Include="Education\EducationSystem.h">
+      <Filter>Header Files\Education</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\HospitalHashTable.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\HospitalMinHeap.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\MedicalGraph.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\MedicalSystem.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\MedicineHashTable.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Population\PopulationHashTable.h">
+      <Filter>Header Files\Population</Filter>
+    </ClInclude>
+    <ClInclude Include="Population\PopulationSystem.h">
+      <Filter>Header Files\Population</Filter>
+    </ClInclude>
+    <ClInclude Include="Population\PopulationTree.h">
+      <Filter>Header Files\Population</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\FacilityGraph.h">
+      <Filter>Header Files\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\FacilitySystem.h">
+      <Filter>Header Files\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\Bus.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\BusHashTable.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\BusRouteList.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\BusStopGraph.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\PassengerQueue.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\RouteHistoryStack.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\TransportSystem.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="BusMinHeap.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
