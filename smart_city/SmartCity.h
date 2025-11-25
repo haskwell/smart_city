@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 class SmartCity {
 
@@ -7,7 +8,6 @@ public:
 	void mainMenu() {
 
 	}
-
 
 	void transportMenu() {
 
