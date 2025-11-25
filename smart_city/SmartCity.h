@@ -20,4 +20,8 @@ public:
 	void medicalMenu() {
 
 	}
+
+	void populationMenu() {
+
+	}
 };
