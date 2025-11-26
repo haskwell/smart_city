@@ -124,9 +124,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Commercial\MallEntities.h" />
     <ClInclude Include="Commercial\MallGraph.h" />
     <ClInclude Include="Commercial\MallHashTable.h" />
     <ClInclude Include="Commercial\MallSystem.h" />
@@ -136,9 +136,11 @@
     <ClInclude Include="Education\SchoolMinHeap.h" />
     <ClInclude Include="Medicine\DoctorsHashTable.h" />
     <ClInclude Include="Medicine\HospitalEntities.h" />
+    <ClInclude Include="Medicine\HospitalGraph.h" />
     <ClInclude Include="Medicine\HospitalMaxHeap.h" />
     <ClInclude Include="Medicine\MedicalSystem.h" />
     <ClInclude Include="Medicine\PatientHashTable.h" />
+    <ClInclude Include="Medicine\PharmacyGraph.h" />
     <ClInclude Include="Medicine\PharmacyHashTable.h" />
     <ClInclude Include="Population\PopulationEntities.h" />
     <ClInclude Include="Population\PopulationHashTable.h" />
@@ -146,6 +148,8 @@
     <ClInclude Include="Population\PopulationTree.h" />
     <ClInclude Include="Public\FacilityGraph.h" />
     <ClInclude Include="Public\FacilitySystem.h" />
+    <ClInclude Include="SmartCity\Menu.h" />
+    <ClInclude Include="SmartCity\SmartCity.h" />
     <ClInclude Include="Transport\Bus.h" />
     <ClInclude Include="Transport\BusHashTable.h" />
     <ClInclude Include="Transport\BusMinHeap.h" />

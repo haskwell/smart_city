@@ -41,7 +41,7 @@ private:
     HospitalVertex* root;
     int count;
 
-    void addStop(int id, const char* name, float lat, float lon) {}
+    void addHospital(int id, const char* name, float lat, float lon) {}
     void addEdge(int from, int to, int weight) {}
     void dijkstra(int start, int end) {}
 

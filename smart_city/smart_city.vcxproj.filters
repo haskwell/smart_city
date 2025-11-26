@@ -31,12 +31,12 @@
     <Filter Include="Header Files\Population">
       <UniqueIdentifier>{4033ebfd-83b6-4ceb-af78-f808d74b2c48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SmartCity">
+      <UniqueIdentifier>{e3983124-c4f8-4197-977b-c4a29fdced7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -121,6 +121,21 @@
     </ClInclude>
     <ClInclude Include="Population\PopulationEntities.h">
       <Filter>Header Files\Population</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartCity\Menu.h">
+      <Filter>Header Files\SmartCity</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartCity\SmartCity.h">
+      <Filter>Header Files\SmartCity</Filter>
+    </ClInclude>
+    <ClInclude Include="Commercial\MallEntities.h">
+      <Filter>Header Files\Commercial</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\HospitalGraph.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\PharmacyGraph.h">
+      <Filter>Header Files\Medicine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
