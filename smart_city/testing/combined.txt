@@ -10,7 +10,6 @@ using namespace std;
 class Bus {
 public:
 	string busNum;
-	string company;
 
 	int currentStop;
 
@@ -18,7 +17,27 @@ public:
 
 	PassengerQueue queue;
 
-	Bus(string n, string c, int s) : busNum(n), company(c), currentStop(s) {}
+	Bus(string n, int s) : busNum(n), currentStop(s) {}
+};
+
+class BusCompany {
+public:
+	string companyName;
+	Bus* head;
+
+	BusCompany(): companyName(""), head(nullptr) {}
+
+	void registerName(string n) {
+		companyName = n;
+	}
+
+	void addBus(const Bus &b) {
+
+	}
+
+	~BusCompany(){
+
+	}
 };
 
 --- BusHashTable.h ---
@@ -53,13 +72,71 @@ public:
 
     void insert(Bus b) {}
 
-    Bus* search(char* busNo) { return 0; }
+    Bus* search(string busNo) { return 0; }
 
     ~BusHashTable() {
         for (int i = 0; i < tableSize; i++) {
             delete[]table[i];
         }
         delete[]table;
+    }
+};
+
+--- BusMinHeap.h ---
+
+#pragma once
+class HeapNode {
+public:
+    int stopId;
+    int distance;
+
+    HeapNode(int id, int d) : stopId(id), distance(d) {}
+};
+
+class MinHeap {
+
+    void swap() {}
+
+    void minHeapify(){}
+
+    int parent(int i) { return (i - 1) / 2; }
+    int leftChild(int i) { return (2 * i + 1); }
+    int rightChild(int i) { return (2 * i + 2); }
+
+public:
+    HeapNode** heapArray;
+    int capacity;
+    int size;
+
+    MinHeap(int cap) : capacity(cap), size(0) {
+        heapArray = new HeapNode * [capacity];
+        for (int i = 0; i < capacity; i++) {
+            heapArray[i] = nullptr;
+        }
+    }
+
+    void insert(int stopId, int distance) {
+
+    }
+
+    HeapNode* extractMin() {
+        return nullptr;
+    }
+
+    void decreaseKey(int stopId, int newDist) {
+
+    }
+
+    bool isEmpty() {
+        return size == 0;
+    }
+
+    // Destructor
+    ~MinHeap() {
+        for (int i = 0; i < size; ++i) {
+            delete heapArray[i];
+        }
+        delete[] heapArray;
     }
 };
 
@@ -134,27 +211,6 @@ public:
 
 	}
 };
-
---- compile.py ---
-
-import os
-
-# Configuration
-input_folder = ".\\Transport"  # <-- change this to your folder
-output_file = "combined.txt"           # <-- name of the big file
-
-# Get all files in the folder
-files = [f for f in os.listdir(input_folder) if os.path.isfile(os.path.join(input_folder, f))]
-
-with open(output_file, "w", encoding="utf-8") as outfile:
-    for filename in files:
-        file_path = os.path.join(input_folder, filename)
-        with open(file_path, "r", encoding="utf-8") as infile:
-            outfile.write(f"\n\n--- {filename} ---\n\n")  # optional: separate files
-            outfile.write(infile.read())
-
-print(f"All files combined into {output_file}")
-
 
 --- PassengerQueue.h ---
 
@@ -238,6 +294,7 @@ class TransportSystem {
 	BusStopGraph graph;
 	BusHashTable busTable;
     RouteHistoryStack history;
+    BusCompany companies[50];
 
 	TransportSystem() {}
 
@@ -250,6 +307,7 @@ public:
     void shortestRoute(int startId, int endId) {}
     Bus* nearestBus(int stopId) {}
     Bus* searchBus(string busNum) {}
+    void addCompany(string name) {}
 
     void busSimulation(){}
 

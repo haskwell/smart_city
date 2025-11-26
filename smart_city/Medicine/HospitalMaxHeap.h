@@ -1,20 +1,21 @@
 #pragma once
+#include<iostream>
 #include<string>
 using namespace std;
 
 class HeapNode {
 public:
-    int ranking;
-    string schoolName;
+    string hospitalId;
+    int bedNumber;
 
-    HeapNode(int rank = 420, string school) : ranking(rank), schoolName(school) {}
+    HeapNode(string id, int bed) : hospitalId(id), bedNumber(bed) {}
 };
 
 class MinHeap {
 
     void swap() {}
 
-    void minHeapify() {}
+    void maxHeapify() {}
 
     int parent(int i) { return (i - 1) / 2; }
     int leftChild(int i) { return (2 * i + 1); }

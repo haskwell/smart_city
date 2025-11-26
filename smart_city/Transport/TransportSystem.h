@@ -9,8 +9,6 @@ class TransportSystem {
     RouteHistoryStack history;
     BusCompany companies[50];
 
-	TransportSystem() {}
-
 public:
     void registerCompany(string companyName) {}
     void registerBus(string busNo, string companyName, int stopId) {}
