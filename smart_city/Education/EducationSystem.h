@@ -1,11 +1,9 @@
 #pragma once
 #include "EducationEntities.h"
-#include "SchoolGraph.h"
 #include "SchoolMaxHeap.h"
 
 class EducationSystem {
 public:
-	SchoolGraph schoolGraph;
 	MaxHeap schoolMinHeap;
 
 	EducationSystem(){}

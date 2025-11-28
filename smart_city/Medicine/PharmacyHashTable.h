@@ -1,5 +1,5 @@
 #pragma once
-#include "HospitalEntities.h"
+#include "Medicine.h"
 
 class MedicineNode {
 public:

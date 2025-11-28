@@ -1,12 +1,8 @@
 #pragma once
-#include "HospitalGraph.h"
-#include "PharmacyGraph.h"
 #include "HospitalEntities.h"
 
 class MedicalSystem{
-    HospitalGraph hospitaGraph;
-    PharmacyGraph pharmacyGraph;
-
+public:
     void addDoctor(Person* p, string hospitalName){}
     void addPatient(Person* p, string hospitalName){}
     void addHospital(Hospital* h){}
