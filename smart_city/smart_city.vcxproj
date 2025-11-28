@@ -130,8 +130,8 @@
     <ClInclude Include="Commercial\MallGraph.h" />
     <ClInclude Include="Commercial\MallHashTable.h" />
     <ClInclude Include="Commercial\MallSystem.h" />
+    <ClInclude Include="Education\EducationEntities.h" />
     <ClInclude Include="Education\EducationSystem.h" />
-    <ClInclude Include="Education\Entities.h" />
     <ClInclude Include="Education\SchoolGraph.h" />
     <ClInclude Include="Education\SchoolMaxHeap.h" />
     <ClInclude Include="Medicine\DoctorsHashTable.h" />
