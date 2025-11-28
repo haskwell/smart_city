@@ -2,6 +2,8 @@
 #include "EducationEntities.h"
 #include "SchoolMaxHeap.h"
 
+
+using namespace std;
 class EducationSystem {
 public:
 	MaxHeap schoolMinHeap;

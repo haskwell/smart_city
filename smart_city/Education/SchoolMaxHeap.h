@@ -2,6 +2,8 @@
 #include<string>
 using namespace std;
 
+//heap :D
+
 class HeapNode {
 public:
     int ranking;
