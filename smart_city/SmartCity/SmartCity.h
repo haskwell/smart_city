@@ -3,6 +3,9 @@
 #include "../Transport/TransportSystem.h"
 #include "../Education/EducationSystem.h"
 #include "../Medicine/MedicalSystem.h"
+#include "../Commercial/MallSystem.h"
+#include "../Population/PopulationSystem.h"
+#include "../Public/FacilitySystem.h"
 using namespace std;
 
 class SmartCity {
@@ -10,6 +13,9 @@ class SmartCity {
     TransportSystem transport;
     EducationSystem education;
     MedicalSystem medical;
+    MallSystem commercial;
+    PopulationSystem population;
+    PublicSystem publicServices;
 
 public:
     SmartCity() {};
@@ -18,113 +24,121 @@ public:
         int choice;
         do {
             choice = menu.showMainMenu();
+
             switch (choice) {
-            case 1: {
+            case 1: { // Transport Module
                 int tChoice;
                 do {
                     tChoice = menu.showTransportMenu();
                     switch (tChoice) {
-                    case 1: break;
-                    case 2: break;
-                    case 3: break;
-                    case 4: break;
-                    case 5: break;
-                    case 6: break;
-                    case 7: break;
-                    case 0: break;
-                    default: cout << "Invalid choice! Try again.\n"; break;
+                    case 1: transport.registerCompanyHandler();     break;
+                    case 2: transport.registerBusHandler();        break;
+                    case 3: transport.addBusStopHandler();          break;
+                    case 4: transport.connectStopsHandler();        break;
+                    case 5: transport.busSimulation();              break;
+                    case 6: transport.shortestRouteHandler();       break;
+                    case 7: transport.searchBusHandler();           break;
+                    case 0: cout << "Returning to main menu...\n\n"; break;
+                    default: cout << "Invalid choice! Try again.\n\n"; break;
                     }
                 } while (tChoice != 0);
                 break;
             }
-            case 2: {
+
+            case 2: { // Education Module
                 int eChoice;
                 do {
                     eChoice = menu.showEducationMenu();
                     switch (eChoice) {
-                    case 1: break;
-                    case 2: break;
-                    case 3: break;
-                    case 4: break;
-                    case 5: break;
-                    case 6: break;
-                    case 7: break;
-                    case 8: break;
-                    case 0: break;
-                    default: cout << "Invalid choice! Try again.\n"; break;
+                    case 1: education.registerSchoolsHandler();         break;
+                    case 2: education.addFacultyHandler();              break;
+                    case 3: education.addStudentsHandler();             break;
+                    case 4: education.addDepartmentHandler();           break;
+                    case 5: education.addClassHandler();                break;
+                    case 6: education.searchSchoolBySubjectHandler();   break;
+                    case 7: education.rankSchoolsHandler();             break;
+                    case 8: education.locateNearestSchoolHandler();     break;
+                    case 0: cout << "Returning to main menu...\n\n"; break;
+                    default: cout << "Invalid choice! Try again.\n\n"; break;
                     }
                 } while (eChoice != 0);
                 break;
             }
-            case 3: {
+
+            case 3: { // Medicine Module
                 int mChoice;
                 do {
                     mChoice = menu.showMedicineMenu();
                     switch (mChoice) {
-                    case 1: break;
-                    case 2: break;
-                    case 3: break;
-                    case 4: break;
-                    case 5: break;
-                    case 6: break;
-                    case 7: break;
-                    case 0: break;
-                    default: cout << "Invalid choice! Try again.\n"; break;
+                    case 1: medical.registerHospitalsHandler();        break;
+                    case 2: medical.registerPharmaciesHandler();       break;
+                    case 3: medical.bookEmergencyBedHandler();         break;
+                    case 4: medical.searchDoctorHandler();             break;
+                    case 5: medical.searchPatientHandler();            break;
+                    case 6: medical.searchMedicineHandler();           break;
+                    case 7: medical.nearestHospitalLookupHandler();    break;
+                    case 0: cout << "Returning to main menu...\n\n"; break;
+                    default: cout << "Invalid choice! Try again.\n\n"; break;
                     }
                 } while (mChoice != 0);
                 break;
             }
-            case 4: {
+
+            case 4: { // Public Services Module
                 int pChoice;
                 do {
                     pChoice = menu.showPublicMenu();
                     switch (pChoice) {
-                    case 1: break;
-                    case 2: break;
-                    case 0: break;
-                    default: cout << "Invalid choice! Try again.\n"; break;
+                    case 1: publicServices.addUtilityHandler();           break;
+                    case 2: publicServices.findNearestUtilityHandler();   break;
+                    case 0: cout << "Returning to main menu...\n\n"; break;
+                    default: cout << "Invalid choice! Try again.\n\n"; break;
                     }
                 } while (pChoice != 0);
                 break;
             }
-            case 5: {
+
+            case 5: { // Commercial Module
                 int cChoice;
                 do {
                     cChoice = menu.showCommercialMenu();
                     switch (cChoice) {
-                    case 1: break;
-                    case 2: break;
-                    case 3: break;
-                    case 4: break;
-                    case 5: break;
-                    case 0: break;
-                    default: cout << "Invalid choice! Try again.\n"; break;
+                    case 1: commercial.registerMallsHandler();       break;
+                    case 2: commercial.registerShopsHandler();       break;
+                    case 3: commercial.addItemsHandler();            break;
+                    case 4: commercial.itemSearchHandler();             break;
+                    case 5: commercial.findNearestMallHandler();     break;
+                    case 0: cout << "Returning to main menu...\n\n"; break;
+                    default: cout << "Invalid choice! Try again.\n\n"; break;
                     }
                 } while (cChoice != 0);
                 break;
             }
-            case 6: {
+
+            case 6: { // Population Module
                 int popChoice;
                 do {
                     popChoice = menu.showPopulationMenu();
                     switch (popChoice) {
-                    case 1: break;
-                    case 2: break;
-                    case 3: break;
-                    case 4: break;
-                    case 5: break;
-                    case 6: break;
-                    case 0: break;
-                    default: cout << "Invalid choice! Try again.\n"; break;
+                    case 1: population.addSectorsHandler();      break;
+                    case 2: population.addStreetsHandler();      break;
+                    case 3: population.addHousesHandler();       break;
+                    case 4: population.addPeopleHandler();       break;
+                    case 5: population.searchByCNICHandler();    break;
+                    case 6: population.generateReportHandler();  break;
+                    case 0: cout << "Returning to main menu...\n\n"; break;
+                    default: cout << "Invalid choice! Try again.\n\n"; break;
                     }
                 } while (popChoice != 0);
                 break;
             }
+
             case 0:
-                cout << "Exiting Smart City Management System...\n";
+                cout << "Thank you for using Smart City Management System!\nGoodbye!\n";
                 break;
+
             default:
-                cout << "Invalid choice! Try again.\n";
+                cout << "Invalid choice! Please select a valid option.\n\n";
                 break;
             }
         } while (choice != 0);
