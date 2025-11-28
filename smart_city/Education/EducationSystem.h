@@ -8,6 +8,8 @@ public:
 	SchoolGraph schoolGraph;
 	MaxHeap schoolMinHeap;
 
+	EducationSystem(){}
+
 	void registerSchool(School school){}
 	void registerStudent(Person student){}
 	void registerFaculty(Person person){}

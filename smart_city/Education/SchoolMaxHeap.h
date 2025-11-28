@@ -25,6 +25,8 @@ public:
     int capacity;
     int size;
 
+    MaxHeap(){}
+
     MaxHeap(int cap) : capacity(cap), size(0) {
         heapArray = new HeapNode * [capacity];
         for (int i = 0; i < capacity; i++) {
