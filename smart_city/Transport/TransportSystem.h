@@ -1,10 +1,8 @@
 #pragma once
-#include "BusStopGraph.h"
 #include "BusHashTable.h"
 #include "RouteHistoryStack.h"
 
 class TransportSystem {
-	BusStopGraph graph;
 	BusHashTable busTable;
     RouteHistoryStack history;
     BusCompany companies[50];
