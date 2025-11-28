@@ -98,9 +98,6 @@
     <ClInclude Include="Transport\BusMinHeap.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="Education\Entities.h">
-      <Filter>Header Files\Education</Filter>
-    </ClInclude>
     <ClInclude Include="Medicine\DoctorsHashTable.h">
       <Filter>Header Files\Medicine</Filter>
     </ClInclude>
@@ -136,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="Medicine\PharmacyGraph.h">
       <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Education\EducationEntities.h">
+      <Filter>Header Files\Education</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
