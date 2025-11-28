@@ -1,8 +1,9 @@
 #pragma once
 #include "EducationEntities.h"
-#include "SchoolGraph.h"
 #include "SchoolMaxHeap.h"
 #include <iostream>
+
+//skool
 
 using namespace std;
 class EducationSystem {
