@@ -31,6 +31,9 @@
     <Filter Include="Header Files\Population">
       <UniqueIdentifier>{4033ebfd-83b6-4ceb-af78-f808d74b2c48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SmartCity">
+      <UniqueIdentifier>{e3983124-c4f8-4197-977b-c4a29fdced7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -38,12 +41,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SmartCity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Commercial\MallGraph.h">
       <Filter>Header Files\Commercial</Filter>
     </ClInclude>
@@ -53,32 +50,11 @@
     <ClInclude Include="Commercial\MallSystem.h">
       <Filter>Header Files\Commercial</Filter>
     </ClInclude>
-    <ClInclude Include="Education\SchoolHashTable.h">
-      <Filter>Header Files\Education</Filter>
-    </ClInclude>
-    <ClInclude Include="Education\SchoolMinHeap.h">
-      <Filter>Header Files\Education</Filter>
-    </ClInclude>
-    <ClInclude Include="Education\SchoolTree.h">
+    <ClInclude Include="Education\SchoolMaxHeap.h">
       <Filter>Header Files\Education</Filter>
     </ClInclude>
     <ClInclude Include="Education\EducationSystem.h">
       <Filter>Header Files\Education</Filter>
-    </ClInclude>
-    <ClInclude Include="Medicine\HospitalHashTable.h">
-      <Filter>Header Files\Medicine</Filter>
-    </ClInclude>
-    <ClInclude Include="Medicine\HospitalMinHeap.h">
-      <Filter>Header Files\Medicine</Filter>
-    </ClInclude>
-    <ClInclude Include="Medicine\MedicalGraph.h">
-      <Filter>Header Files\Medicine</Filter>
-    </ClInclude>
-    <ClInclude Include="Medicine\MedicalSystem.h">
-      <Filter>Header Files\Medicine</Filter>
-    </ClInclude>
-    <ClInclude Include="Medicine\MedicineHashTable.h">
-      <Filter>Header Files\Medicine</Filter>
     </ClInclude>
     <ClInclude Include="Population\PopulationHashTable.h">
       <Filter>Header Files\Population</Filter>
@@ -116,8 +92,50 @@
     <ClInclude Include="Transport\TransportSystem.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="BusMinHeap.h">
+    <ClInclude Include="Education\SchoolGraph.h">
+      <Filter>Header Files\Education</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\BusMinHeap.h">
       <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Education\Entities.h">
+      <Filter>Header Files\Education</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\DoctorsHashTable.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\HospitalEntities.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\HospitalMaxHeap.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\MedicalSystem.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\PatientHashTable.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\PharmacyHashTable.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Population\PopulationEntities.h">
+      <Filter>Header Files\Population</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartCity\Menu.h">
+      <Filter>Header Files\SmartCity</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartCity\SmartCity.h">
+      <Filter>Header Files\SmartCity</Filter>
+    </ClInclude>
+    <ClInclude Include="Commercial\MallEntities.h">
+      <Filter>Header Files\Commercial</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\HospitalGraph.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
+    <ClInclude Include="Medicine\PharmacyGraph.h">
+      <Filter>Header Files\Medicine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

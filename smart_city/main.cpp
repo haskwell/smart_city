@@ -1,12 +1,6 @@
-#include <iostream>
-
+#include "SmartCity/SmartCity.h"
 int main() {
-
-
-
-
-
-
-
-	return 0;
+    SmartCity city;
+    city.run();
+    return 0;
 }

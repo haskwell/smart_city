@@ -7,8 +7,7 @@ class TransportSystem {
 	BusStopGraph graph;
 	BusHashTable busTable;
     RouteHistoryStack history;
-
-	TransportSystem() {}
+    BusCompany companies[50];
 
 public:
     void registerCompany(string companyName) {}
@@ -19,6 +18,7 @@ public:
     void shortestRoute(int startId, int endId) {}
     Bus* nearestBus(int stopId) {}
     Bus* searchBus(string busNum) {}
+    void addCompany(string name) {}
 
     void busSimulation(){}
 
