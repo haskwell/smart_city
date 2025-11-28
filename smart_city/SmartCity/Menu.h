@@ -6,12 +6,6 @@ using namespace std;
 class Menu {
 private:
 
-    int readChoice() {
-        string input;
-        getline(cin, input);
-        return stringToInt(input);
-    }
-
     int stringToInt(string& s) {
         int len = s.size();
         int num = 0;
@@ -24,133 +18,129 @@ private:
         return num;
     }
 
+    int readChoice() {
+        string input;
+        getline(cin, input);
+        return stringToInt(input);
+    }
+
+    string mainMenu[8] = {
+        "Welcome to Smart City Management System",
+        "1. Transport Module",
+        "2. Education Module",
+        "3. Medicine Module",
+        "4. Public Services Module",
+        "5. Commercial Module",
+        "6. Population Module",
+        "0. Exit"
+    };
+
+    string transportMenu[11] = {
+        "=== TRANSPORT MODULE ===",
+        "1. Register Company",
+        "2. Register Bus with Route",
+        "3. Add Bus Stop",
+        "4. Connect Stops",
+        "5. Bus Simulation",
+        "6. Find Shortest Path",
+        "7. Get Bus Details",
+        "0. Back"
+    };
+
+    string educationMenu[11] = {
+        "=== EDUCATION MODULE ===",
+        "1. Register Schools",
+        "2. Add Faculty",
+        "3. Add Students",
+        "4. Add Department",
+        "5. Add Class",
+        "6. Search School by Subject",
+        "7. Rank Schools",
+        "8. Locate Nearest School",
+        "0. Back"
+    };
+
+    string medicineMenu[11] = {
+       "=== MEDICINE MODULE ===",
+       "1. Register Hospitals",
+       "2. Register Pharmacies",
+       "3. Book Emergency Bed",
+       "4. Search Doctor",
+       "5. Search Patient",
+       "6. Search Medicine",
+       "7. Nearest Hospital Lookup",
+       "0. Back"
+    };
+
+    string commercialMenu[11] = {
+        "=== COMMERCIAL MODULE ===",
+        "1. Register Malls",
+        "2. Register Shops in Malls",
+        "3. Add Items to Shops",
+        "4. Item Search (Category Based)",
+        "5. Find Nearest Mall",
+        "0. Back"
+    };
+
+    string populationMenu[11] = {
+        "=== POPULATION MODULE ===",
+        "1. Add Sectors",
+        "2. Add Streets",
+        "3. Add Houses",
+        "4. Add People",
+        "5. Search by CNIC",
+        "6. Generate Report",
+        "0. Back"
+    };
+
+    string publicMenu[11] = {
+        "=== PUBLIC MODULE ===",
+        "1. Add Utility",
+        "2. Find Nearest Utility",
+        "0. Back"
+    };
+
 public:
-    // === Main Menu ===
-    void mainMenu() {
-        cout << "\n====================================\n";
-        cout << " SMART CITY MANAGEMENT SYSTEM \n";
-        cout << "====================================\n";
-        cout << "1. Transport Module\n";
-        cout << "2. Education Module\n";
-        cout << "3. Medical Module\n";
-        cout << "4. Commercial Module [Coming Soon]\n";
-        cout << "5. Public Services Module [Coming Soon]\n";
-        cout << "6. Population Module [Coming Soon]\n";
-        cout << "7. Exit\n";
-        cout << "------------------------------------\n";
-        cout << "Enter your choice: ";
-    }
 
-    int getMainMenuChoice() {
-        mainMenu();
-        int choice = readChoice();
-        while (choice < 0 || choice > 7) {
-            cout << "Invalid choice. Please enter 0-7: ";
-            choice = readChoice();
+        void printMenu(string s[], int len) {
+        for (int i = 0; i < len; i++) {
+            cout << s[i] << '\n';
         }
-        return choice;
     }
 
-    // === Transport Menu ===
-    void transportMenu() {
-        cout << "\n====================================\n";
-        cout << " TRANSPORT MODULE \n";
-        cout << "====================================\n";
-        cout << "1. Register Bus Company\n";
-        cout << "2. Register New Bus\n";
-        cout << "3. Add Bus Stop to Route\n";
-        cout << "4. Add New Bus Stop\n";
-        cout << "5. Connect Two Bus Stops (Road)\n";
-        cout << "6. Find Shortest Route Between Stops\n";
-        cout << "7. Find Nearest Bus at a Stop\n";
-        cout << "8. Search Bus by Number\n";
-        cout << "9. Start Bus Simulation\n";
-        cout << "10. View All Bus Companies\n";
-        cout << "0. Back to Main Menu\n";
-        cout << "------------------------------------\n";
-        cout << "Enter your choice: ";
+    int showMainMenu() {
+        printMenu(mainMenu, 8);
+        return readChoice();
     }
 
-    int getTransportChoice() {
-        transportMenu();
-        int choice = readChoice();
-        while (choice < 0 || choice > 10) {
-            cout << "Invalid choice. Please enter 0-10: ";
-            choice = readChoice();
-        }
-        return choice;
+    int showTransportMenu() {
+        printMenu(transportMenu, 9);
+        return readChoice();
     }
 
-    // === Education Menu ===
-    void educationMenu() {
-        cout << "\n====================================\n";
-        cout << " EDUCATION MODULE \n";
-        cout << "====================================\n";
-        cout << "1. Register New School\n";
-        cout << "2. Register Student\n";
-        cout << "3. Register Faculty/Teacher\n";
-        cout << "4. Search School by Name\n";
-        cout << "5. Search Schools by Subject\n";
-        cout << "6. Display School Ranking (Performance)\n";
-        cout << "7. View All Schools\n";
-        cout << "0. Back to Main Menu\n";
-        cout << "------------------------------------\n";
-        cout << "Enter your choice: ";
+    int showEducationMenu() {
+        printMenu(educationMenu, 10);
+        return readChoice();
     }
 
-    int getEducationChoice() {
-        educationMenu();
-        int choice = readChoice();
-        while (choice < 0 || choice > 7) {
-            cout << "Invalid choice. Please enter 0-7: ";
-            choice = readChoice();
-        }
-        return choice;
+    int showMedicineMenu() {
+        printMenu(medicineMenu, 9);
+        return readChoice();
     }
 
-    // === Medical Menu ===
-    void medicalMenu() {
-        cout << "\n====================================\n";
-        cout << " MEDICAL MODULE \n";
-        cout << "====================================\n";
-        cout << "1. Add New Hospital\n";
-        cout << "2. Add Doctor to Hospital\n";
-        cout << "3. Admit Patient\n";
-        cout << "4. Request Emergency Beds\n";
-        cout << "5. Add New Pharmacy\n";
-        cout << "6. Add Medicine to Pharmacy\n";
-        cout << "7. Search Hospital by Name\n";
-        cout << "8. Search Medicine Availability\n";
-        cout << "9. Find Nearest Hospital/Pharmacy\n";
-        cout << "0. Back to Main Menu\n";
-        cout << "------------------------------------\n";
-        cout << "Enter your choice: ";
+    int showCommercialMenu() {
+        printMenu(commercialMenu, 6);
+        return readChoice();
     }
 
-    int getMedicalChoice() {
-        medicalMenu();
-        int choice = readChoice();
-        while (choice < 0 || choice > 9) {
-            cout << "Invalid choice. Please enter 0-9: ";
-            choice = readChoice();
-        }
-        return choice;
+    int showPopulationMenu() {
+        printMenu(populationMenu, 8);
+        return readChoice();
     }
 
-    // Placeholder for future modules
-    void showUnderConstruction() {
-        cout << "\nThis module is under development.\n";
-        cout << "0. Back to Main Menu\n";
-        cout << "Enter choice: ";
+    int showPublicMenu() {
+        printMenu(publicMenu, 4);
+        return readChoice();
     }
 
-    int getPlaceholderChoice() {
-        showUnderConstruction();
-        int choice = readChoice();
-        while (choice != 0) {
-            cout << "Please enter 0 to go back: ";
-            choice = readChoice();
-        }
-        return choice;
-    }
 };
