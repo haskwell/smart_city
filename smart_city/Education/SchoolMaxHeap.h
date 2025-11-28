@@ -7,7 +7,7 @@ public:
     int ranking;
     string schoolName;
 
-    HeapNode(int rank = 420, string school) : ranking(rank), schoolName(school) {}
+    HeapNode(int rank = 420, string school = "") : ranking(rank), schoolName(school) {}
 };
 
 class MaxHeap {
