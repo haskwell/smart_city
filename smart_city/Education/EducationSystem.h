@@ -2,7 +2,7 @@
 #include "EducationEntities.h"
 #include "SchoolGraph.h"
 #include "SchoolMaxHeap.h"
-
+//nigger
 class EducationSystem {
 public:
 	SchoolGraph schoolGraph;
