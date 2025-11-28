@@ -10,11 +10,11 @@ public:
     HeapNode(int rank = 420, string school) : ranking(rank), schoolName(school) {}
 };
 
-class MinHeap {
+class MaxHeap {
 
     void swap() {}
 
-    void minHeapify() {}
+    void maxHeapify() {}
 
     int parent(int i) { return (i - 1) / 2; }
     int leftChild(int i) { return (2 * i + 1); }
@@ -25,7 +25,7 @@ public:
     int capacity;
     int size;
 
-    MinHeap(int cap) : capacity(cap), size(0) {
+    MaxHeap(int cap) : capacity(cap), size(0) {
         heapArray = new HeapNode * [capacity];
         for (int i = 0; i < capacity; i++) {
             heapArray[i] = nullptr;
@@ -49,7 +49,7 @@ public:
     }
 
     // Destructor
-    ~MinHeap() {
+    ~MaxHeap() {
         for (int i = 0; i < size; ++i) {
             delete heapArray[i];
         }

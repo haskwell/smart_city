@@ -133,7 +133,7 @@
     <ClInclude Include="Education\EducationSystem.h" />
     <ClInclude Include="Education\Entities.h" />
     <ClInclude Include="Education\SchoolGraph.h" />
-    <ClInclude Include="Education\SchoolMinHeap.h" />
+    <ClInclude Include="Education\SchoolMaxHeap.h" />
     <ClInclude Include="Medicine\DoctorsHashTable.h" />
     <ClInclude Include="Medicine\HospitalEntities.h" />
     <ClInclude Include="Medicine\HospitalGraph.h" />

@@ -1,12 +1,12 @@
 #pragma once
 #include "EducationEntities.h"
 #include "SchoolGraph.h"
-#include "SchoolMinHeap.h"
+#include "SchoolMaxHeap.h"
 
 class EducationSystem {
 public:
 	SchoolGraph schoolGraph;
-	MinHeap schoolMinHeap;
+	MaxHeap schoolMinHeap;
 
 	void registerSchool(School school){}
 	void registerStudent(Person student){}

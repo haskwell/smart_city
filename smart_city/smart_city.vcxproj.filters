@@ -50,7 +50,7 @@
     <ClInclude Include="Commercial\MallSystem.h">
       <Filter>Header Files\Commercial</Filter>
     </ClInclude>
-    <ClInclude Include="Education\SchoolMinHeap.h">
+    <ClInclude Include="Education\SchoolMaxHeap.h">
       <Filter>Header Files\Education</Filter>
     </ClInclude>
     <ClInclude Include="Education\EducationSystem.h">
