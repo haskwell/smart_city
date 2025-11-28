@@ -1,15 +1,12 @@
 #pragma once
-#include "BusStopGraph.h"
 #include "BusHashTable.h"
 #include "RouteHistoryStack.h"
 
 class TransportSystem {
-	BusStopGraph graph;
 	BusHashTable busTable;
     RouteHistoryStack history;
     BusCompany companies[50];
 
-public:
     void registerCompany(string companyName) {}
     void registerBus(string busNo, string companyName, int stopId) {}
     void addBusStopInRoute(string busNo, int stopId) {}
@@ -20,7 +17,35 @@ public:
     Bus* searchBus(string busNum) {}
     void addCompany(string name) {}
 
-    void busSimulation(){}
+public:
+
+    void registerCompanyHandler() {
+        cout << ">>> Register Company - Not implemented yet\n\n";
+    }
+
+    void registerBusHandler() {
+        cout << ">>> Register Bus with Route - Not implemented yet\n\n";
+    }
+
+    void addBusStopHandler() {
+        cout << ">>> Add Bus Stop - Not implemented yet\n\n";
+    }
+
+    void connectStopsHandler() {
+        cout << ">>> Connect Stops - Not implemented yet\n\n";
+    }
+
+    void busSimulation() {
+        cout << ">>> Bus Simulation - Not implemented yet\n\n";
+    }
+
+    void shortestRouteHandler() {
+        cout << ">>> Find Shortest Path - Not implemented yet\n\n";
+    }
+
+    void searchBusHandler() {
+        cout << ">>> Get Bus Details - Not implemented yet\n\n";
+    }
 
     ~TransportSystem() {
 

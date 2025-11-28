@@ -1,5 +1,5 @@
 #pragma once
-#include "HospitalEntities.h"
+#include "Medicine.h"
 
 class MedicineNode {
 public:
@@ -24,16 +24,60 @@ public:
         }
     }
 
-    int hash(string busNo) { return 0; }
+    int hash(string med) {
+        long long hashValue = 0;
+        int primeNumber = 17; // prime base
 
-    void insert(Medicine b) {}
+        for (int i = 0; i < med.length(); i++) {
+            hashValue = (hashValue * primeNumber + med[i]) % tableSize;
+        }
 
-    Medicine* search(string busNo) { return 0; }
+        return hashValue;
+    }
 
+    // Insert a medicine into the table
+    void insert(Medicine med) {
+        int index = hash(med.name);
+
+        MedicineNode* medNode = new MedicineNode(med);
+
+        if (table[index] == nullptr) {
+            table[index] = medNode;
+        }
+        else { // collision ? append to linked list
+            MedicineNode* temp = table[index];
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = medNode;
+        }
+    }
+
+    // Search a medicine by name
+    Medicine* search(string med) {
+        int index = hash(med);
+
+        MedicineNode* current = table[index];
+
+        while (current != nullptr) {
+            if (current->data.name == med) {
+                return &(current->data);
+            }
+            current = current->next;
+        }
+        return nullptr;
+    }
+
+    // Destructor to free memory
     ~MedicineHashTable() {
         for (int i = 0; i < tableSize; i++) {
-            delete[]table[i];
+            MedicineNode* current = table[i];
+            while (current != nullptr) {
+                MedicineNode* prev = current;
+                current = current->next;
+                delete prev;
+            }
         }
-        delete[]table;
+        delete[] table;
     }
 };

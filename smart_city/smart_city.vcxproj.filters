@@ -137,5 +137,8 @@
     <ClInclude Include="Education\EducationEntities.h">
       <Filter>Header Files\Education</Filter>
     </ClInclude>
+    <ClInclude Include="Medicine\Medicine.h">
+      <Filter>Header Files\Medicine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

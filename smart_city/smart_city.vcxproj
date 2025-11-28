@@ -139,6 +139,7 @@
     <ClInclude Include="Medicine\HospitalGraph.h" />
     <ClInclude Include="Medicine\HospitalMaxHeap.h" />
     <ClInclude Include="Medicine\MedicalSystem.h" />
+    <ClInclude Include="Medicine\Medicine.h" />
     <ClInclude Include="Medicine\PatientHashTable.h" />
     <ClInclude Include="Medicine\PharmacyGraph.h" />
     <ClInclude Include="Medicine\PharmacyHashTable.h" />
