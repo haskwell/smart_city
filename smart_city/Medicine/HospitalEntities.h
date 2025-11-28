@@ -6,6 +6,8 @@
 #include "PharmacyHashTable.h"
 using namespace std;
 
+//hello
+
 struct Medicine {
     string name;
     string formula;
