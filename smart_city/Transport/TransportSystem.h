@@ -1,8 +1,11 @@
 #pragma once
 #include "BusHashTable.h"
 #include "RouteHistoryStack.h"
+#include"../Database/Database.h"
 
 class TransportSystem {
+private:
+    Database* db;
 	BusHashTable busTable;
     RouteHistoryStack history;
 
@@ -17,7 +20,9 @@ class TransportSystem {
     void addCompany(string name) {}
 
 public:
-
+    TransportSystem(Database* database = nullptr) : db(database) {
+        busTable.setUptable(100); // Example size
+	}
     void registerCompanyHandler() {
         cout << ">>> Register Company - Not implemented yet\n\n";
     }

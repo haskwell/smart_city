@@ -1,9 +1,15 @@
 #pragma once
 #include <iostream>
+#include"../Database/Database.h"
+
 using namespace std;
 
 class MallSystem {
+private:
+	Database* db;
+
 public:
+	MallSystem(Database* database = nullptr) : db(database) {}
 
 	void locateMall(){}
 

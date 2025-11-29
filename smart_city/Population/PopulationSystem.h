@@ -1,9 +1,14 @@
 #pragma once
 #include <iostream>
+#include"../Database/database.h"
 using namespace std;
 
 class PopulationSystem {
+private:
+	Database* db;
 public:
+	PopulationSystem(Database* database = nullptr) : db(database) {}
+
     void addSectorsHandler() {
         cout << ">>> Add Sectors - Not implemented yet\n\n";
     }
