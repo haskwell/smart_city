@@ -17,8 +17,18 @@ class SmartCity {
     PopulationSystem population;
     PublicSystem publicServices;
 
+    Database db;
+
 public:
-    SmartCity() {};
+    SmartCity()
+        : transport(&db),
+        education(&db),
+        medical(&db),
+        commercial(&db),
+        population(&db),
+        publicServices(&db)
+    {
+    }
 
     void run() {
         int choice;

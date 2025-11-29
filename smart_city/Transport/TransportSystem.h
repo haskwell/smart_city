@@ -1,11 +1,11 @@
 #pragma once
-#include "BusHashTable.h"
 #include "RouteHistoryStack.h"
+#include"../Database/Database.h"
 
 class TransportSystem {
-	BusHashTable busTable;
+private:
+    Database* db;
     RouteHistoryStack history;
-    BusCompany companies[50];
 
     void registerCompany(string companyName) {}
     void registerBus(string busNo, string companyName, int stopId) {}
@@ -13,12 +13,10 @@ class TransportSystem {
     void addBusStop(string name, int stopId, float lat, float lon) {}
     void connectStops(int fromId, int toId, int distance) {}
     void shortestRoute(int startId, int endId) {}
-    Bus* nearestBus(int stopId) {}
-    Bus* searchBus(string busNum) {}
     void addCompany(string name) {}
 
 public:
-
+    TransportSystem(Database* database = nullptr) : db(database) {}
     void registerCompanyHandler() {
         cout << ">>> Register Company - Not implemented yet\n\n";
     }

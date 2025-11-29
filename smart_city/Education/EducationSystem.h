@@ -1,14 +1,18 @@
 #pragma once
 #include "EducationEntities.h"
 #include "SchoolMaxHeap.h"
-
+#include"../Database/Database.h"
 
 using namespace std;
+
 class EducationSystem {
+private:
+	Database* db;
+
 public:
 	MaxHeap schoolMinHeap;
 
-	EducationSystem(){}
+    EducationSystem(Database* d = nullptr) : db(d) {}
 
 	void registerSchool(School school){}
 	void registerStudent(Person student){}

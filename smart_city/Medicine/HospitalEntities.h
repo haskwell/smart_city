@@ -3,7 +3,7 @@
 #include "../Population/PopulationEntities.h"
 #include "DoctorsHashTable.h"
 #include "PatientHashTable.h"
-#include "PharmacyHashTable.h"
+#include "MedicineHashTable.h"
 using namespace std;
 
 class Hospital {
