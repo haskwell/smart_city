@@ -1,86 +1,82 @@
 #pragma once
 #include "../Population/PopulationEntities.h"
+#include <string>
+using namespace std;
 
 class PersonNode {
 public:
-	Person data;
-	PersonNode* next;
-	PersonNode(Person p) : data(p), next(nullptr) {}
+    Person data;
+    PersonNode* next;
+    PersonNode(Person p) : data(p), next(nullptr) {}
 };
 
 class PeopleHashTable {
 public:
-	PersonNode** table;
-	int tableSize;
-	PeopleHashTable() : table(nullptr), tableSize(0) {}
-	void setUptable(int size) {
-		tableSize = size;
-		table = new PersonNode * [tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			table[i] = nullptr;
-		}
-	}
-	int hash(string cnic) {
-		if (tableSize == 0)
-		{
-			return 0; // Safety check
-		}
-		long long hashValue = 0;
-		int primeNumber = 31;
-		for (int i = 0; i < cnic.length(); i++) {
-			hashValue = (hashValue * primeNumber + cnic[i]) % tableSize;
-		}
-		// Ensure result is positive
-		return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
-	}
+    PersonNode** table;
+    int tableSize;
 
-	void insert(Person person) {
-		int index = hash(person.CNIC);
+    PeopleHashTable(int size = 10) : tableSize(size) {
+        table = new PersonNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) table[i] = nullptr;
+    }
 
-		PersonNode* personNode = new PersonNode(person);
+    int hash(const string& cnic) {
+        long long hashValue = 0;
+        int primeNumber = 31;
+        for (char c : cnic) hashValue = (hashValue * primeNumber + c) % tableSize;
+        return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
+    }
 
-		if (table[index] == nullptr)
-		{
-			table[index] = personNode;
-		}
-		else
-		{
-			PersonNode* temp = table[index];
-			while (temp->next != nullptr)
-			{
-				temp = temp->next;
-			}
-			temp->next = personNode;
-		}
-	}
+    void insert(Person person) {
+        int index = hash(person.CNIC);
+        PersonNode* newNode = new PersonNode(person);
+        if (!table[index]) table[index] = newNode;
+        else {
+            PersonNode* temp = table[index];
+            while (temp->next) temp = temp->next;
+            temp->next = newNode;
+        }
+    }
 
-	Person* search(string cnic) {
-		int index = hash(cnic);
+    Person* search(const string& cnic) {
+        int index = hash(cnic);
+        PersonNode* current = table[index];
+        while (current) {
+            if (current->data.CNIC == cnic) return &current->data;
+            current = current->next;
+        }
+        return nullptr;
+    }
 
-		PersonNode* current = table[index];
+    void resize(int newSize) {
+        PersonNode** oldTable = table;
+        int oldSize = tableSize;
+        tableSize = newSize;
+        table = new PersonNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) table[i] = nullptr;
 
-		while (current != nullptr)
-		{
-			if (current->data.CNIC == cnic)
-			{
-				return &(current->data);
-			}
-			current = current->next;
-		}
-		return nullptr;
-	}
+        for (int i = 0; i < oldSize; i++) {
+            PersonNode* current = oldTable[i];
+            while (current) {
+                PersonNode* nextNode = current->next;
+                int index = hash(current->data.CNIC);
+                current->next = table[index];
+                table[index] = current;
+                current = nextNode;
+            }
+        }
+        delete[] oldTable;
+    }
 
-	~PeopleHashTable() {
-		for (int i = 0; i < tableSize; i++) {
-			PersonNode* current = table[i];
-			while (current != nullptr) {
-				PersonNode* toDelete = current;
-				current = current->next;
-				delete toDelete;
-			}
-		}
-		delete[] table;
-		table = nullptr;
-	}
-
+    ~PeopleHashTable() {
+        for (int i = 0; i < tableSize; i++) {
+            PersonNode* current = table[i];
+            while (current) {
+                PersonNode* toDelete = current;
+                current = current->next;
+                delete toDelete;
+            }
+        }
+        delete[] table;
+    }
 };

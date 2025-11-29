@@ -1,91 +1,99 @@
 #pragma once
 #include "../Medicine/HospitalEntities.h"
+#include <string>
+using namespace std;
 
 class HospitalNode {
-
 public:
-	Hospital data;
-	HospitalNode* next;
-	HospitalNode(Hospital h) : data(h), next(nullptr) {}
+    Hospital data;
+    HospitalNode* next;
+    HospitalNode(const Hospital& h) : data(h), next(nullptr) {}
 };
 
 class HospitalHashTable {
 public:
-	HospitalNode** table;
-	int tableSize;
+    HospitalNode** table;
+    int tableSize;
 
-	HospitalHashTable() : table(nullptr), tableSize(0) {}
+    // Constructor initializes the table directly
+    HospitalHashTable(int size = 10) : tableSize(size) {
+        table = new HospitalNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) {
+            table[i] = nullptr;
+        }
+    }
 
-	void setUptable(int size) {
-		tableSize = size;
-		table = new HospitalNode * [tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			table[i] = nullptr;
-		}
-	}
-	int hash(string hospitalID) {
-		if (tableSize == 0)
-		{
-			return 0; // Safety check
-		}
-		long long hashValue = 0;
-		int primeNumber = 31;
+    int hash(const string& hospitalID) {
+        if (tableSize == 0) return 0;
 
-		for (int i = 0; i < hospitalID.length(); i++) {
-			hashValue = (hashValue * primeNumber + hospitalID[i]) % tableSize;
-		}
-		// Ensure result is positive
-		return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
-	}
-	// 2. Insert Function (Tail Insertion)
-	void insert(Hospital Hos) {
-		int index = hash(Hos.id);;
+        long long hashValue = 0;
+        int primeNumber = 31;
 
-		HospitalNode* hosNode = new HospitalNode(Hos);
+        for (char c : hospitalID) {
+            hashValue = (hashValue * primeNumber + c) % tableSize;
+        }
 
-		if (table[index] == nullptr)
-		{
-			table[index] = hosNode;
-		}
-		else {
-			HospitalNode* temp = table[index];
-			while (temp->next != nullptr)
-			{
-				temp = temp->next;
+        return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
+    }
 
-			}
-			temp->next = hosNode;
-		}
-	}
+    void insert(const Hospital& hos) {
+        int index = hash(hos.id);
+        HospitalNode* newNode = new HospitalNode(hos);
 
-	Hospital* search(string hospitalID) {
-		int index = hash(hospitalID);
+        if (table[index] == nullptr) {
+            table[index] = newNode;
+        }
+        else {
+            HospitalNode* temp = table[index];
+            while (temp->next) temp = temp->next;
+            temp->next = newNode;
+        }
+    }
 
-		HospitalNode* current = table[index];
+    Hospital* search(const string& hospitalID) {
+        int index = hash(hospitalID);
+        HospitalNode* current = table[index];
 
-		while (current != nullptr)
-		{
-			if (current->data.id == hospitalID)
-			{
-				return &(current->data);
+        while (current) {
+            if (current->data.id == hospitalID) return &(current->data);
+            current = current->next;
+        }
+        return nullptr;
+    }
 
-			}
-			current = current->next;
-		}
+    // Resize function: doubles table size and rehashes all hospitals
+    void resize(int newSize) {
+        HospitalNode** oldTable = table;
+        int oldSize = tableSize;
 
-		return nullptr;
-	}
+        tableSize = newSize;
+        table = new HospitalNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) table[i] = nullptr;
 
-	~HospitalHashTable() {
-		for (int i = 0; i < tableSize; i++) {
-			HospitalNode* current = table[i];
-			while (current != nullptr) {
-				HospitalNode* toDelete = current;
-				current = current->next;
-				delete toDelete;
-			}
-		}
-		delete[] table;
-		table = nullptr;
-	}
+        for (int i = 0; i < oldSize; i++) {
+            HospitalNode* current = oldTable[i];
+            while (current) {
+                HospitalNode* nextNode = current->next;
+                int index = hash(current->data.id);
+                current->next = table[index];
+                table[index] = current;
+                current = nextNode;
+            }
+        }
+
+        delete[] oldTable; // delete old array, nodes reused
+    }
+
+    ~HospitalHashTable() {
+        for (int i = 0; i < tableSize; i++) {
+            HospitalNode* current = table[i];
+            while (current) {
+                HospitalNode* toDelete = current;
+                current = current->next;
+                delete toDelete;
+            }
+        }
+        delete[] table;
+        table = nullptr;
+    }
 };

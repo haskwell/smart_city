@@ -1,84 +1,82 @@
 #pragma once
 #include "../Education/EducationEntities.h"
+#include <string>
+using namespace std;
 
 class SchoolNode {
 public:
-	School data;
-	SchoolNode* next;
-	SchoolNode(School s) : data(s), next(nullptr) {}
+    School data;
+    SchoolNode* next;
+    SchoolNode(School s) : data(s), next(nullptr) {}
 };
 
 class SchoolHashTable {
 public:
-	SchoolNode** table;
-	int tableSize;
-	SchoolHashTable() : table(nullptr), tableSize(0) {}
-	void setUptable(int size) {
-		tableSize = size;
-		table = new SchoolNode * [tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			table[i] = nullptr;
-		}
-	}
-	int hash(string schoolID) {
-		if (tableSize == 0)
-		{
-			return 0; // Safety check
-		}
-		long long hashValue = 0;
-		int primeNumber = 31;
-		for (int i = 0; i < schoolID.length(); i++) {
-			hashValue = (hashValue * primeNumber + schoolID[i]) % tableSize;
-		}
-		// Ensure result is positive
-		return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
-	}
+    SchoolNode** table;
+    int tableSize;
 
-	void insert(School school) {
-		int index = hash(school.schoolID);
+    SchoolHashTable(int size = 10) : tableSize(size) {
+        table = new SchoolNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) table[i] = nullptr;
+    }
 
-		SchoolNode* schoolNode = new SchoolNode(school);
+    int hash(const string& schoolID) {
+        long long hashValue = 0;
+        int primeNumber = 31;
+        for (char c : schoolID) hashValue = (hashValue * primeNumber + c) % tableSize;
+        return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
+    }
 
-		if (table[index] == nullptr)
-		{
-			table[index] = schoolNode;
-		}
-		else {
-			SchoolNode* temp = table[index];
-			while (temp->next != nullptr)
-			{
-				temp = temp->next;
-			}
-			temp->next = schoolNode;
-		}
-	}
+    void insert(School school) {
+        int index = hash(school.schoolID);
+        SchoolNode* newNode = new SchoolNode(school);
+        if (!table[index]) table[index] = newNode;
+        else {
+            SchoolNode* temp = table[index];
+            while (temp->next) temp = temp->next;
+            temp->next = newNode;
+        }
+    }
 
-	School* search(string schoolID) {
-		int index = hash(schoolID);
+    School* search(const string& schoolID) {
+        int index = hash(schoolID);
+        SchoolNode* current = table[index];
+        while (current) {
+            if (current->data.schoolID == schoolID) return &current->data;
+            current = current->next;
+        }
+        return nullptr;
+    }
 
-		SchoolNode* current = table[index];
+    void resize(int newSize) {
+        SchoolNode** oldTable = table;
+        int oldSize = tableSize;
+        tableSize = newSize;
+        table = new SchoolNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) table[i] = nullptr;
 
-		while (current != nullptr) {
+        for (int i = 0; i < oldSize; i++) {
+            SchoolNode* current = oldTable[i];
+            while (current) {
+                SchoolNode* nextNode = current->next;
+                int index = hash(current->data.schoolID);
+                current->next = table[index];
+                table[index] = current;
+                current = nextNode;
+            }
+        }
+        delete[] oldTable;
+    }
 
-			if (current->data.schoolID == schoolID) {
-				return &(current->data);
-			}
-			current = current->next;
-		}
-		return nullptr; // Not found
-	}
-
-	~SchoolHashTable() {
-		for (int i = 0; i < tableSize; i++) {
-			SchoolNode* current = table[i];
-			while (current != nullptr) {
-				SchoolNode* toDelete = current;
-				current = current->next;
-				delete toDelete;
-			}
-		}
-		delete[] table;
-		table = nullptr;
-	}
-
+    ~SchoolHashTable() {
+        for (int i = 0; i < tableSize; i++) {
+            SchoolNode* current = table[i];
+            while (current) {
+                SchoolNode* toDelete = current;
+                current = current->next;
+                delete toDelete;
+            }
+        }
+        delete[] table;
+    }
 };

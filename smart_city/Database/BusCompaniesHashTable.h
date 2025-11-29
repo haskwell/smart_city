@@ -1,98 +1,112 @@
 #pragma once
 #include "../Transport/Bus.h"
 #include "BusHashTable.h"
+#include <string>
+using namespace std;
 
 class BusCompaniesNode {
-	
-	public:
-	BusCompany data;
-	BusCompaniesNode* next;
-	BusCompaniesNode(BusCompany bc) : data(bc), next(nullptr) {}
+public:
+    BusCompany data;
+    BusCompaniesNode* next;
+
+    BusCompaniesNode(BusCompany bc) : data(bc), next(nullptr) {}
 };
 
 class BusCompaniesHashTable {
 public:
-	BusCompaniesNode** table;
-	int tableSize;
-	BusCompaniesHashTable() : table(nullptr), tableSize(0) {}
-	void setUptable(int size) {
-		tableSize = size;
-		table = new BusCompaniesNode * [tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			table[i] = nullptr;
-		}
-	}
-	int hash(string companyName) {
-		if (tableSize == 0)
-		{
-			return 0; // Safety check
-		}
-		long long hashValue = 0;
-		int primeNumber = 29;
-		for (int i = 0; i < companyName.length(); i++) {
-			hashValue = (hashValue * primeNumber + companyName[i]) % tableSize;
-		}
-		// Ensure result is positive
-		return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
-	}
-	// 2. Insert Function (Tail Insertion)
-	void insert(BusCompany bc) {
-		int index = hash(bc.companyName);;
-		BusCompaniesNode* bcNode = new BusCompaniesNode(bc);
-		if (table[index] == nullptr)
-		{
-			table[index] = bcNode;
-		}
-		else {
-			BusCompaniesNode* temp = table[index];
-			while (temp->next != nullptr)
-			{
-				temp = temp->next;
-			}
-			temp->next = bcNode;
-		}
-	}
+    BusCompaniesNode** table;
+    int tableSize;
 
-	BusCompany* search(string companyName) {
-		int index = hash(companyName);
-		BusCompaniesNode* current = table[index];
-		while (current != nullptr) {
-			if (current->data.companyName == companyName) {
-				return &current->data;
-			}
-			current = current->next;
-		}
-		// If not found, return a default BusCompany object
-		return nullptr;
-	}
+    // Constructor initializes the table directly
+    BusCompaniesHashTable(int size = 10) : tableSize(size) {
+        table = new BusCompaniesNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) {
+            table[i] = nullptr;
+        }
+    }
 
-	void insertBusToCompany(string companyName, Bus b) {
-		int index = hash(companyName);
-		BusCompaniesNode* current = table[index];
+    int hash(const string& companyName) {
+        if (tableSize == 0) return 0;
 
-		while (current != nullptr) {
-			if (current->data.companyName == companyName) {
-				current->data.busTable.insert(b);
-				return; // bus inserted, exit
-			}
-			current = current->next;
-		}
+        long long hashValue = 0;
+        int primeNumber = 29;
 
-	}
+        for (char c : companyName) {
+            hashValue = (hashValue * primeNumber + c) % tableSize;
+        }
 
-	Bus* searchBusInCompany(string companyName, string busNum) {
-		int index = hash(companyName);
-		BusCompaniesNode* current = table[index];
+        return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
+    }
 
-		while (current != nullptr) {
-			if (current->data.companyName == companyName) {
-				// search in this company's bus table
-				return current->data.busTable.search(busNum);
-			}
-			current = current->next;
-		}
+    void insert(BusCompany bc) {
+        int index = hash(bc.companyName);
+        BusCompaniesNode* newNode = new BusCompaniesNode(bc);
 
-		// If company not found
-		return nullptr;
-	}
+        if (table[index] == nullptr) {
+            table[index] = newNode;
+        }
+        else {
+            BusCompaniesNode* temp = table[index];
+            while (temp->next) temp = temp->next;
+            temp->next = newNode;
+        }
+    }
+
+    BusCompany* search(const string& companyName) {
+        int index = hash(companyName);
+        BusCompaniesNode* current = table[index];
+
+        while (current) {
+            if (current->data.companyName == companyName) return &current->data;
+            current = current->next;
+        }
+
+        return nullptr;
+    }
+
+    void insertBusToCompany(const string& companyName, Bus b) {
+        BusCompany* company = search(companyName);
+        if (company) company->busTable.insert(b);
+    }
+
+    Bus* searchBusInCompany(const string& companyName, const string& busNum) {
+        BusCompany* company = search(companyName);
+        if (company) return company->busTable.search(busNum);
+        return nullptr;
+    }
+
+    // Resize function: doubles table size and rehashes all companies
+    void resize(int newSize) {
+        BusCompaniesNode** oldTable = table;
+        int oldSize = tableSize;
+
+        tableSize = newSize;
+        table = new BusCompaniesNode * [tableSize];
+        for (int i = 0; i < tableSize; i++) table[i] = nullptr;
+
+        for (int i = 0; i < oldSize; i++) {
+            BusCompaniesNode* current = oldTable[i];
+            while (current) {
+                BusCompaniesNode* nextNode = current->next;
+                int index = hash(current->data.companyName);
+                current->next = table[index];
+                table[index] = current;
+                current = nextNode;
+            }
+        }
+
+        delete[] oldTable; // delete old array, nodes reused
+    }
+
+    ~BusCompaniesHashTable() {
+        for (int i = 0; i < tableSize; i++) {
+            BusCompaniesNode* current = table[i];
+            while (current) {
+                BusCompaniesNode* prev = current;
+                current = current->next;
+                delete prev;
+            }
+        }
+        delete[] table;
+    }
 };

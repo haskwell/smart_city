@@ -1,76 +1,86 @@
 #pragma once
 #include "HospitalEntities.h"
-#include"../Database/Database.h"
+#include "../Database/Database.h"
+#include <iostream>
+#include <string>
+using namespace std;
 
-
-class MedicalSystem{
+class MedicalSystem {
 private:
     Database* db;
 
 public:
-
-	MedicalSystem(Database* database = nullptr) : db(database) {}
+    MedicalSystem(Database* database = nullptr) : db(database) {}
 
     void addHospital(Hospital* h) {
-        // Initialize DB table if needed
-        if (db->hospitalTable.tableSize == 0) {
-            db->hospitalTable.setUptable(101);
+        if (!db) return;
+
+        // If the hash table is uninitialized, create it with default size 101
+        if (db->hospitals.tableSize == 0) {
+            db->hospitals = HospitalHashTable(101);
         }
-        // Insert hospital into the central Database Hash Table
+
         db->hospitals.insert(*h);
     }
 
     void addPharmacy(Pharmacy* p) {
+        if (!db) return;
+
         if (db->pharmacies.tableSize == 0) {
-            db->pharmacies.setUptable(101);
+            db->pharmacies = PharmacyHashTable(101);
         }
+
         db->pharmacies.insert(*p);
     }
 
-    // Adds a doctor to a SPECIFIC hospital found by ID
-    void addDoctor(Person* p, string hospitalID) {
-        // 1. Search for the hospital in the Database
-        Hospital* targetHospital = db->hospitals.search(hospitalID);
+    void addDoctor(Person* p, const string& hospitalID) {
+        if (!db) return;
 
-        if (targetHospital != nullptr) {
-            // 2. Add doctor to that hospital's internal table
-            targetHospital->addDoctor(p);
+        Hospital* hospital = db->hospitals.search(hospitalID);
+        if (hospital) {
+            hospital->addDoctor(p);
         }
         else {
             cout << "Error: Hospital with ID " << hospitalID << " not found.\n";
         }
     }
 
-    // Adds a patient to a SPECIFIC hospital found by ID
-    void addPatient(Person* p, string hospitalID) {
-        Hospital* targetHospital = db->hospitals.search(hospitalID);
+    void addPatient(Person* p, const string& hospitalID) {
+        if (!db) return;
 
-        if (targetHospital != nullptr) {
-            targetHospital->addPatient(p);
+        Hospital* hospital = db->hospitals.search(hospitalID);
+        if (hospital) {
+            hospital->addPatient(p);
         }
         else {
             cout << "Error: Hospital with ID " << hospitalID << " not found.\n";
         }
     }
 
-    // Adds a medicine to a SPECIFIC pharmacy found by ID
-    void addMedicine(Medicine m, string pharmacyID) {
-        // Assuming Database has a PharmacyHashTable named 'pharmacies'
-        // You might need to add a search function to PharmacyHashTable similar to HospitalHashTable
-        Pharmacy* targetPharma = db->searchPharmacy.search(pharmacyID);
+    void addMedicine(const Medicine& m, const string& pharmacyID) {
+        if (!db) return;
 
-        if (targetPharma != nullptr) {
-            targetPharma->addMedicine(m);
-            cout << "Medicine " << m.name << " added to Pharmacy " << targetPharma->name << endl;
+        Pharmacy* pharmacy = db->pharmacies.search(pharmacyID);
+        if (pharmacy) {
+            pharmacy->addMedicine();
+            cout << "Medicine " << m.name << " added to Pharmacy " << pharmacy->name << endl;
         }
         else {
             cout << "Error: Pharmacy with ID " << pharmacyID << " not found.\n";
         }
     }
 
-    void requestEmergencyBeds(int numBeds){}
-    void searchHospitalGraph(string hospitalName){}
-    void searchMedicine(string name){}
+    void requestEmergencyBeds(int numBeds) {
+        cout << ">>> Request Emergency Beds - Not implemented yet\n";
+    }
+
+    void searchHospitalGraph(const string& hospitalName) {
+        cout << ">>> Search Hospital Graph - Not implemented yet\n";
+    }
+
+    void searchMedicine(const string& name) {
+        cout << ">>> Search Medicine - Not implemented yet\n";
+    }
 
     void registerHospitalsHandler() {
         string ID, name, sector;
@@ -107,14 +117,52 @@ public:
             }
         }
 
-        this->addHospital(newHospital);
+        addHospital(newHospital);
 
         cout << "\n>>> Success: " << name << " has been registered.\n\n";
     }
 
     void registerPharmaciesHandler() {
-        cout << ">>> Register Pharmacies - Not implemented yet\n\n";
+        string ID, name, location;
+        int totalMedicines;
+
+        cout << "\n----------------------------------------\n";
+        cout << "      REGISTER NEW PHARMACY\n";
+        cout << "----------------------------------------\n";
+
+        cout << "Enter Pharmacy ID: ";
+        cin >> ID;
+        cin.ignore();
+
+        cout << "Enter Pharmacy Name: ";
+        getline(cin, name);
+
+        cout << "Enter Pharmacy Location: ";
+        getline(cin, location);
+
+        cout << "Enter Total Number of Medicines: ";
+        cin >> totalMedicines;
+        cin.ignore();
+
+        Pharmacy* newPharmacy = new Pharmacy(name, ID, location, totalMedicines);
+
+        //if (totalMedicines > 0) {
+        //    cout << "Enter the " << totalMedicines << " medicines below:\n";
+        //    for (int i = 0; i < totalMedicines; i++) {
+        //        string medName;
+        //        cout << "  " << (i + 1) << ". ";
+        //        getline(cin, medName);
+        //        Medicine m(medName);
+        //        newPharmacy->addMedicine(m);
+        //    }
+        //}
+
+        // Insert into the database
+        addPharmacy(newPharmacy);
+
+        cout << "\n>>> Success: " << name << " has been registered.\n\n";
     }
+
 
     void bookEmergencyBedHandler() {
         cout << ">>> Book Emergency Bed - Not implemented yet\n\n";

@@ -3,52 +3,50 @@
 #include "PharmacyHashTable.h"
 #include "SchoolHashTable.h"
 #include "PeopleHashTable.h"
+#include <optional>
+#include <string>
+using namespace std;
 
 class Database {
-
-
 public:
-	HospitalHashTable hospitalTable;
-	PharmacyHashTable pharmacyTable;
-	SchoolHashTable schoolTable;
-	PeopleHashTable peopleTable;
-	Database() {}
-	~Database() {}
+    HospitalHashTable hospitals;
+    PharmacyHashTable pharmacies;
+    SchoolHashTable schools;
+    PeopleHashTable people;
 
-	void insertHospital(const Hospital& hospital) {
-		hospitalTable.insert(hospital);
-	}
+    Database() {}
+    ~Database() {}
 
-	void insertPharmacy(const Pharmacy& pharmacy) {
-		pharmacyTable.insert(pharmacy);
-	}
+    void insertHospital(const Hospital& hospital) {
+        hospitals.insert(hospital);
+    }
 
-	void insertSchool(const School& school) {
-		schoolTable.insert(school);
-	}
+    void insertPharmacy(const Pharmacy& pharmacy) {
+        pharmacies.insert(pharmacy);
+    }
 
-	void insertPerson(const Person& person) {
-		peopleTable.insert(person);
-	}
+    void insertSchool(const School& school) {
+        schools.insert(school);
+    }
 
-	Hospital searchHospital(const string& hospitalID) {
-		Hospital* hospital = hospitalTable.search(hospitalID);
-		return *hospital;
-	}
+    void insertPerson(const Person& person) {
+        people.insert(person);
+    }
 
-	Pharmacy searchPharmacy(const string& pharmacyID) {
-		Pharmacy* pharmacy = pharmacyTable.search(pharmacyID);
-		return *pharmacy;
-	}
+    // Return pointers so caller can check for nullptr
+    Hospital* searchHospital(const string& hospitalID) {
+        return hospitals.search(hospitalID);
+    }
 
-	School searchSchool(const string& schoolID) {
-		School* school = schoolTable.search(schoolID);
-		return *school;
-	}
+    Pharmacy* searchPharmacy(const string& pharmacyID) {
+        return pharmacies.search(pharmacyID);
+    }
 
-	Person searchPerson(const string& personCNIC) {
-		Person* person = peopleTable.search(personCNIC);
-		return *person;
-	}
+    School* searchSchool(const string& schoolID) {
+        return schools.search(schoolID);
+    }
 
+    Person* searchPerson(const string& personCNIC) {
+        return people.search(personCNIC);
+    }
 };
