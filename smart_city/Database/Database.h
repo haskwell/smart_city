@@ -29,7 +29,7 @@ public:
         schools.insert(school);
     }
 
-    void insertPerson(const Person& person) {
+    void insertPerson(Person* person) {
         people.insert(person);
     }
 

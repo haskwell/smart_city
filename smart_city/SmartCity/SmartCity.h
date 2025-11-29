@@ -17,9 +17,10 @@ class SmartCity {
     PopulationSystem population;
     PublicSystem publicServices;
 
-    Database db;
 
 public:
+    Database db;
+
     SmartCity()
         : transport(&db),
         education(&db),
@@ -82,11 +83,13 @@ public:
                     switch (mChoice) {
                     case 1: medical.registerHospitalsHandler();        break;
                     case 2: medical.registerPharmaciesHandler();       break;
-                    case 3: medical.bookEmergencyBedHandler();         break;
-                    case 4: medical.searchDoctorHandler();             break;
-                    case 5: medical.searchPatientHandler();            break;
-                    case 6: medical.searchMedicineHandler();           break;
-                    case 7: medical.nearestHospitalLookupHandler();    break;
+                    case 3: medical.addDoctorHandler();                break;
+                    case 4: medical.addPatientHandler();               break;
+                    case 5: medical.bookEmergencyBedHandler();         break;
+                    case 6: medical.searchDoctorHandler();             break;
+                    case 7: medical.searchPatientHandler();            break;
+                    case 8: medical.searchMedicineHandler();           break;
+                    case 9: medical.nearestHospitalLookupHandler();    break;
                     case 0: cout << "Returning to main menu...\n\n"; break;
                     default: cout << "Invalid choice! Try again.\n\n"; break;
                     }
@@ -130,12 +133,9 @@ public:
                 do {
                     popChoice = menu.showPopulationMenu();
                     switch (popChoice) {
-                    case 1: population.addSectorsHandler();      break;
-                    case 2: population.addStreetsHandler();      break;
-                    case 3: population.addHousesHandler();       break;
-                    case 4: population.addPeopleHandler();       break;
-                    case 5: population.searchByCNICHandler();    break;
-                    case 6: population.generateReportHandler();  break;
+                    case 1: population.addPeopleHandler();       break;
+                    case 2: population.searchByCNICHandler();    break;
+                    case 3: population.generateReportHandler();  break;
                     case 0: cout << "Returning to main menu...\n\n"; break;
                     default: cout << "Invalid choice! Try again.\n\n"; break;
                     }

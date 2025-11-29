@@ -64,11 +64,13 @@ private:
        "=== MEDICINE MODULE ===",
        "1. Register Hospitals",
        "2. Register Pharmacies",
-       "3. Book Emergency Bed",
-       "4. Search Doctor",
-       "5. Search Patient",
-       "6. Search Medicine",
-       "7. Nearest Hospital Lookup",
+       "3. Add Doctor",
+       "4. Add Patient",
+       "5. Book Emergency Bed",
+       "6. Search Doctor",
+       "7. Search Patient",
+       "8. Search Medicine",
+       "9. Nearest Hospital Lookup",
        "0. Back"
     };
 
@@ -84,12 +86,9 @@ private:
 
     string populationMenu[11] = {
         "=== POPULATION MODULE ===",
-        "1. Add Sectors",
-        "2. Add Streets",
-        "3. Add Houses",
-        "4. Add People",
-        "5. Search by CNIC",
-        "6. Generate Report",
+        "1. Add People",
+        "2. Search by CNIC",
+        "3. Generate Report",
         "0. Back"
     };
 
@@ -124,7 +123,7 @@ public:
     }
 
     int showMedicineMenu() {
-        printMenu(medicineMenu, 9);
+        printMenu(medicineMenu, 11);
         return readChoice();
     }
 

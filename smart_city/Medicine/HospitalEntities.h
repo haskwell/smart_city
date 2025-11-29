@@ -6,32 +6,44 @@
 #include "MedicineHashTable.h"
 using namespace std;
 
+class Doctor : public Person {
+public:
+    string specialization;
+
+    Doctor(string n = "",
+        int a = -99999,
+        char g = 'M',
+        string cnic = "",
+        string s = "",
+        int house = 0,
+        string o = "",
+        string sec = "",
+        string spec = "")
+        : Person(n, a, g, cnic, s, house, o, sec),
+        specialization(spec) {
+	}
+};
+
 class Hospital {
 public:
     string name;
     string id;
-    Person* patients;
     int emergencyBeds;
     int occupiedBeds;
     string sector;
     string* specialization;
     int totalSpecializations;
-    Person* doctors;
 
     PatientHashTable patientTable;
     DoctorsHashTable doctorsTable;
 
     Hospital(string n = "",
         string i = "",
-        Person* p = nullptr, 
-        Person* d = nullptr,
         int beds = 0,
         string sec = "",
         int specCount = 0)
         : name(n),
         id(i),
-        doctors(d), 
-        patients(p),
         occupiedBeds(0), 
         emergencyBeds(beds),
         sector(sec),

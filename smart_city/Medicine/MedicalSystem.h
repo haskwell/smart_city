@@ -38,7 +38,7 @@ public:
 
         Hospital* hospital = db->hospitals.search(hospitalID);
         if (hospital) {
-            hospital->addDoctor(p);
+            hospital->doctorsTable.insert(p);
         }
         else {
             cout << "Error: Hospital with ID " << hospitalID << " not found.\n";
@@ -50,7 +50,7 @@ public:
 
         Hospital* hospital = db->hospitals.search(hospitalID);
         if (hospital) {
-            hospital->addPatient(p);
+			hospital->patientTable.insert(p);
         }
         else {
             cout << "Error: Hospital with ID " << hospitalID << " not found.\n";
@@ -68,6 +68,22 @@ public:
         else {
             cout << "Error: Pharmacy with ID " << pharmacyID << " not found.\n";
         }
+    }
+
+    Doctor* searchDoctor(const string& cnic) {
+
+        Person* p = db->people.search(cnic);
+        Doctor* d = dynamic_cast<Doctor*>(p);
+        if (!d) {
+            cout << "This person is not a doctor\n";
+            return nullptr;
+        }
+        return d;
+
+    }
+
+    Person* searchPatient(const string& cnic) {
+        return db->people.search(cnic);
     }
 
     void requestEmergencyBeds(int numBeds) {
@@ -107,7 +123,7 @@ public:
         cin >> totalSpecializations;
         cin.ignore();
 
-        Hospital* newHospital = new Hospital(name, ID, nullptr, nullptr, emergencyBeds, sector, totalSpecializations);
+        Hospital* newHospital = new Hospital(name, ID, emergencyBeds, sector, totalSpecializations);
 
         if (totalSpecializations > 0) {
             cout << "Enter the " << totalSpecializations << " specializations below:\n";
@@ -163,6 +179,51 @@ public:
         cout << "\n>>> Success: " << name << " has been registered.\n\n";
     }
 
+    void addDoctorHandler() {
+        cout << "\n----------------------------------------\n";
+        cout << "      REGISTER NEW DOCTOR\n";
+        cout << "----------------------------------------\n";
+
+        string cnic;
+		cout << "Enter Doctor's CNIC: ";
+        //cin.ignore();
+		getline(cin, cnic);
+		Doctor* newDoctor = searchDoctor(cnic);
+        if (newDoctor == nullptr) {
+            cout << "Doctor not found in the population database. Please add the doctor to the population first.\n\n";
+            return;
+        }
+        string hospitalID;
+        cout << "Enter Hospital ID to associate the doctor with: ";
+        cin >> hospitalID;
+        cin.ignore();
+        addDoctor(newDoctor, hospitalID);
+		cout << "\n>>> Success: Doctor " << newDoctor->name << " has been added to Hospital ID " << hospitalID << ".\n\n";
+
+    }
+
+    void addPatientHandler() {
+        cout << "\n----------------------------------------\n";
+        cout << "      REGISTER NEW PATIENT\n";
+        cout << "----------------------------------------\n";
+    
+        string cnic;
+        cout << "Enter Patient's CNIC: ";
+        //cin.ignore();
+        getline(cin, cnic);
+        Person* newPatient = searchPatient(cnic);
+        if (newPatient == nullptr) {
+            cout << "Person not found in the population database. Please add the person to the population first.\n\n";
+            return;
+        }
+        string hospitalID;
+        cout << "Enter Hospital ID to associate the patient with: ";
+        cin >> hospitalID;
+        cin.ignore();
+        addPatient(newPatient, hospitalID);
+        cout << "\n>>> Success: Patient " << newPatient->name << " has been added to Hospital ID " << hospitalID << ".\n\n";
+
+    }
 
     void bookEmergencyBedHandler() {
         cout << ">>> Book Emergency Bed - Not implemented yet\n\n";

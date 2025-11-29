@@ -18,6 +18,8 @@ public:
 		string cnic = "", string s = "", int house = 0, string o = "", string sec = "") : name(n), age(a), gender(g)
 		, CNIC(cnic), street(s), houseNo(house), occupation(o), next(nullptr), sector(sec) {
 	}
+
+	virtual ~Person() {}
 };
 
 class House {
