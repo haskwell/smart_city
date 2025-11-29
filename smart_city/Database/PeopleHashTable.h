@@ -34,12 +34,40 @@ public:
 		return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
 	}
 
-	void insert(Person p) {
+	void insert(Person person) {
+		int index = hash(person.CNIC);
 
+		PersonNode* personNode = new PersonNode(person);
+
+		if (table[index] == nullptr)
+		{
+			table[index] = personNode;
+		}
+		else
+		{
+			PersonNode* temp = table[index];
+			while (temp->next != nullptr)
+			{
+				temp = temp->next;
+			}
+			temp->next = personNode;
+		}
 	}
 
 	Person* search(string cnic) {
+		int index = hash(cnic);
 
+		PersonNode* current = table[index];
+
+		while (current != nullptr)
+		{
+			if (current->data.CNIC == cnic)
+			{
+				return &(current->data);
+			}
+			current = current->next;
+		}
+		return nullptr; 
 	}
 
 	~PeopleHashTable() {
