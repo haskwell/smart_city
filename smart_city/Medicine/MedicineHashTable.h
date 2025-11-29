@@ -6,7 +6,7 @@ public:
     Medicine data;
     MedicineNode* next;
 
-    MedicineNode(Medicine b) : data(b), next(nullptr) {}
+    MedicineNode(const Medicine& b) : data(b), next(nullptr) {}
 };
 
 class MedicineHashTable {
@@ -14,65 +14,59 @@ public:
     MedicineNode** table;
     int tableSize;
 
-    MedicineHashTable() : table(nullptr), tableSize(0) {}
-
-    void setUptable(int size) {
-        tableSize = size;
+    // Constructor allocates table directly
+    MedicineHashTable(int size = 101) : tableSize(size) {
         table = new MedicineNode * [tableSize];
         for (int i = 0; i < tableSize; i++) {
             table[i] = nullptr;
         }
     }
 
-    int hash(string med) {
+    // Polynomial hash
+    int hash(const string& med) {
         long long hashValue = 0;
-        int primeNumber = 17; // prime base
+        int primeNumber = 17;
 
-        for (int i = 0; i < med.length(); i++) {
-            hashValue = (hashValue * primeNumber + med[i]) % tableSize;
+        for (char c : med) {
+            hashValue = (hashValue * primeNumber + c) % tableSize;
         }
-
         return hashValue;
     }
 
-    // Insert a medicine into the table
-    void insert(Medicine med) {
+    // Insert a medicine
+    void insert(const Medicine& med) {
         int index = hash(med.name);
 
         MedicineNode* medNode = new MedicineNode(med);
 
-        if (table[index] == nullptr) {
+        if (!table[index]) {
             table[index] = medNode;
         }
-        else { // collision ? append to linked list
+        else {
             MedicineNode* temp = table[index];
-            while (temp->next != nullptr) {
-                temp = temp->next;
-            }
+            while (temp->next) temp = temp->next;
             temp->next = medNode;
         }
     }
 
-    // Search a medicine by name
-    Medicine* search(string med) {
-        int index = hash(med);
+    // Search for a medicine by name
+    Medicine* search(const string& medName) {
+        int index = hash(medName);
 
         MedicineNode* current = table[index];
-
-        while (current != nullptr) {
-            if (current->data.name == med) {
-                return &(current->data);
-            }
+        while (current) {
+            if (current->data.name == medName)
+                return &current->data;
             current = current->next;
         }
         return nullptr;
     }
 
-    // Destructor to free memory
+    // Destructor
     ~MedicineHashTable() {
         for (int i = 0; i < tableSize; i++) {
             MedicineNode* current = table[i];
-            while (current != nullptr) {
+            while (current) {
                 MedicineNode* prev = current;
                 current = current->next;
                 delete prev;

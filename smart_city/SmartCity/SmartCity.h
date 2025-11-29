@@ -90,6 +90,11 @@ public:
                     case 7: medical.searchPatientHandler();            break;
                     case 8: medical.searchMedicineHandler();           break;
                     case 9: medical.nearestHospitalLookupHandler();    break;
+                    case 10: medical.listAllHospitalsHandler();    break;
+                    case 11: medical.listAllDoctorsHandler();    break;
+                    case 12: medical.listAllPharmaciesHandler();    break;
+                    case 13: medical.listAllMedicinesHandler();    break;
+                    case 14: medical.nearestHospitalLookupHandler();    break;
                     case 0: cout << "Returning to main menu...\n\n"; break;
                     default: cout << "Invalid choice! Try again.\n\n"; break;
                     }

@@ -1,12 +1,30 @@
 #pragma once
 #include "../Population/PopulationEntities.h"
 
+class Doctor : public Person {
+public:
+    string specialization;
+
+    Doctor(string n = "",
+        int a = -99999,
+        char g = 'M',
+        string cnic = "",
+        string s = "",
+        int house = 0,
+        string o = "",
+        string sec = "",
+        string spec = "")
+        : Person(n, a, g, cnic, s, house, o, sec),
+        specialization(spec) {
+    }
+};
+
 class DoctorNode {
 public:
-    Person* data;
+    Doctor* data;
     DoctorNode* next;
 
-    DoctorNode(Person* b) : data(b), next(nullptr) {}
+    DoctorNode(Doctor* b) : data(b), next(nullptr) {}
 };
 
 class DoctorsHashTable {
@@ -35,7 +53,7 @@ public:
     }
 
     // Insert doctor
-    void insert(Person* doc) {
+    void insert(Doctor* doc) {
         int index = hash(doc->name);
 
         DoctorNode* docNode = new DoctorNode(doc);
@@ -51,7 +69,7 @@ public:
     }
 
     // Search doctor by name
-    Person* search(const string& doc) {
+    Doctor* search(const string& doc) {
         int index = hash(doc);
         DoctorNode* current = table[index];
 

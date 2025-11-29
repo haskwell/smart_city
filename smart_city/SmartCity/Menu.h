@@ -6,6 +6,8 @@ using namespace std;
 class Menu {
 private:
 
+    string clear = "\033[2J\033[H";
+
     int stringToInt(string& s) {
         int len = s.size();
         int num = 0;
@@ -60,7 +62,7 @@ private:
         "0. Back"
     };
 
-    string medicineMenu[11] = {
+    string medicineMenu[15] = {
        "=== MEDICINE MODULE ===",
        "1. Register Hospitals",
        "2. Register Pharmacies",
@@ -71,6 +73,10 @@ private:
        "7. Search Patient",
        "8. Search Medicine",
        "9. Nearest Hospital Lookup",
+       "10. List All Hospitals",
+       "11. List All Doctors",
+       "12. List All Pharmacies",
+       "13. List All Medicines",
        "0. Back"
     };
 
@@ -101,43 +107,50 @@ private:
 
 public:
 
-        void printMenu(string s[], int len) {
+    void printMenu(string s[], int len) {
         for (int i = 0; i < len; i++) {
             cout << s[i] << '\n';
         }
     }
 
     int showMainMenu() {
+		cout << clear;
         printMenu(mainMenu, 8);
         return readChoice();
     }
 
     int showTransportMenu() {
+		cout << clear;
         printMenu(transportMenu, 9);
         return readChoice();
     }
 
     int showEducationMenu() {
+		cout << clear;
         printMenu(educationMenu, 10);
         return readChoice();
     }
 
     int showMedicineMenu() {
-        printMenu(medicineMenu, 11);
+		cout << clear;
+        printMenu(medicineMenu, 15);
         return readChoice();
     }
 
     int showCommercialMenu() {
+		cout << clear;
         printMenu(commercialMenu, 6);
         return readChoice();
     }
 
     int showPopulationMenu() {
+		cout << clear;
         printMenu(populationMenu, 8);
         return readChoice();
     }
 
     int showPublicMenu() {
+		cout << clear;
         printMenu(publicMenu, 4);
         return readChoice();
     }

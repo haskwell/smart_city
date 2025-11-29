@@ -6,24 +6,6 @@
 #include "MedicineHashTable.h"
 using namespace std;
 
-class Doctor : public Person {
-public:
-    string specialization;
-
-    Doctor(string n = "",
-        int a = -99999,
-        char g = 'M',
-        string cnic = "",
-        string s = "",
-        int house = 0,
-        string o = "",
-        string sec = "",
-        string spec = "")
-        : Person(n, a, g, cnic, s, house, o, sec),
-        specialization(spec) {
-	}
-};
-
 class Hospital {
 public:
     string name;
