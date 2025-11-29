@@ -108,49 +108,43 @@ private:
 public:
 
     void printMenu(string s[], int len) {
+		cout << clear;
         for (int i = 0; i < len; i++) {
             cout << s[i] << '\n';
         }
     }
 
     int showMainMenu() {
-		cout << clear;
         printMenu(mainMenu, 8);
         return readChoice();
     }
 
     int showTransportMenu() {
-		cout << clear;
         printMenu(transportMenu, 9);
         return readChoice();
     }
 
     int showEducationMenu() {
-		cout << clear;
         printMenu(educationMenu, 10);
         return readChoice();
     }
 
     int showMedicineMenu() {
-		cout << clear;
         printMenu(medicineMenu, 15);
         return readChoice();
     }
 
     int showCommercialMenu() {
-		cout << clear;
         printMenu(commercialMenu, 6);
         return readChoice();
     }
 
     int showPopulationMenu() {
-		cout << clear;
         printMenu(populationMenu, 8);
         return readChoice();
     }
 
     int showPublicMenu() {
-		cout << clear;
         printMenu(publicMenu, 4);
         return readChoice();
     }

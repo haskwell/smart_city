@@ -287,6 +287,7 @@ public:
         else {
 			cout << "Doctor " << name << " not found in Hospital " << hospitalName << ".\n\n";
         }
+		pressEnterToContinue();
     }
 
     void searchPatientHandler() {
@@ -306,6 +307,7 @@ public:
         else {
             cout << "Patient " << name << " not found in Hospital " << hospitalName << ".\n\n";
         }
+		pressEnterToContinue();
     }
 
     void addMedicineHandler() {
@@ -347,6 +349,11 @@ public:
 		string pharmId;
 		getline(cin, pharmId);
 		Pharmacy* pharmacy = db->pharmacies.search(pharmId);
+        if (!pharmacy) {
+			cout << "Pharmacy " << pharmId << " not found.\n\n";
+            pressEnterToContinue();
+            return;
+        }
         Medicine* m = searchMedicine(name, pharmacy);
         if (!m) {
 			cout << "Medicine " << name << " not found in Pharmacy " << pharmacy->name << ".\n\n";
@@ -357,6 +364,7 @@ public:
             cout << "Formula: " << m->formula << "\n";
             cout << "Price: " << m->price << "\n\n";
 		}
+		pressEnterToContinue();
     }
 
     void listAllHospitalsHandler() {
