@@ -24,16 +24,68 @@ public:
         }
     }
 
-    int hash(string busNo) { return 0; }
+    int hash(string busNo) {
+        if (tableSize == 0) return 0; // Safety check
 
-    void insert(Bus b) {}
+        long long hashValue = 0;
+        int primeNumber = 17;
 
-    Bus* search(string busNo) { return 0; }
-
-    ~BusHashTable() {
-        for (int i = 0; i < tableSize; i++) {
-            delete[]table[i];
+        for (int i = 0; i < busNo.length(); i++) {
+            hashValue = (hashValue * primeNumber + busNo[i]) % tableSize;
         }
-        delete[]table;
+
+        // Ensure result is positive
+        return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
+    }
+
+    // 2. Insert Function (Tail Insertion)
+    void insert(Bus b) {
+        // ASSUMPTION: Your Bus class has a 'busNo' member variable.
+        // If it is named 'regNumber' or 'id', change 'b.busNo' below.
+        int index = hash(b.busNum);
+
+        BusNode* newNode = new BusNode(b);
+
+        if (table[index] == nullptr) {
+            table[index] = newNode;
+        }
+        else {
+            BusNode* temp = table[index];
+            // Traverse to the end of the list
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+        }
+    }
+
+    // 3. Search Function
+    Bus* search(string busNo) {
+        int index = hash(busNo);
+        BusNode* current = table[index];
+
+        while (current != nullptr) {
+            // Compare the key (busNo)
+            if (current->data.busNum == busNo) {
+                return &(current->data);
+            }
+            current = current->next;
+        }
+        return nullptr;
+    }
+
+    // 4. Corrected Destructor
+    ~BusHashTable() {
+        if (table == nullptr) return;
+
+        for (int i = 0; i < tableSize; i++) {
+            BusNode* current = table[i];
+            while (current != nullptr) {
+                BusNode* prev = current;
+                current = current->next;
+                delete prev; // Delete individual nodes
+            }
+        }
+        delete[] table; // Delete the array of pointers
     }
 };
