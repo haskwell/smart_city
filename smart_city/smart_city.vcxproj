@@ -140,7 +140,6 @@
     <ClInclude Include="Database\SchoolHashTable.h" />
     <ClInclude Include="Education\EducationEntities.h" />
     <ClInclude Include="Education\EducationSystem.h" />
-    <ClInclude Include="Education\SchoolGraph.h" />
     <ClInclude Include="Education\SchoolMaxHeap.h" />
     <ClInclude Include="Medicine\DoctorsHashTable.h" />
     <ClInclude Include="Medicine\HospitalEntities.h" />
@@ -151,6 +150,7 @@
     <ClInclude Include="Medicine\PatientHashTable.h" />
     <ClInclude Include="Medicine\PharmacyGraph.h" />
     <ClInclude Include="Medicine\MedicineHashTable.h" />
+    <ClInclude Include="Population\CityHierarchy.h" />
     <ClInclude Include="Population\PopulationEntities.h" />
     <ClInclude Include="Population\PopulationHashTable.h" />
     <ClInclude Include="Population\PopulationSystem.h" />
