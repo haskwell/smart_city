@@ -35,37 +35,10 @@ public:
 	}
 
 	void insert(School school) {
-		int index = hash(school.schoolID);
 
-		SchoolNode* schoolNode = new SchoolNode(school);
-
-		if (table[index] == nullptr)
-		{
-			table[index] = schoolNode;
-		}
-		else {
-			SchoolNode* temp = table[index];
-			while (temp->next != nullptr)
-			{
-				temp = temp->next;
-			}
-			temp->next = schoolNode;
-		}
 	}
 
 	School* search(string schoolID) {
-		int index = hash(schoolID);
-
-		SchoolNode* current = table[index];
-		
-		while (current != nullptr) {
-		
-			if (current->data.schoolID == schoolID) {
-				return &(current->data);
-			}
-			current = current->next;
-		}
-		return nullptr; // Not found
 	}
 
 	~SchoolHashTable() {

@@ -35,35 +35,8 @@ class PharmacyHashTable {
 	}
 	// 2. Insert Function (Tail Insertion)
 	void insert(Pharmacy phar) {
-		int index = hash(phar.id);
-
-		PharmacyNode* pharNode = new PharmacyNode(phar);
-
-		if (table[index] == nullptr)
-		{
-			table[index] = pharNode;
-		}
-		else {
-			PharmacyNode* temp = table[index];
-			while (temp->next != nullptr)
-			{
-				temp = temp->next;
-			}
-			temp->next = pharNode;
-		}
 	}
 	Pharmacy* search(string pharmacyID) {
-		int index = hash(pharmacyID);
-
-		PharmacyNode* current = table[index];
-		
-		while (current != nullptr) {
-			if (current->data.id == pharmacyID) {
-				return &current->data;
-			}
-			current = current->next;
-		}
-		return nullptr; 
 	}
 	~PharmacyHashTable() {
 		for (int i = 0; i < tableSize; i++) {
