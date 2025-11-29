@@ -6,16 +6,18 @@ using namespace std;
 class Menu {
 private:
 
+    bool errorFlag;
+
     string clear = "\033[2J\033[H";
 
-    int stringToInt(string& s) {
-        int len = s.size();
+    int stringToInt(const string& s) {
+        if (s.empty()) return -1;
         int num = 0;
-        for (int i = 0; i < len; i++) {
-            if (s[i] < '0' || s[i] > '9') {
+        for (char c : s) {
+            if (c < '0' || c > '9') {
                 return -1;
             }
-            num = num * 10 + (s[i] - '0');
+            num = num * 10 + (c - '0');
         }
         return num;
     }
@@ -26,8 +28,21 @@ private:
         return stringToInt(input);
     }
 
-    string mainMenu[8] = {
-        "Welcome to Smart City Management System",
+    void pressEnterToContinue() {
+        cout << "\nPress Enter to continue...";
+        cin.ignore();
+    }
+
+    void printMenu(const string s[], int len) {
+		cout << clear;
+        for (int i = 0; i < len; i++) {
+            cout << s[i] << '\n';
+        }
+        cout << endl;
+    }
+
+    const string mainMenu[8] = {
+        "=== SMART CITY MANAGEMENT SYSTEM ===",
         "1. Transport Module",
         "2. Education Module",
         "3. Medicine Module",
@@ -37,8 +52,9 @@ private:
         "0. Exit"
     };
 
-    string transportMenu[11] = {
+    const string transportMenu[10] = {
         "=== TRANSPORT MODULE ===",
+        "",
         "1. Register Company",
         "2. Register Bus with Route",
         "3. Add Bus Stop",
@@ -49,8 +65,9 @@ private:
         "0. Back"
     };
 
-    string educationMenu[11] = {
+    const string educationMenu[11] = {
         "=== EDUCATION MODULE ===",
+        "",
         "1. Register Schools",
         "2. Add Faculty",
         "3. Add Students",
@@ -62,26 +79,28 @@ private:
         "0. Back"
     };
 
-    string medicineMenu[15] = {
-       "=== MEDICINE MODULE ===",
-       "1. Register Hospitals",
-       "2. Register Pharmacies",
-       "3. Add Doctor",
-       "4. Add Patient",
-       "5. Book Emergency Bed",
-       "6. Search Doctor",
-       "7. Search Patient",
-       "8. Search Medicine",
-       "9. Nearest Hospital Lookup",
-       "10. List All Hospitals",
-       "11. List All Doctors",
-       "12. List All Pharmacies",
-       "13. List All Medicines",
-       "0. Back"
+    const string medicineMenu[16] = {
+        "=== MEDICINE MODULE ===",
+        "",
+        "1. Register Hospitals",
+        "2. Register Pharmacies",
+        "3. Add Doctor",
+        "4. Add Patient",
+        "5. Book Emergency Bed",
+        "6. Search Doctor",
+        "7. Search Patient",
+        "8. Search Medicine",
+        "9. Nearest Hospital Lookup",
+        "10. List All Hospitals",
+        "11. List All Doctors",
+        "12. List All Pharmacies",
+        "13. List All Medicines",
+        "0. Back"
     };
 
-    string commercialMenu[11] = {
+    const string commercialMenu[8] = {
         "=== COMMERCIAL MODULE ===",
+        "",
         "1. Register Malls",
         "2. Register Shops in Malls",
         "3. Add Items to Shops",
@@ -90,63 +109,70 @@ private:
         "0. Back"
     };
 
-    string populationMenu[11] = {
+    const string populationMenu[6] = {
         "=== POPULATION MODULE ===",
+        "",
         "1. Add People",
-        "2. Search by CNIC",
+        "2.Search by CNIC",
         "3. Generate Report",
         "0. Back"
     };
 
-    string publicMenu[11] = {
-        "=== PUBLIC MODULE ===",
+    const string publicMenu[6] = {
+        "=== PUBLIC SERVICES MODULE ===",
+        "",
         "1. Add Utility",
         "2. Find Nearest Utility",
         "0. Back"
     };
 
-public:
+    int getMenuChoice(const string menuArr[], int len) {
+        int choice;
+        do {
+            if (!errorFlag) {
+                printMenu(menuArr, len);
+            }
+            cout << "\nEnter your choice: ";
+            choice = readChoice();
 
-    void printMenu(string s[], int len) {
-		cout << clear;
-        for (int i = 0; i < len; i++) {
-            cout << s[i] << '\n';
-        }
+            if (choice == -1) {
+                cout << "\nInvalid input! Please enter a valid number.\n";
+				errorFlag = true;
+            }
+        } while (choice == -1);
+		errorFlag = false;
+        return choice;
     }
 
+public:
+
+    Menu(): errorFlag(false){}
+
     int showMainMenu() {
-        printMenu(mainMenu, 8);
-        return readChoice();
+        return getMenuChoice(mainMenu, 8);
     }
 
     int showTransportMenu() {
-        printMenu(transportMenu, 9);
-        return readChoice();
+        return getMenuChoice(transportMenu, 10);
     }
 
     int showEducationMenu() {
-        printMenu(educationMenu, 10);
-        return readChoice();
+        return getMenuChoice(educationMenu, 11);
     }
 
     int showMedicineMenu() {
-        printMenu(medicineMenu, 15);
-        return readChoice();
+        return getMenuChoice(medicineMenu, 16);
     }
 
     int showCommercialMenu() {
-        printMenu(commercialMenu, 6);
-        return readChoice();
+        return getMenuChoice(commercialMenu, 8);
     }
 
     int showPopulationMenu() {
-        printMenu(populationMenu, 8);
-        return readChoice();
+        return getMenuChoice(populationMenu, 6);
     }
 
     int showPublicMenu() {
-        printMenu(publicMenu, 4);
-        return readChoice();
+        return getMenuChoice(publicMenu, 6);
     }
-
 };
