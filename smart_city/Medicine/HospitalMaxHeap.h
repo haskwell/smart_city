@@ -54,9 +54,6 @@ class HospitalMaxHeap {
             newArray[i] = heapArray[i];
         }
 
-        for (int i = 0; i < size; ++i) {
-            delete heapArray[i];
-        }
         delete[] heapArray;
 
         heapArray = newArray;

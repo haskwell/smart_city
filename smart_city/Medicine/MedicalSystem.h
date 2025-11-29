@@ -334,7 +334,6 @@ public:
         logger->Prompt("How many beds are required: ");
         int bedsRequired;
         cin >> bedsRequired;
-        cin.ignore();
         string hospitalId = emergencyBedHeap.getMax();
         bool beds = emergencyBedHeap.updateBedCount(bedsRequired, hospitalId);
         if (!beds) {
