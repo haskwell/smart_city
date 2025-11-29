@@ -3,7 +3,7 @@
 
 void seed(SmartCity& city) {
 	//insert 1000 people into population with ages 0 to 100
-	for (int i = 1; i <= 100000; i++) {
+	for (int i = 1; i <= 1000; i++) {
 		string name = "Citizen " + to_string(i);
 		string cnic = "CIT" + to_string(i);
 		int age = rand() % 101; // age between 0 and 100
