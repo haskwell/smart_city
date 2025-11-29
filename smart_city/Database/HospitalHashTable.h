@@ -39,11 +39,41 @@ public:
 	}
 	// 2. Insert Function (Tail Insertion)
 	void insert(Hospital Hos) {
+		int index = hash(Hos.id);;
 
+		HospitalNode* hosNode = new HospitalNode(Hos);
+
+		if (table[index] == nullptr)
+		{
+			table[index] = hosNode;
+		}
+		else {
+			HospitalNode* temp = table[index];
+			while (temp->next != nullptr)
+			{
+				temp = temp->next;
+
+			}
+			temp->next = hosNode;
+		}
 	}
 
 	Hospital* search(string hospitalID) {
+		int index = hash(hospitalID);
 
+		HospitalNode* current = table[index];
+
+		while (current != nullptr)
+		{
+			if (current->data.id == hospitalID)
+			{
+				return &(current->data);
+
+			}
+			current = current->next;
+		}
+
+		return nullptr;
 	}
 
 	~HospitalHashTable() {
