@@ -11,6 +11,7 @@
 using namespace std;
 
 class SmartCity {
+public:
     Menu menu;
     TransportSystem transport;
     EducationSystem education;

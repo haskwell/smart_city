@@ -1,14 +1,18 @@
 #pragma once
 #include "HospitalEntities.h"
+#include "HospitalMaxHeap.h"
 #include "../Database/Database.h"
 #include "../SmartCity/CityLogger.h"
 #include <string>
 using namespace std;
 
 class MedicalSystem {
-private:
+public:
     Database* db;
     CityLogger* logger;
+
+	HospitalMaxHeap emergencyBedHeap;
+
     void pressEnterToContinue() {
         logger->Prompt("Press Enter to continue...");
         cin.ignore();
@@ -37,6 +41,7 @@ public:
         }
 
         db->hospitals.insert(*h);
+		emergencyBedHeap.insert(h->id, h->emergencyBeds);
         return true;
     }
 
@@ -127,7 +132,7 @@ public:
     }
 
     void requestEmergencyBeds(int numBeds) {
-        logger->Info(">>> Request Emergency Beds - Not implemented yet");
+
     }
 
     void searchHospitalGraph(const string& hospitalName) {
@@ -326,7 +331,21 @@ public:
 
         cls();
 
-        logger->Info(">>> Book Emergency Bed - Not implemented yet");
+        logger->Prompt("How many beds are required: ");
+        int bedsRequired;
+        cin >> bedsRequired;
+        cin.ignore();
+        string hospitalId = emergencyBedHeap.getMax();
+        bool beds = emergencyBedHeap.updateBedCount(bedsRequired, hospitalId);
+        if (!beds) {
+            logger->Error("Not enough beds available");
+			pressEnterToContinue();
+            return;
+        }
+        else {
+            logger->Ok("Beds booked successfully at hospital with ID: " + hospitalId);
+        }
+
         pressEnterToContinue();
     }
 

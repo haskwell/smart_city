@@ -3,18 +3,18 @@
 #include<string>
 using namespace std;
 
-class HeapNode {
+class HospitalHeapNode {
 public:
     string hospitalId;
     int bedNumber;
 
-    HeapNode(string id, int bed) : hospitalId(id), bedNumber(bed) {}
+    HospitalHeapNode(string id, int bed) : hospitalId(id), bedNumber(bed) {}
 };
 
-class MaxHeap {
+class HospitalMaxHeap {
 
     void swap(int i, int j) {
-        HeapNode* temp = heapArray[i];
+        HospitalHeapNode* temp = heapArray[i];
         heapArray[i] = heapArray[j];
         heapArray[j] = temp;
     }
@@ -44,7 +44,7 @@ class MaxHeap {
 
     void resize() {
         int newCap = capacity * 2;
-        HeapNode** newArray = new HeapNode * [newCap];
+        HospitalHeapNode** newArray = new HospitalHeapNode * [newCap];
 
         for (int i = 0; i < newCap; ++i) {
             newArray[i] = nullptr;
@@ -64,16 +64,12 @@ class MaxHeap {
     }
 
 public:
-    HeapNode** heapArray;
+    HospitalHeapNode** heapArray;
     int capacity;
     int size;
 
-    MaxHeap() : capacity(0), size(0), heapArray(nullptr) {}
-
-    void setTable(int cap) {
-        capacity = cap;
-        size = 0;
-        heapArray = new HeapNode * [capacity];
+    HospitalMaxHeap(int cap = 10) : capacity(cap), size(0) {
+        heapArray = new HospitalHeapNode * [capacity];
         for (int i = 0; i < capacity; i++) {
             heapArray[i] = nullptr;
         }
@@ -85,7 +81,7 @@ public:
         }
         size++;
         int i = size - 1;
-        heapArray[i] = new HeapNode(hospitalId, bedNumber);
+        heapArray[i] = new HospitalHeapNode(hospitalId, bedNumber);
 
         while (i != 0 && heapArray[parent(i)]->bedNumber < heapArray[i]->bedNumber) {
             swap(i, parent(i));
@@ -93,30 +89,30 @@ public:
         }
     }
 
-    HeapNode* getMax() const {
+    string getMax() const {
         if (size > 0) {
-            return heapArray[0];
+            return heapArray[0]->hospitalId;
         }
-        return nullptr;
+        return "";
     }
 
-    void updateBedCount(int bedsRequired, string& hospitalId) {
+    bool updateBedCount(int bedsRequired, string& hospitalId) {
         int oldBedNumber = heapArray[0]->bedNumber;
         if (bedsRequired > oldBedNumber) {
-            return;
+            return false;
         }
         int newBedNumber = oldBedNumber - bedsRequired;
         hospitalId = heapArray[0]->hospitalId;
         heapArray[0]->bedNumber = newBedNumber;
         maxHeapify(0);
+        return true;
     }
 
     bool isEmpty() const {
         return size == 0;
     }
 
-    // Destructor
-    ~MaxHeap() {
+    ~HospitalMaxHeap() {
         for (int i = 0; i < size; ++i) {
             delete heapArray[i];
         }
