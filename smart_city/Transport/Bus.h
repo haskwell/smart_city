@@ -2,6 +2,7 @@
 #include <string>
 #include "PassengerQueue.h"
 #include "BusRouteList.h"
+#include "../Database/BusHashTable.h"
 using namespace std;
 class Bus {
 public:
@@ -19,9 +20,9 @@ public:
 class BusCompany {
 public:
 	string companyName;
-	Bus* head;
+	BusHashTable busTable;
 
-	BusCompany(): companyName(""), head(nullptr) {}
+	BusCompany(): companyName("") {}
 
 	void registerName(string n) {
 		companyName = n;

@@ -5,7 +5,6 @@
 class BusCompaniesNode {
 	
 	public:
-		BusHashTable busTable;
 	BusCompany data;
 	BusCompaniesNode* next;
 	BusCompaniesNode(BusCompany bc) : data(bc), next(nullptr) {}
@@ -68,9 +67,32 @@ public:
 	}
 
 	void insertBusToCompany(string companyName, Bus b) {
-		BusCompany* company = search(companyName);
-		if (company != nullptr) {
-			company->addBus(b);
+		int index = hash(companyName);
+		BusCompaniesNode* current = table[index];
+
+		while (current != nullptr) {
+			if (current->data.companyName == companyName) {
+				current->data.busTable.insert(b);
+				return; // bus inserted, exit
+			}
+			current = current->next;
 		}
+
+	}
+
+	Bus* searchBusInCompany(string companyName, string busNum) {
+		int index = hash(companyName);
+		BusCompaniesNode* current = table[index];
+
+		while (current != nullptr) {
+			if (current->data.companyName == companyName) {
+				// search in this company's bus table
+				return current->data.busTable.search(busNum);
+			}
+			current = current->next;
+		}
+
+		// If company not found
+		return nullptr;
 	}
 };
