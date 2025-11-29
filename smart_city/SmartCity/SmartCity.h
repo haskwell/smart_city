@@ -142,6 +142,7 @@ private:
             case 1: population.addPeopleHandler(); break;
             case 2: population.searchByCNICHandler(); break;
             case 3: population.generateReportHandler(); break;
+            case 4: population.printAllPeople(); break;
             }
         } while (popChoice != 0);
     }

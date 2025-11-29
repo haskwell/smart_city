@@ -2,11 +2,12 @@
 #include <ctime>
 
 void seed(SmartCity& city) {
-	//insert 100 people
-	for (int i = 1; i <= 100; i++) {
-		string name = "Person " + to_string(i);
-		string cnic = "CNIC" + to_string(i);
-		Person* person = new Person(name, 30 + i, 'M', cnic, "Street " + to_string(i), i, "Occupation " + to_string(i), "Sector " + to_string(i));
+	//insert 1000 people into population with ages 0 to 100
+	for (int i = 1; i <= 100000; i++) {
+		string name = "Citizen " + to_string(i);
+		string cnic = "CIT" + to_string(i);
+		int age = rand() % 101; // age between 0 and 100
+		Person* person = new Person(name, age, (i % 2 == 0) ? 'M' : 'F', cnic, "Street " + to_string(i), i, "Citizen", "Sector " + to_string(i));
 		city.db.people.insert(person);
 	}
 	//insert 20 pharmacies
@@ -52,6 +53,8 @@ void seed(SmartCity& city) {
 	Hospital* hospital = new Hospital("City Hospital", "HOSPP1", 50, "Sector 1", 5);
 	city.db.hospitals.insert(*hospital);
 	hospital->doctorsTable.insert(dynamic_cast<Doctor*>(doctor));
+
+
 
 	//insert ONE pharmacy into database with THREE medicines
 	//Pharmacy* pharmacy = new Pharmacy("HealthPlus Pharmacy", "PHARM1", "456 Elm St", 3);

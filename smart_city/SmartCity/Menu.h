@@ -131,12 +131,13 @@ private:
         "\t0. Back"
     };
 
-    const string populationMenu[6] = {
+    const string populationMenu[7] = {
         "\t=== POPULATION MODULE ===",
         "",
         "\t1. Add People",
         "\t2. Search by CNIC",
         "\t3. Generate Report",
+		"\t4. Print All People",
         "\t0. Back"
     };
 
@@ -191,7 +192,7 @@ public:
     }
 
     int showPopulationMenu() {
-        return getMenuChoice(populationMenu, 6);
+        return getMenuChoice(populationMenu, 7);
     }
 
     int showPublicMenu() {

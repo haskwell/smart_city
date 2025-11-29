@@ -133,7 +133,89 @@ public:
         pressEnterToContinue();
     }
 
+    void generateAgeReport() {
+
+		int oneToEighteen = 0;
+		int nineteenTo25 = 0;
+		int twentySixTo40 = 0;
+		int fortyOneTo60 = 0;
+		int sixtyOnePlus = 0;
+
+        for (int i = 0; i < db->people.tableSize; i++) {
+            PersonNode* current = db->people.table[i];
+            while (current) {
+                int age = current->data->age;
+                if (age >= 1 && age <= 18) oneToEighteen++;
+                else if (age >= 19 && age <= 25) nineteenTo25++;
+                else if (age >= 26 && age <= 40) twentySixTo40++;
+                else if (age >= 41 && age <= 60) fortyOneTo60++;
+                else if (age >= 61) sixtyOnePlus++;
+                current = current->next;
+            }
+        }
+
+		logger->Info("Population Age Report:");
+		logger->Info("Age 1-18      : " + to_string(oneToEighteen));
+		logger->Info("Age 19-25     : " + to_string(nineteenTo25));
+		logger->Info("Age 26-40     : " + to_string(twentySixTo40));
+		logger->Info("Age 41-60     : " + to_string(fortyOneTo60));
+		logger->Info("Age 61+       : " + to_string(sixtyOnePlus));
+
+    }
+
+    void occupationSummaryReport() {
+        
+    
+    }
+
+    void genderRatioReport() {
+        int maleCount = 0;
+		int femaleCount = 0;
+
+        for (int i = 0; i < db->people.tableSize; i++) {
+            PersonNode* current = db->people.table[i];
+            while (current) {
+                if (current->data->gender == 'M' || current->data->gender == 'm') {
+                    maleCount++;
+                }
+                else if (current->data->gender == 'F' || current->data->gender == 'f') {
+                    femaleCount++;
+                }
+                current = current->next;
+            }
+
+        }
+        logger->Info("Gender Ratio Report");
+		logger->Info("Men     : " + to_string(maleCount));
+		logger->Info("Women   : " + to_string(femaleCount));
+    
+    }
+
     void generateReportHandler() {
-        cout << ">>> Generate Report - Not implemented yet\n\n";
+        cls();
+		generateAgeReport();
+        logger->Info("\n");
+        logger->Info("\n");
+        logger->Info("\n");
+		genderRatioReport();
+
+        pressEnterToContinue();
+
+    }
+
+    void printAllPeople() {
+        cls();
+        logger->Title("ALL PEOPLE IN POPULATION");
+        for (int i = 0; i < db->people.tableSize; i++) {
+            PersonNode* current = db->people.table[i];
+            while (current) {
+                Person* person = current->data;
+                logger->Info("Name       : " + person->name);
+                logger->Info("CNIC       : " + person->CNIC);
+                logger->Info("Age        : " + to_string(person->age));
+				current = current->next;
+            }
+        }
+		pressEnterToContinue();
     }
 };
