@@ -1,4 +1,5 @@
 #include "SmartCity/SmartCity.h"
+#include <ctime>
 
 void seed(SmartCity& city) {
 	//insert 100 people
@@ -26,8 +27,11 @@ void seed(SmartCity& city) {
 	for (int i = 1; i <= 20; i++) {
 		string name = "Hospital " + to_string(i);
 		string id = "HOSP" + to_string(i);
-		Hospital* hospital = new Hospital(name, id, 30, "Sector " + to_string(i), 5);
+		//random beds
+		int beds = 20 + (rand() % 30);
+		Hospital* hospital = new Hospital(name, id, beds, "Sector " + to_string(i), 5);
 		city.db.hospitals.insert(*hospital);
+		city.medical.emergencyBedHeap.insert(hospital->id, beds);
 	}
 	//insert 100 doctors into the population and assign to hospitals
 	for (int i = 1; i <= 100; i++) {
@@ -61,7 +65,8 @@ void seed(SmartCity& city) {
 }
 
 int main() {
-    SmartCity city;
+	srand(static_cast<unsigned int>(time(0)));
+	SmartCity city;
 	seed(city);
     city.run();
     return 0;
