@@ -1,8 +1,16 @@
 #pragma once
 #include "HospitalEntities.h"
+#include"../Database/Database.h"
+
 
 class MedicalSystem{
+private:
+    Database* db;
+
 public:
+
+	MedicalSystem(Database* database = nullptr) : db(database) {}
+
     void addDoctor(Person* p, string hospitalName){}
     void addPatient(Person* p, string hospitalName){}
     void addHospital(Hospital* h){}
