@@ -1,76 +1,112 @@
 #pragma once
 #include "HospitalEntities.h"
 #include "../Database/Database.h"
-#include <iostream>
+#include "../SmartCity/CityLogger.h"
 #include <string>
 using namespace std;
 
 class MedicalSystem {
 private:
     Database* db;
-
+    CityLogger* logger;
     void pressEnterToContinue() {
-        cout << "Press Enter to continue...";
+        logger->Prompt("Press Enter to continue...");
         cin.ignore();
+    }
+
+    void cls() {
+        cout << "\033[2J\033[H";
 	}
 
 public:
-    MedicalSystem(Database* database = nullptr) : db(database) {}
+    MedicalSystem(Database* database = nullptr,
+        CityLogger* log = nullptr) : db(database), logger(log) {
+    }
 
-    void addHospital(Hospital* h) {
-        if (!db) return;
+    bool addHospital(Hospital* h) {
+        if (!db) return false;
 
-        // If the hash table is uninitialized, create it with default size 101
+        if (db->hospitals.search(h->id)) {
+            logger->Warning("Hospital with ID '" + h->id + "' already exists!");
+            delete h;
+            return false;
+        }
+        
         if (db->hospitals.tableSize == 0) {
             db->hospitals = HospitalHashTable(101);
         }
 
         db->hospitals.insert(*h);
+        return true;
     }
 
-    void addPharmacy(Pharmacy* p) {
-        if (!db) return;
+    bool addPharmacy(Pharmacy* p) {
+        if (!db) return false;
 
+        if (db->pharmacies.search(p->id)) {
+            logger->Warning("Pharmacy with ID '" + p->id + "' already exists!");
+            delete p;
+            return false;
+        }
+        
         if (db->pharmacies.tableSize == 0) {
             db->pharmacies = PharmacyHashTable(101);
         }
 
         db->pharmacies.insert(*p);
+        return true;
     }
 
-    void addDoctor(Person* p, const string& hospitalID) {
-        if (!db) return;
-		Doctor* d = dynamic_cast<Doctor*>(p);
+    bool addDoctor(Person* p, const string& hospitalID) {
+        if (!db) return false;
+        Doctor* d = dynamic_cast<Doctor*>(p);
         Hospital* hospital = db->hospitals.search(hospitalID);
         if (hospital) {
+            if (hospital->doctorsTable.search(d->name)) {
+                logger->Warning("Doctor '" + d->name + "' is already working at " + hospital->name + "!");
+                return false;
+            }
             hospital->doctorsTable.insert(d);
+            return true;
         }
         else {
-            cout << "Error: Hospital with ID " << hospitalID << " not found.\n";
+            logger->Error("Hospital with ID " + hospitalID + " not found.");
+            return false;
         }
     }
 
-    void addPatient(Person* p, const string& hospitalID) {
-        if (!db) return;
-
+    bool addPatient(Person* p, const string& hospitalID) {
+        if (!db) return false;
         Hospital* hospital = db->hospitals.search(hospitalID);
         if (hospital) {
-			hospital->patientTable.insert(p);
+            if (hospital->patientTable.search(p->name)) {
+                logger->Warning("Patient '" + p->name + "' is already admitted to " + hospital->name + "!");
+                return false;
+            }
+            hospital->patientTable.insert(p);
+            return true;
         }
         else {
-            cout << "Error: Hospital with ID " << hospitalID << " not found.\n";
+            logger->Error("Hospital with ID " + hospitalID + " not found.");
+            return false;
         }
     }
 
-    void addMedicine(const Medicine& m, Pharmacy* pharmacy) {
-        if (!db) return;
-        if(!pharmacy) return; 
+    bool addMedicine(const Medicine& m, Pharmacy* pharmacy) {
+        if (!db) return false;
+        
         if (pharmacy) {
-			pharmacy->medicineTable.insert(m);
-            cout << "Medicine " << m.name << " added to Pharmacy " << pharmacy->name << endl;
+            if (pharmacy->medicineTable.search(m.name)) {
+                logger->Warning("Medicine '" + m.name + "' already exists in " + pharmacy->name + "!");
+                return false;
+            }
+            pharmacy->medicineTable.insert(m);
+            logger->Ok("Medicine " + m.name + " added to Pharmacy " + pharmacy->name);
+            return true;
         }
         else {
-            cout << "Error: Pharmacy with ID " << pharmacy->id << " not found.\n";
+            logger->Error("Pharmacy with ID " + pharmacy->id + " not found.");
+            return false;
         }
     }
 
@@ -79,7 +115,7 @@ public:
         Person* p = db->people.search(cnic);
         Doctor* d = dynamic_cast<Doctor*>(p);
         if (!d) {
-            cout << "This person is not a doctor\n";
+            logger->Error("This person is not a doctor");
             return nullptr;
         }
         return d;
@@ -91,336 +127,378 @@ public:
     }
 
     void requestEmergencyBeds(int numBeds) {
-        cout << ">>> Request Emergency Beds - Not implemented yet\n";
+        logger->Info(">>> Request Emergency Beds - Not implemented yet");
     }
 
     void searchHospitalGraph(const string& hospitalName) {
-        cout << ">>> Search Hospital Graph - Not implemented yet\n";
+        logger->Info(">>> Search Hospital Graph - Not implemented yet");
     }
 
     Medicine* searchMedicine(const string& name, Pharmacy* pharmacy) {
-		return pharmacy->medicineTable.search(name);
+        return pharmacy->medicineTable.search(name);
     }
 
     Doctor* searchDoctorInHospital(const string& name, const string& hospitalId) {
-		Hospital* hospital = db->hospitals.search(hospitalId);
+        Hospital* hospital = db->hospitals.search(hospitalId);
         if (!hospital) {
-            cout << "Hospital " << hospitalId << " not found.\n";
+            logger->Error("Hospital " + hospitalId + " not found.");
             return nullptr;
         }
 
-		Doctor* doc = hospital->doctorsTable.search(name);
-        
+        Doctor* doc = hospital->doctorsTable.search(name);
+
         if (!doc) {
-            cout << "Doctor " << name << " not found in Hospital " << hospitalId << ".\n";
             return nullptr;
         }
 
         return doc;
-	}
+    }
 
     Person* searchPatientInHospital(const string& name, const string& hospitalId) {
         Hospital* hospital = db->hospitals.search(hospitalId);
         if (!hospital) {
-            cout << "Hospital " << hospitalId << " not found.\n";
+            logger->Error("Hospital " + hospitalId + " not found.");
             return nullptr;
         }
         Person* p = hospital->patientTable.search(name);
         if (!p) {
-            cout << "Patient " << name << " not found in Hospital " << hospitalId << ".\n";
             return nullptr;
         }
         return p;
-	}
+    }
 
     void registerHospitalsHandler() {
         string ID, name, sector;
         int totalSpecializations, emergencyBeds;
 
-        cout << "\n----------------------------------------\n";
-        cout << "      REGISTER NEW HOSPITAL\n";
-        cout << "----------------------------------------\n";
+        cls();
 
-        cout << "Enter Hospital ID: ";
+        logger->Title("REGISTER NEW HOSPITAL");
+
+        logger->Prompt("Enter Hospital ID: ");
         cin >> ID;
         cin.ignore();
 
-        cout << "Enter Hospital Name: ";
+        logger->Prompt("Enter Hospital Name: ");
         getline(cin, name);
 
-        cout << "Enter Sector/Location: ";
+        logger->Prompt("Enter Sector/Location: ");
         getline(cin, sector);
 
-        cout << "Enter Number of Emergency Beds: ";
+        logger->Prompt("Enter Number of Emergency Beds: ");
         cin >> emergencyBeds;
 
-        cout << "Enter Total Number of Specializations: ";
+        logger->Prompt("Enter Total Number of Specializations: ");
         cin >> totalSpecializations;
         cin.ignore();
 
         Hospital* newHospital = new Hospital(name, ID, emergencyBeds, sector, totalSpecializations);
 
         if (totalSpecializations > 0) {
-            cout << "Enter the " << totalSpecializations << " specializations below:\n";
+            logger->Prompt("Enter the " + to_string(totalSpecializations) + " specializations below:");
             for (int i = 0; i < totalSpecializations; i++) {
-                cout << "  " << (i + 1) << ". ";
+                logger->Prompt("\n  " + to_string(i + 1) + ". ");
                 getline(cin, newHospital->specialization[i]);
             }
         }
 
-        addHospital(newHospital);
-
-        cout << "\n>>> Success: " << name << " has been registered.\n\n";
+        bool added = addHospital(newHospital);
+        if (!added) {
+            logger->Error("Registration Failed.");
+            pressEnterToContinue();
+            return;
+        }
+        logger->Ok(name + " has been registered.");
+        pressEnterToContinue();
     }
 
     void registerPharmaciesHandler() {
         string ID, name, location;
         int totalMedicines;
 
-        cout << "\n----------------------------------------\n";
-        cout << "      REGISTER NEW PHARMACY\n";
-        cout << "----------------------------------------\n";
+        cls();
 
-        cout << "Enter Pharmacy ID: ";
+        logger->Title("REGISTER NEW PHARMACY");
+
+        logger->Prompt("Enter Pharmacy ID: ");
         cin >> ID;
         cin.ignore();
 
-        cout << "Enter Pharmacy Name: ";
+        logger->Prompt("Enter Pharmacy Name: ");
         getline(cin, name);
 
-        cout << "Enter Pharmacy Location: ";
+        logger->Prompt("Enter Pharmacy Location: ");
         getline(cin, location);
 
-        cout << "Enter Total Number of Medicines: ";
+        logger->Prompt("Enter Total Number of Medicines: ");
         cin >> totalMedicines;
+        cin.ignore();
 
         Pharmacy* newPharmacy = new Pharmacy(name, ID, location, totalMedicines);
-        addPharmacy(newPharmacy);
-        cin.ignore();
+        bool added = addPharmacy(newPharmacy);
+
+        if (!added) {
+            logger->Error("Registration Failed.");
+            pressEnterToContinue();
+            return;
+		}
+
         if (totalMedicines > 0) {
-            cout << "Enter the " << totalMedicines << " medicines below:\n";
+            logger->Prompt("Enter the " + to_string(totalMedicines) + " medicines below:");
             for (int i = 0; i < totalMedicines; i++) {
                 string medName, formula;
-				float price;
-                cout << "Medicine " << (i + 1) << " Name: ";
+                float price;
+                logger->Prompt("\nMedicine " + to_string(i + 1) + " Name: ");
                 getline(cin, medName);
-                cout << "Medicine " << (i + 1) << " Formula: ";
+                logger->Prompt("Medicine " + to_string(i + 1) + " Formula: ");
                 getline(cin, formula);
-                cout << "Medicine " << (i + 1) << " Price: ";
+                logger->Prompt("Medicine " + to_string(i + 1) + " Price: ");
                 cin >> price;
                 cin.ignore();
-				Medicine m(medName, formula, price);
-				addMedicine(m, newPharmacy);
+                Medicine m(medName, formula, price);
+                addMedicine(m, newPharmacy);
             }
         }
 
-        // Insert into the database
-
-        cout << "\n>>> Success: " << name << " has been registered.\n\n";
+        logger->Ok(name + " has been registered.");
+		pressEnterToContinue();
     }
 
     void addDoctorHandler() {
-        cout << "\n----------------------------------------\n";
-        cout << "      REGISTER NEW DOCTOR\n";
-        cout << "----------------------------------------\n";
+    
+        cls();
+
+        logger->Title("REGISTER NEW DOCTOR");
 
         string cnic;
-		cout << "Enter Doctor's CNIC: ";
-        //cin.ignore();
-		getline(cin, cnic);
-		Doctor* newDoctor = searchDoctor(cnic);
+        logger->Prompt("Enter Doctor's CNIC: ");
+        getline(cin, cnic);
+        Doctor* newDoctor = searchDoctor(cnic);
         if (newDoctor == nullptr) {
-            cout << "Doctor not found in the population database. Please add the doctor to the population first.\n\n";
+            logger->Error("Doctor not found in the population database. Please add the doctor to the population first.");
+            pressEnterToContinue();
             return;
         }
         string hospitalID;
-        cout << "Enter Hospital ID to associate the doctor with: ";
+        logger->Prompt("Enter Hospital ID to associate the doctor with: ");
         cin >> hospitalID;
         cin.ignore();
-        addDoctor(newDoctor, hospitalID);
-		cout << "\n>>> Success: Doctor " << newDoctor->name << " has been added to Hospital ID " << hospitalID << ".\n\n";
-
+        bool added = addDoctor(newDoctor, hospitalID);
+        if (!added) {
+            logger->Error("Registration Failed.");
+            pressEnterToContinue();
+            return;
+        }
+        logger->Ok("Doctor " + newDoctor->name + " has been added to Hospital ID " + hospitalID + ".");
+        pressEnterToContinue();
     }
 
     void addPatientHandler() {
-        cout << "\n----------------------------------------\n";
-        cout << "      REGISTER NEW PATIENT\n";
-        cout << "----------------------------------------\n";
-    
+
+        cls();
+
+        logger->Title("REGISTER NEW PATIENT");
+
         string cnic;
-        cout << "Enter Patient's CNIC: ";
-        //cin.ignore();
+        logger->Prompt("Enter Patient's CNIC: ");
         getline(cin, cnic);
         Person* newPatient = searchPatient(cnic);
         if (newPatient == nullptr) {
-            cout << "Person not found in the population database. Please add the person to the population first.\n\n";
+            logger->Error("Person not found in the population database. Please add the person to the population first.");
+            pressEnterToContinue();
             return;
         }
         string hospitalID;
-        cout << "Enter Hospital ID to associate the patient with: ";
+        logger->Prompt("Enter Hospital ID to associate the patient with: ");
         cin >> hospitalID;
         cin.ignore();
-        addPatient(newPatient, hospitalID);
-        cout << "\n>>> Success: Patient " << newPatient->name << " has been added to Hospital ID " << hospitalID << ".\n\n";
-
+        bool added = addPatient(newPatient, hospitalID);
+        if (!added) {
+			logger->Error("Registration Failed.");
+            pressEnterToContinue();
+			return;
+        }
+        logger->Ok("Patient " + newPatient->name + " has been added to Hospital ID " + hospitalID + ".");
+        pressEnterToContinue();
     }
 
     void bookEmergencyBedHandler() {
-        cout << ">>> Book Emergency Bed - Not implemented yet\n\n";
+
+        cls();
+
+        logger->Info(">>> Book Emergency Bed - Not implemented yet");
+        pressEnterToContinue();
     }
 
     void searchDoctorHandler() {
-		string name, hospitalName;
-		cout << "Enter Doctor's name to search: ";
-		getline(cin, name);
-		cout << "Enter the name of the hospital the doctor is associated with: ";
-		getline(cin, hospitalName);
-        cin.ignore();
-		Doctor* doc = searchDoctorInHospital(name, hospitalName);
+
+        cls();
+
+        string name, hospitalName;
+        logger->Prompt("Enter Doctor's name to search: ");
+        getline(cin, name);
+        logger->Prompt("Enter the name of the hospital the doctor is associated with: ");
+        getline(cin, hospitalName);
+        Doctor* doc = searchDoctorInHospital(name, hospitalName);
 
         if (doc) {
-            cout << "\nDoctor Found:\n";
-            cout << "Name: " << doc->name << "\n";
-            cout << "CNIC: " << doc->CNIC << "\n";
-            cout << "Specialization: " << doc->specialization << "\n\n";
+            logger->Info("Doctor Found:");
+            logger->Info("Name: " + doc->name);
+            logger->Info("CNIC: " + doc->CNIC);
+            logger->Info("Specialization: " + doc->specialization);
         }
         else {
-			cout << "Doctor " << name << " not found in Hospital " << hospitalName << ".\n\n";
+            logger->Error("Doctor " + name + " not found in Hospital " + hospitalName + ".");
         }
-		pressEnterToContinue();
+        pressEnterToContinue();
     }
 
     void searchPatientHandler() {
+
+        cls();
+
         string name, hospitalName;
-        cout << "Enter Patient's name to search: ";
+        logger->Prompt("Enter Patient's name to search: ");
         getline(cin, name);
-        cout << "Enter the name of the hospital the patient is associated with: ";
+        logger->Prompt("Enter the name of the hospital the patient is associated with: ");
         getline(cin, hospitalName);
-        cin.ignore();
         Person* p = searchPatientInHospital(name, hospitalName);
 
         if (p) {
-			cout << "\nPatient Found:\n";
-            cout << "Name: " << p->name << "\n";
-			cout << "CNIC: " << p->CNIC << "\n\n";
+            logger->Info("Patient Found:");
+            logger->Info("Name: " + p->name);
+            logger->Info("CNIC: " + p->CNIC);
         }
         else {
-            cout << "Patient " << name << " not found in Hospital " << hospitalName << ".\n\n";
+            logger->Warning("Patient " + name + " not found in Hospital " + hospitalName + ".");
         }
-		pressEnterToContinue();
+        pressEnterToContinue();
     }
 
     void addMedicineHandler() {
 
-        cout << "\n----------------------------------------\n";
-        cout << "      ADD MEDICINE\n";
-        cout << "----------------------------------------\n";
+        cls();
+
+        logger->Title("ADD MEDICINE");
 
         string pharmId;
-        cout << "Enter Pharmacy name: ";
+        logger->Prompt("Enter Pharmacy name: ");
         getline(cin, pharmId);
-		Pharmacy* pharmacy = db->pharmacies.search(pharmId);
+        Pharmacy* pharmacy = db->pharmacies.search(pharmId);
         if (pharmacy == nullptr) {
-            cout << "Pharmacy not found in the population database. Please add the pharmacy to the database first.\n\n";
+            logger->Error("Pharmacy not found in the population database. Please add the pharmacy to the database first.");
+			pressEnterToContinue();
             return;
         }
-		string name, formula;
-		float price;
-		cout << "Enter Medicine Name: ";
-		getline(cin, name);
-		cout << "Enter Medicine Formula: ";
-		getline(cin, formula);
-		cout << "Enter Medicine Price: ";
-		cin >> price;
-		Medicine m(name, formula, price);
+        string name, formula;
+        float price;
+        logger->Prompt("Enter Medicine Name: ");
+        getline(cin, name);
+        logger->Prompt("Enter Medicine Formula: ");
+        getline(cin, formula);
+        logger->Prompt("Enter Medicine Price: ");
+        cin >> price;
+        Medicine m(name, formula, price);
         cin.ignore();
-        addMedicine(m, pharmacy);
-		cout << "\n>>> Success: Medicine " << name << " has been added to Pharmacy " << pharmacy->name << ".\n\n";
+        bool added = addMedicine(m, pharmacy);
+        if (!added) {
+			logger->Error("Failed to add medicine.");
+            pressEnterToContinue();
+			return;
+        }
+        logger->Ok("Medicine " + name + " has been added to Pharmacy " + pharmacy->name + ".");
+        pressEnterToContinue();
     }
 
     void searchMedicineHandler() {
-		cout << "\n----------------------------------------\n";
-        cout << "      SEARCH MEDICINE\n";
-		cout << "----------------------------------------\n";
+
+        cls();
+
+        logger->Title("SEARCH MEDICINE");
         string name;
-        cout << "Enter Medicine Name to search: ";
+        logger->Prompt("Enter Medicine Name to search: ");
         getline(cin, name);
-		cout << "Enter Pharmacy name the medicine is in: ";
-		string pharmId;
-		getline(cin, pharmId);
-		Pharmacy* pharmacy = db->pharmacies.search(pharmId);
+        logger->Prompt("Enter Pharmacy name the medicine is in: ");
+        string pharmId;
+        getline(cin, pharmId);
+        Pharmacy* pharmacy = db->pharmacies.search(pharmId);
         if (!pharmacy) {
-			cout << "Pharmacy " << pharmId << " not found.\n\n";
+            logger->Warning("Pharmacy with ID " + pharmId + " not found.");
             pressEnterToContinue();
             return;
         }
         Medicine* m = searchMedicine(name, pharmacy);
         if (!m) {
-			cout << "Medicine " << name << " not found in Pharmacy " << pharmacy->name << ".\n\n";
+            logger->Warning("Medicine " + name + " not found in Pharmacy " + pharmacy->name + ".");
         }
         else {
-            cout << "\nMedicine Found:\n";
-            cout << "Name: " << m->name << "\n";
-            cout << "Formula: " << m->formula << "\n";
-            cout << "Price: " << m->price << "\n\n";
-		}
-		pressEnterToContinue();
+            logger->Info("Medicine " + name + " found in Pharmacy " + pharmacy->name + " with price " + to_string(m->price) + ".");
+        }
+        pressEnterToContinue();
     }
 
     void listAllHospitalsHandler() {
-		for (int i = 0; i < db->hospitals.tableSize; i++) {
+
+        cls();
+
+        for (int i = 0; i < db->hospitals.tableSize; i++) {
             HospitalNode* current = db->hospitals.table[i];
             while (current) {
-                cout << "Hospital ID: " << current->data.id << ", Name: " << current->data.name << ", Sector: " << current->data.sector << endl;
+                logger->Info("Hospital ID: " + current->data.id + ", Name: " + current->data.name + ", Sector: " + current->data.sector);
                 current = current->next;
             }
         }
-
-		pressEnterToContinue();
+        pressEnterToContinue();
     }
 
     void listAllDoctorsHandler() {
 
-		for (int i = 0; i < db->hospitals.tableSize; i++) {
+        cls();
+
+        for (int i = 0; i < db->hospitals.tableSize; i++) {
             HospitalNode* current = db->hospitals.table[i];
             while (current) {
-                cout << "Hospital ID: " << current->data.id << ", Name: " << current->data.name << endl;
-                
-				for (int j = 0; j < current->data.doctorsTable.tableSize; j++) {
+                logger->Info("Hospital ID: " + current->data.id + ", Name: " + current->data.name);
+                for (int j = 0; j < current->data.doctorsTable.tableSize; j++) {
                     DoctorNode* docCurrent = current->data.doctorsTable.table[j];
                     while (docCurrent) {
-                        cout << "  Doctor Name: " << docCurrent->data->name << ", CNIC: " << docCurrent->data->CNIC << ", Specialization: " << docCurrent->data->specialization << endl;
+                        logger->Info("  Doctor Name: " + docCurrent->data->name + ", CNIC: " + docCurrent->data->CNIC + ", Specialization: " + docCurrent->data->specialization);
                         docCurrent = docCurrent->next;
                     }
                 }
-                
                 current = current->next;
             }
         }
-		pressEnterToContinue();
-	}
+        pressEnterToContinue();
+    }
 
     void listAllPharmaciesHandler() {
+
+        cls();
+
         for (int i = 0; i < db->pharmacies.tableSize; i++) {
             PharmacyNode* current = db->pharmacies.table[i];
             while (current) {
-                cout << "Pharmacy ID: " << current->data.id << ", Name: " << current->data.name << ", Sector: " << current->data.sector << endl;
+                logger->Info("Pharmacy ID: " + current->data.id + ", Name: " + current->data.name + ", Sector: " + current->data.sector);
                 current = current->next;
             }
         }
-		pressEnterToContinue();
-	}
+        pressEnterToContinue();
+    }
 
     void listAllMedicinesHandler() {
+
+        cls();
+
         for (int i = 0; i < db->pharmacies.tableSize; i++) {
             PharmacyNode* current = db->pharmacies.table[i];
             while (current) {
-                cout << "Pharmacy ID: " << current->data.id << ", Name: " << current->data.name << endl;
+                logger->Info("Pharmacy ID: " + current->data.id + ", Name: " + current->data.name);
 
                 for (int j = 0; j < current->data.medicineTable.tableSize; j++) {
                     MedicineNode* medCurrent = current->data.medicineTable.table[j];
                     while (medCurrent) {
-                        cout << "  Medicine Name: " << medCurrent->data.name << ", Formula: " << medCurrent->data.formula << ", Price: " << medCurrent->data.price << endl;
+                        logger->Info("  Medicine Name: " + medCurrent->data.name + ", Formula: " + medCurrent->data.formula + ", Price: " + to_string(medCurrent->data.price));
                         medCurrent = medCurrent->next;
                     }
                 }
@@ -432,6 +510,10 @@ public:
     }
 
     void nearestHospitalLookupHandler() {
-        cout << ">>> Nearest Hospital Lookup - Not implemented yet\n\n";
+
+        cls();
+
+        logger->Info(">>> Nearest Hospital Lookup - Not implemented yet");
+        pressEnterToContinue();
     }
 };

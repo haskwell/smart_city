@@ -6,6 +6,8 @@
 #include "../Commercial/MallSystem.h"
 #include "../Population/PopulationSystem.h"
 #include "../Public/FacilitySystem.h"
+#include "CityLogger.h"
+
 using namespace std;
 
 class SmartCity {
@@ -17,16 +19,18 @@ class SmartCity {
     PopulationSystem population;
     PublicSystem publicServices;
 
+	CityLogger logger;
+
 public:
     Database db;
 
     SmartCity()
-        : transport(&db),
-        education(&db),
-        medical(&db),
-        commercial(&db),
-        population(&db),
-        publicServices(&db)
+        : transport(&db, &logger),
+        education(&db, &logger),
+        medical(&db, &logger),
+        commercial(&db, &logger),
+        population(&db, &logger),
+        publicServices(&db, &logger)
     {
     }
 

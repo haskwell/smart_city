@@ -3,7 +3,6 @@
 #include "PharmacyHashTable.h"
 #include "SchoolHashTable.h"
 #include "PeopleHashTable.h"
-#include <optional>
 #include <string>
 using namespace std;
 

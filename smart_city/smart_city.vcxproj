@@ -157,6 +157,7 @@
     <ClInclude Include="Population\PopulationTree.h" />
     <ClInclude Include="Public\FacilityGraph.h" />
     <ClInclude Include="Public\FacilitySystem.h" />
+    <ClInclude Include="SmartCity\CityLogger.h" />
     <ClInclude Include="SmartCity\Menu.h" />
     <ClInclude Include="SmartCity\SmartCity.h" />
     <ClInclude Include="Transport\Bus.h" />

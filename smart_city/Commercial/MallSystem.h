@@ -1,15 +1,17 @@
 #pragma once
 #include <iostream>
 #include"../Database/Database.h"
+#include "../SmartCity/CityLogger.h"
 
 using namespace std;
 
 class MallSystem {
 private:
 	Database* db;
+	CityLogger* logger;
 
 public:
-	MallSystem(Database* database = nullptr) : db(database) {}
+	MallSystem(Database* database = nullptr, CityLogger* log = nullptr) : db(database), logger(log) {}
 
 	void locateMall(){}
 

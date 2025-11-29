@@ -1,11 +1,13 @@
 #pragma once
 #include <iostream>
 #include"../Database/database.h"
+#include "../SmartCity/CityLogger.h"
 using namespace std;
 
 class PopulationSystem {
 private:
 	Database* db;
+    CityLogger* logger;
 
     void addPerson(Person* p) {
         if (!db) return;
@@ -17,7 +19,7 @@ private:
 	}
 
 public:
-	PopulationSystem(Database* database = nullptr) : db(database) {}
+	PopulationSystem(Database* database, CityLogger* log) : db(database), logger(log) {}
 
     void addPeopleHandler() {
         cout << "\n----------------------------------------\n";

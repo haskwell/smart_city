@@ -43,11 +43,11 @@ void seed(SmartCity& city) {
 	}
 
 	//insert ONE doctor into population and assign to hospital
-	//Person* doctor = new Doctor("Dr. John Doe", 45, 'M', "DOC1001", "123 Main St", 1, "Doctor", "Sector 1", "Cardiology");
-	//city.db.people.insert(doctor);
-	//Hospital* hospital = new Hospital("City Hospital", "HOSP1", 50, "Sector 1", 5);
-	//city.db.hospitals.insert(*hospital);
-	//hospital->doctorsTable.insert(dynamic_cast<Doctor*>(doctor));
+	Person* doctor = new Doctor("Dr. John Doe", 45, 'M', "DOC1001", "123 Main St", 1, "Doctor", "Sector 1", "Cardiology");
+	city.db.people.insert(doctor);
+	Hospital* hospital = new Hospital("City Hospital", "HOSPP1", 50, "Sector 1", 5);
+	city.db.hospitals.insert(*hospital);
+	hospital->doctorsTable.insert(dynamic_cast<Doctor*>(doctor));
 
 	//insert ONE pharmacy into database with THREE medicines
 	//Pharmacy* pharmacy = new Pharmacy("HealthPlus Pharmacy", "PHARM1", "456 Elm St", 3);

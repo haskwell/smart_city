@@ -164,5 +164,8 @@
     <ClInclude Include="Population\CityHierarchy.h">
       <Filter>Header Files\Population</Filter>
     </ClInclude>
+    <ClInclude Include="SmartCity\CityLogger.h">
+      <Filter>Header Files\SmartCity</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

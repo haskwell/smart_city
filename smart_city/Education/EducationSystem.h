@@ -8,11 +8,11 @@ using namespace std;
 class EducationSystem {
 private:
 	Database* db;
-
+    CityLogger* logger;
 public:
 	MaxHeap schoolMinHeap;
 
-    EducationSystem(Database* d = nullptr) : db(d) {}
+    EducationSystem(Database* d = nullptr, CityLogger* log = nullptr) : db(d), logger(log) {}
 
     void registerSchool(const School* s) {
         if (!db) return;

@@ -1,11 +1,12 @@
 #pragma once
 #include "RouteHistoryStack.h"
 #include"../Database/Database.h"
-
+#include "../SmartCity/CityLogger.h"
 class TransportSystem {
 private:
     Database* db;
     RouteHistoryStack history;
+	CityLogger* logger;
 
     void registerCompany(string companyName) {}
     void registerBus(string busNo, string companyName, int stopId) {}
@@ -16,7 +17,7 @@ private:
     void addCompany(string name) {}
 
 public:
-    TransportSystem(Database* database = nullptr) : db(database) {}
+    TransportSystem(Database* database = nullptr, CityLogger* log = nullptr) : db(database), logger(log) {}
     void registerCompanyHandler() {
         cout << ">>> Register Company - Not implemented yet\n\n";
     }
