@@ -110,7 +110,7 @@ public:
             return true;
         }
         else {
-            logger->Error("Pharmacy with ID " + pharmacy->id + " not found.");
+            logger->Error("Pharmacy not found.");
             return false;
         }
     }
