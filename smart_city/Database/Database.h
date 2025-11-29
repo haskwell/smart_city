@@ -5,13 +5,13 @@
 #include "PeopleHashTable.h"
 
 class Database {
+
+
+public:
 	HospitalHashTable hospitalTable;
 	PharmacyHashTable pharmacyTable;
 	SchoolHashTable schoolTable;
 	PeopleHashTable peopleTable;
-
-public:
-
 	Database() {}
 	~Database() {}
 
