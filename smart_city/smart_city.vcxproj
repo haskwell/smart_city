@@ -130,10 +130,16 @@
     <ClInclude Include="Commercial\MallGraph.h" />
     <ClInclude Include="Commercial\MallHashTable.h" />
     <ClInclude Include="Commercial\MallSystem.h" />
+    <ClInclude Include="Database\Database.h" />
     <ClInclude Include="Education\EducationEntities.h" />
     <ClInclude Include="Education\EducationSystem.h" />
     <ClInclude Include="Education\SchoolGraph.h" />
     <ClInclude Include="Education\SchoolMaxHeap.h" />
+    <ClInclude Include="SchoolHashTable.h" />
+    <ClInclude Include="HospitalHashTable.h" />
+    <ClInclude Include="PharmacyHashTable.h" />
+    <ClInclude Include="BusHashTable.h" />
+    <ClInclude Include="PeopleHashTable.h" />
     <ClInclude Include="Medicine\DoctorsHashTable.h" />
     <ClInclude Include="Medicine\HospitalEntities.h" />
     <ClInclude Include="Medicine\HospitalGraph.h" />
@@ -142,7 +148,7 @@
     <ClInclude Include="Medicine\Medicine.h" />
     <ClInclude Include="Medicine\PatientHashTable.h" />
     <ClInclude Include="Medicine\PharmacyGraph.h" />
-    <ClInclude Include="Medicine\PharmacyHashTable.h" />
+    <ClInclude Include="Medicine\MedicineHashTable.h" />
     <ClInclude Include="Population\PopulationEntities.h" />
     <ClInclude Include="Population\PopulationHashTable.h" />
     <ClInclude Include="Population\PopulationSystem.h" />

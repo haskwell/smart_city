@@ -5,7 +5,6 @@
 class TransportSystem {
 	BusHashTable busTable;
     RouteHistoryStack history;
-    BusCompany companies[50];
 
     void registerCompany(string companyName) {}
     void registerBus(string busNo, string companyName, int stopId) {}
