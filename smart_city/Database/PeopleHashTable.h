@@ -7,7 +7,7 @@ class PersonNode {
 public:
     Person data;
     PersonNode* next;
-    PersonNode(Person p) : data(p), next(nullptr) {}
+    PersonNode(const Person& p) : data(p), next(nullptr) {}
 };
 
 class PeopleHashTable {
@@ -27,7 +27,7 @@ public:
         return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
     }
 
-    void insert(Person person) {
+    void insert(const Person& person) {
         int index = hash(person.CNIC);
         PersonNode* newNode = new PersonNode(person);
         if (!table[index]) table[index] = newNode;

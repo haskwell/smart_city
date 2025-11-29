@@ -7,7 +7,7 @@ class PharmacyNode {
 public:
     Pharmacy data;
     PharmacyNode* next;
-    PharmacyNode(Pharmacy p) : data(p), next(nullptr) {}
+    PharmacyNode(const Pharmacy& p) : data(p), next(nullptr) {}
 };
 
 class PharmacyHashTable {
@@ -27,7 +27,7 @@ public:
         return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
     }
 
-    void insert(Pharmacy phar) {
+    void insert(const Pharmacy& phar) {
         int index = hash(phar.id);
         PharmacyNode* newNode = new PharmacyNode(phar);
         if (!table[index]) table[index] = newNode;

@@ -9,7 +9,7 @@ public:
     BusCompany data;
     BusCompaniesNode* next;
 
-    BusCompaniesNode(BusCompany bc) : data(bc), next(nullptr) {}
+    BusCompaniesNode(const BusCompany& bc) : data(bc), next(nullptr) {}
 };
 
 class BusCompaniesHashTable {
@@ -38,7 +38,7 @@ public:
         return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
     }
 
-    void insert(BusCompany bc) {
+    void insert(const BusCompany& bc) {
         int index = hash(bc.companyName);
         BusCompaniesNode* newNode = new BusCompaniesNode(bc);
 

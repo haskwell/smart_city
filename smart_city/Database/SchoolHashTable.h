@@ -7,7 +7,7 @@ class SchoolNode {
 public:
     School data;
     SchoolNode* next;
-    SchoolNode(School s) : data(s), next(nullptr) {}
+    SchoolNode(const School& s) : data(s), next(nullptr) {}
 };
 
 class SchoolHashTable {
@@ -27,7 +27,7 @@ public:
         return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
     }
 
-    void insert(School school) {
+    void insert(const School& school) {
         int index = hash(school.schoolID);
         SchoolNode* newNode = new SchoolNode(school);
         if (!table[index]) table[index] = newNode;

@@ -8,7 +8,7 @@ public:
     Bus data;
     BusNode* next;
 
-    BusNode(Bus b) : data(b), next(nullptr) {}
+    BusNode(const Bus& b) : data(b), next(nullptr) {}
 };
 
 class BusHashTable {
@@ -37,7 +37,7 @@ public:
         return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
     }
 
-    void insert(Bus b) {
+    void insert(const Bus& b) {
         int index = hash(b.busNum);
         BusNode* newNode = new BusNode(b);
 
