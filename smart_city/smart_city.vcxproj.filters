@@ -77,9 +77,6 @@
     <ClInclude Include="Transport\Bus.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="Transport\BusHashTable.h">
-      <Filter>Header Files\Transport</Filter>
-    </ClInclude>
     <ClInclude Include="Transport\BusRouteList.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
@@ -94,9 +91,6 @@
     </ClInclude>
     <ClInclude Include="Transport\TransportSystem.h">
       <Filter>Header Files\Transport</Filter>
-    </ClInclude>
-    <ClInclude Include="Education\SchoolGraph.h">
-      <Filter>Header Files\Education</Filter>
     </ClInclude>
     <ClInclude Include="Transport\BusMinHeap.h">
       <Filter>Header Files\Transport</Filter>
@@ -146,20 +140,29 @@
     <ClInclude Include="Database\Database.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="HospitalHashTable.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Database\BusCompaniesHashTable.h">
+      <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="PharmacyHashTable.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Database\BusHashTable.h">
+      <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="BusHashTable.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Database\BusStopHashTable.h">
+      <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="PeopleHashTable.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Database\HospitalHashTable.h">
+      <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="SchoolHashTable.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Database\PeopleHashTable.h">
+      <Filter>Header Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\PharmacyHashTable.h">
+      <Filter>Header Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\SchoolHashTable.h">
+      <Filter>Header Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Population\CityHierarchy.h">
+      <Filter>Header Files\Population</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
