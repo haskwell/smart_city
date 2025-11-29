@@ -6,6 +6,7 @@
 #include "../Commercial/MallSystem.h"
 #include "../Population/PopulationSystem.h"
 #include "../Public/FacilitySystem.h"
+#include "../Database/Database.h"
 using namespace std;
 
 class SmartCity {
@@ -16,6 +17,8 @@ class SmartCity {
     MallSystem commercial;
     PopulationSystem population;
     PublicSystem publicServices;
+
+	Database db;
 
 public:
     SmartCity() {};

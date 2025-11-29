@@ -102,7 +102,7 @@ private:
 
 public:
 
-        void printMenu(string s[], int len) {
+    void printMenu(string s[], int len) {
         for (int i = 0; i < len; i++) {
             cout << s[i] << '\n';
         }
