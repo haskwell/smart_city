@@ -1,5 +1,5 @@
 #pragma once
-#include <iostream>
+#include <string>
 #include"../Database/database.h"
 #include "../SmartCity/CityLogger.h"
 using namespace std;
@@ -18,64 +18,119 @@ private:
         db->people.insert(p);
 	}
 
+    Person* searchPersonByCNIC(const string& cnic) {
+        if (!db) return nullptr;
+        return db->people.search(cnic);
+	}
+
+    void pressEnterToContinue() {
+        logger->Prompt("Press Enter to continue...");
+        cin.ignore();
+    }
+
+    void cls() {
+        cout << "\033[2J\033[H";
+    }
+
 public:
 	PopulationSystem(Database* database, CityLogger* log) : db(database), logger(log) {}
 
     void addPeopleHandler() {
-        cout << "\n----------------------------------------\n";
-        cout << "      ADD NEW PERSON\n";
-        cout << "----------------------------------------\n";
+        cls();
+        logger->Title("ADD NEW PERSON");
 
-        string name, CNIC, street, sector, occupation;
+        string name, CNIC, street, sector, occupation, specialization;
         int age, houseNo;
         char gender;
 
-        cout << "Enter Name: ";
-        cin.ignore();
+        logger->Prompt("Enter Name: ");
         getline(cin, name);
 
-        cout << "Enter Age: ";
+        logger->Prompt("Enter Age: ");
         cin >> age;
 
-        cout << "Enter Gender (M/F): ";
+        logger->Prompt("Enter Gender (M/F): ");
         cin >> gender;
-
-        cout << "Enter CNIC: ";
         cin.ignore();
+
+        logger->Prompt("Enter CNIC: ");
         getline(cin, CNIC);
 
-        cout << "Enter Street: ";
+        logger->Prompt("Enter Street: ");
         getline(cin, street);
 
-        cout << "Enter Sector: ";
+        logger->Prompt("Enter Sector: ");
         getline(cin, sector);
 
-        cout << "Enter House Number: ";
+        logger->Prompt("Enter House Number: ");
         cin >> houseNo;
-
-        cout << "Enter Occupation: ";
         cin.ignore();
+
+        logger->Prompt("Enter Occupation: ");
         getline(cin, occupation);
 
-        if (occupation == "doctor") {
-            string specialization;
-			cout << "Enter Specialization: ";
-            cin.ignore();
-			Doctor* newDoctor = new Doctor(name, age, gender, CNIC, street, houseNo, occupation, sector, specialization);
-			addPerson(newDoctor);
-        }
-        else{
-            Person* newPerson = new Person(name, age, gender, CNIC, street, houseNo, occupation, sector);
-            addPerson(newPerson);
+        if (db->people.search(CNIC)) {
+            logger->Warning("Person with CNIC '" + CNIC + "' already exists in the population!");
+            pressEnterToContinue();
+            return;
         }
 
-        cout << "\nPerson added successfully!\n";
-        cout << "----------------------------------------\n";
+        Person* newPerson = nullptr;
+
+        if (occupation == "doctor" || occupation == "Doctor" || occupation == "DOCTOR") {
+            logger->Prompt("Enter Doctor Specialization: ");
+            getline(cin, specialization);
+
+            newPerson = new Doctor(name, age, gender, CNIC, street, houseNo, occupation, sector, specialization);
+            logger->Ok("Doctor '" + name + "' registered with specialization: " + specialization);
+        }
+        else {
+            newPerson = new Person(name, age, gender, CNIC, street, houseNo, occupation, sector);
+            logger->Ok("Person '" + name + "' added to population as '" + occupation + "'");
+        }
+
+        db->people.insert(newPerson);
+
+        pressEnterToContinue();
     }
 
-
     void searchByCNICHandler() {
-        cout << ">>> Search by CNIC - Not implemented yet\n\n";
+        cls();
+        logger->Title("SEARCH PERSON BY CNIC");
+
+        string cnic;
+        logger->Prompt("Enter CNIC to search: ");
+        getline(cin, cnic);
+
+        Person* person = db->people.search(cnic);
+
+        if(!person) {
+            logger->Warning("No person found with CNIC: " + cnic);
+			pressEnterToContinue();
+			return;
+        }
+        
+        if (person->occupation == "doctor" || person->occupation == "Doctor" || person->occupation == "DOCTOR") {
+            Doctor* doc = dynamic_cast<Doctor*>(person);
+            logger->Ok("Person Found!");
+            logger->Info("Name           : " + person->name);
+            logger->Info("CNIC           : " + person->CNIC);
+            logger->Info("Age            : " + to_string(person->age));
+            logger->Info("Gender         : " + string(1, person->gender));
+            logger->Info("Occupation     : " + person->occupation);
+            logger->Info("Address        : House #" + to_string(person->houseNo) + ", " + person->street + ", " + person->sector);
+            logger->Info("Specialization : " + doc->specialization);
+        }
+        else {
+			logger->Ok("Person Found!");
+            logger->Info("Name         : " + person->name);
+            logger->Info("CNIC         : " + person->CNIC);
+            logger->Info("Age          : " + to_string(person->age));
+            logger->Info("Gender       : " + string(1, person->gender));
+            logger->Info("Occupation   : " + person->occupation);
+            logger->Info("Address      : House #" + to_string(person->houseNo) + ", " + person->street + ", " + person->sector);
+        }
+        pressEnterToContinue();
     }
 
     void generateReportHandler() {
