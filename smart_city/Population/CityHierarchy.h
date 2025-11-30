@@ -53,7 +53,6 @@ class CityHierarchy {
 			curr->nextSector = toAdd;
 		}
 
-
 		Sector* searchSector(string name)
 		{
 			Sector* curr = nullptr;
@@ -231,6 +230,35 @@ class CityHierarchy {
 			return;
 		}
 
+		Street* getStreet(string sectorName, string streetName)
+		{
+			Sector* currSector = searchSector(sectorName);
+			if (!currSector)
+			{
+				return nullptr;
+			}
+			Street* currStreet = currSector->searchStreet(streetName);
+			if (!currStreet)
+			{
+				return nullptr;
+			}
+			return currStreet;
+		}
+
+		House* getHouse(string sectorName, string streetName, int houseNo)
+		{
+			Street* currStreet = getStreet(sectorName, streetName);
+			if (!currStreet)
+			{
+				return nullptr;
+			}
+			House* currHouse = currStreet->searchHouse(houseNo);
+			if (!currHouse)
+			{
+				return nullptr;
+			}
+			return currHouse;
+		}
 
 		void printHierarchy()
 		{

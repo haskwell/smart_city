@@ -223,4 +223,149 @@ public:
         cityHierarchy.printHierarchy();
 		pressEnterToContinue();
     }
+
+    void searchHouseHandler() {
+        logger->Title("SEARCH HOUSE");
+        logger->Prompt("Enter Sector: ");
+        string sectorName;
+        getline(cin, sectorName);
+
+        logger->Prompt("Enter Street: ");
+        string streetName;
+        getline(cin, streetName);
+
+        logger->Prompt("Enter House Number: ");
+        int houseNo;
+        cin >> houseNo;
+        cin.ignore(); // consume leftover newline
+
+        House* house = cityHierarchy.getHouse(sectorName, streetName, houseNo);
+        if (!house) {
+            logger->Warning("House not found");
+            pressEnterToContinue();
+            return;
+        }
+
+        logger->Ok("House found in city hierarchy");
+        logger->Info("Sector name: " + sectorName);
+        logger->Info("Street name: " + streetName);
+        logger->Info("House number: " + to_string(houseNo));
+
+        Person* currPerson = house->occupants;
+        if (!currPerson) {
+            logger->Info("   (No occupants in this house)");
+        }
+        else {
+            while (currPerson) {
+                logger->Info("   Name: " + currPerson->name);
+                logger->Info("   Age: " + to_string(currPerson->age));
+                logger->Info("   Gender: " + string(1, currPerson->gender));
+                logger->Info("   CNIC: " + currPerson->CNIC);
+                logger->Info("   Occupation: " + currPerson->occupation);
+                logger->Info("----------------------");
+                currPerson = currPerson->next;
+            }
+        }
+        pressEnterToContinue();
+    }
+
+
+    void searchStreetHandler() {
+        logger->Title("SEARCH STREET");
+        logger->Prompt("Enter Sector Name: ");
+        string sectorName;
+        getline(cin, sectorName);
+
+        Sector* sector = cityHierarchy.searchSector(sectorName);
+        if (!sector) {
+            logger->Warning("Sector '" + sectorName + "' not found.");
+            pressEnterToContinue();
+            return;
+        }
+
+        logger->Prompt("Enter Street Name: ");
+        string streetName;
+        getline(cin, streetName);
+
+        Street* street = sector->searchStreet(streetName);
+        if (!street) {
+            logger->Warning("Street '" + streetName + "' not found in sector '" + sectorName + "'.");
+            pressEnterToContinue();
+            return;
+        }
+
+        logger->Ok("Street found in sector");
+        logger->Info("Street Name: " + street->name);
+
+        House* currHouse = street->houses;
+        if (!currHouse) {
+            logger->Info("   (No houses in this street)");
+        }
+        else {
+            while (currHouse) {
+                logger->Info("   House No: " + to_string(currHouse->houseNo));
+                Person* currPerson = currHouse->occupants;
+                if (!currPerson) {
+                    logger->Info("      (No occupants in this house)");
+                }
+                else {
+                    while (currPerson) {
+                        logger->Info("      Name: " + currPerson->name);
+                        currPerson = currPerson->next;
+                    }
+                }
+                currHouse = currHouse->nextHouse;
+            }
+        }
+        pressEnterToContinue();
+    }
+
+    void searchSectorHandler() {
+        logger->Title("SEARCH SECTOR");
+        logger->Prompt("Enter Sector Name: ");
+        string sectorName;
+        getline(cin, sectorName);
+
+        Sector* sector = cityHierarchy.searchSector(sectorName);
+        if (!sector) {
+            logger->Warning("Sector '" + sectorName + "' not found in the city hierarchy.");
+            pressEnterToContinue();
+            return;
+        }
+
+        logger->Ok("Sector '" + sectorName + "' found.");
+        logger->Info("Sector Name: " + sector->name);
+
+        Street* currStreet = sector->streets;
+        if (!currStreet) {
+            logger->Info("   (No streets in this sector)");
+        }
+        else {
+            while (currStreet) {
+                logger->Info("   Street: " + currStreet->name);
+                House* currHouse = currStreet->houses;
+                if (!currHouse) {
+                    logger->Info("      (No houses in this street)");
+                }
+                else {
+                    while (currHouse) {
+                        logger->Info("      House No: " + to_string(currHouse->houseNo));
+                        Person* currPerson = currHouse->occupants;
+                        if (!currPerson) {
+                            logger->Info("         (No occupants)");
+                        }
+                        else {
+                            while (currPerson) {
+                                logger->Info("         Name: " + currPerson->name);
+                                currPerson = currPerson->next;
+                            }
+                        }
+                        currHouse = currHouse->nextHouse;
+                    }
+                }
+                currStreet = currStreet->nextStreet;
+            }
+        }
+        pressEnterToContinue();
+    }
 };
