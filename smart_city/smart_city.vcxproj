@@ -128,13 +128,14 @@
   <ItemGroup>
     <ClInclude Include="Commercial\MallEntities.h" />
     <ClInclude Include="Commercial\MallGraph.h" />
-    <ClInclude Include="Commercial\MallHashTable.h" />
+    <ClInclude Include="Commercial\ProductHashTable.h" />
     <ClInclude Include="Commercial\MallSystem.h" />
     <ClInclude Include="Database\BusCompaniesHashTable.h" />
     <ClInclude Include="Database\BusHashTable.h" />
     <ClInclude Include="Database\BusStopHashTable.h" />
     <ClInclude Include="Database\Database.h" />
     <ClInclude Include="Database\HospitalHashTable.h" />
+    <ClInclude Include="Database\MallHashTable.h" />
     <ClInclude Include="Database\PeopleHashTable.h" />
     <ClInclude Include="Database\PharmacyHashTable.h" />
     <ClInclude Include="Database\SchoolHashTable.h" />

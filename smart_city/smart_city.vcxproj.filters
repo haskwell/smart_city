@@ -47,7 +47,7 @@
     <ClInclude Include="Commercial\MallGraph.h">
       <Filter>Header Files\Commercial</Filter>
     </ClInclude>
-    <ClInclude Include="Commercial\MallHashTable.h">
+    <ClInclude Include="Commercial\ProductHashTable.h">
       <Filter>Header Files\Commercial</Filter>
     </ClInclude>
     <ClInclude Include="Commercial\MallSystem.h">
@@ -166,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="SmartCity\CityLogger.h">
       <Filter>Header Files\SmartCity</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\MallHashTable.h">
+      <Filter>Header Files\Database</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
