@@ -126,11 +126,59 @@ class CityHierarchy {
 			currStreet->insertHouse(house);
 		}
 
+		void addPerson(Person* toAdd)
+		{
+			//dest=destination
+			Sector* destSector = searchSector(toAdd->sector);
+			Street* destStreet = nullptr;
+			House* destHouse = nullptr;
+			if (!destSector)
+			{ 
+				destSector = new Sector();
+				destSector->name = toAdd->name;
+				destStreet = new Street();
+				destStreet->name = toAdd->name;
+				destHouse = new House();
+				destHouse->houseNo = toAdd->houseNo;
+				destHouse->insertOccupant(toAdd);
+				destStreet->insertHouse(destHouse);
+				destSector->insertStreet(destStreet);
+				return;
+			}
+			
+			destStreet = destSector->searchStreet(toAdd->street);
+			if (!destStreet)
+			{
+				destStreet = new Street();
+				destStreet->name = toAdd->name;
+				destHouse = new House();
+				destHouse->houseNo = toAdd->houseNo;
+				destHouse->insertOccupant(toAdd);
+				destStreet->insertHouse(destHouse);
+				destSector->insertStreet(destStreet);
+				return;
+			}
+
+			destHouse = destStreet->searchHouse(toAdd->houseNo);
+			if (!destHouse)
+			{
+				destHouse = new House();
+				destHouse->houseNo = toAdd->houseNo;
+				destHouse->insertOccupant(toAdd);
+				destStreet->insertHouse(destHouse);
+				destSector->insertStreet(destStreet);
+				return;
+			}
+
+			destHouse->insertOccupant(toAdd);
+	
+		}
 		//takes sectorName, streetNAme, HouseName finds them, takes in a PERSON POINTER, adds that to them
 		void addPerson(string sectorName, string streetName, int houseNo, Person* toAdd)
 		{
+			
 			Sector* currSector = searchSector(sectorName);
-
+			
 			if (!currSector)
 			{
 				cout << "\033[33mThis Sector Doesn't Exist!\033[0m\n";
@@ -154,9 +202,7 @@ class CityHierarchy {
 			}
 
 			currHouse->insertOccupant(toAdd);
-			toAdd->houseNo = houseNo;
-			toAdd->street = streetName;
-			toAdd->sector = sectorName;
+
 			return;
 		}
 };

@@ -120,8 +120,7 @@ public:
         string n = "",
         string sec = "",
         float r = 0.0,
-        int subCount = 0
-    )
+        int subCount = 0)
         : schoolID(id),
         schoolName(n),
         sector(sec),
@@ -131,49 +130,124 @@ public:
     {
         if (maxSubject > 0) {
             subjects = new string[maxSubject];
-            for (int i = 0; i < maxSubject; i++) {
+            for (int i = 0; i < maxSubject; i++)
                 subjects[i] = "";
-            }
         }
         else {
             subjects = nullptr;
         }
     }
-    //takes in department object pointer, adds to linkedList starting from departmentHead
-    void insertDepartment(Department* toAdd)
+
+    // =====================================================
+    // Add Department
+    // =====================================================
+    void addDepartment(string name)
     {
-        if (!departmentHead)
-        {
-            departmentHead = toAdd;
+        Department* d = new Department;
+
+        d->departmentName = name;
+
+        if (!departmentHead) {
+            departmentHead = d;
             return;
         }
 
-        Department* currDepartment = departmentHead;
+        Department* curr = departmentHead;
+        while (curr->nextDepartment)
+            curr = curr->nextDepartment;
 
-        while (currDepartment->nextDepartment)
-        {
-            currDepartment = currDepartment->nextDepartment;
-        }
-
-        currDepartment->nextDepartment = toAdd;
-        return;
+        curr->nextDepartment = d;
     }
-    //takes in department object pointer, searches it in linkedList starting from departmentHead, and returns;
-    Department* searchDepartment(string departmentName) {
-        Department* currDepartment = departmentHead;
 
-        while (currDepartment)
-        {
-            if (currDepartment->departmentName == departmentName)
-            {
-                return currDepartment;
-            }
-            currDepartment = currDepartment->nextDepartment;
+    // =====================================================
+    // Search Department
+    // =====================================================
+    Department* searchDepartment(string deptName)
+    {
+
+        Department* curr = departmentHead;
+        while (curr) {
+            if (curr->departmentName == deptName)
+                return curr;
+            curr = curr->nextDepartment;
         }
-
         return nullptr;
     }
 
+    // =====================================================
+    // Add Class to Department
+    // =====================================================
+    void addClass(string deptName, string className)
+    {
+        Department* dept = searchDepartment(deptName);
+        if (!dept) {
+            cout << "\033[31mDepartment doesn't exist!\033[0m\n";
+            return;
+        }
+
+        Class* cls = new Class;
+        cls->className = className;
+        dept->insertClass(cls);
+    }
+
+    Class* searchClass(string deptName, string className)
+    {
+        Department* dept = searchDepartment(deptName);
+        if (!dept) {
+            cout << "\033[31mDepartment doesn't exist!\033[0m\n";
+            return nullptr;
+        }
+
+        Class* cls = dept->searchClass(className);
+        return cls;
+    }
+
+    // =====================================================
+    // Add Student to Class
+    // =====================================================
+    void addStudent(string deptName, string className, Student* stu)
+    {
+        if (!stu) {
+            cout << "\033[31m[ERROR] Student pointer is NULL! Cannot add student.\033[0m\n";
+            return;
+        }
+
+        Class* cls = searchClass(deptName, className);
+        if (!cls) {
+            cout << "\033[31m[ERROR] Cannot add student. Class is NULL!\033[0m\n";
+            return;
+        }
+
+        cls->addStudent(stu);
+    }
+
+    // =====================================================
+    // Search Student across School
+    // =====================================================
+    Student* searchStudent(string studentName)
+    {
+        if (!departmentHead)
+        {
+            return nullptr;
+        }
+
+        Department* dept = departmentHead;
+        while (dept) 
+        {
+            Class* cls = dept->classHead;
+            while (cls) {
+                Student* stu = cls->searchStudent(studentName);
+                if (stu) return stu;
+                cls = cls->nextClass;
+            }
+            dept = dept->nextDepartment;
+        }
+        return nullptr;
+    }
+
+    // =====================================================
+    // Destructor
+    // =====================================================
     ~School() {
         if (subjects != nullptr) {
             delete[] subjects;
