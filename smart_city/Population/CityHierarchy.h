@@ -30,6 +30,30 @@ class CityHierarchy {
 			return;
 		}
 
+		void addSector(Sector* toAdd)
+		{
+			if (!toAdd) {
+				return;
+			}
+
+			toAdd->nextSector = nullptr;
+
+			if (!sectors)
+			{
+				sectors = toAdd;
+				return;
+			}
+
+			Sector* curr = sectors;
+			while (curr->nextSector)
+			{
+				curr = curr->nextSector;
+			}
+
+			curr->nextSector = toAdd;
+		}
+
+
 		Sector* searchSector(string name)
 		{
 			Sector* curr = nullptr;
@@ -132,17 +156,19 @@ class CityHierarchy {
 			Sector* destSector = searchSector(toAdd->sector);
 			Street* destStreet = nullptr;
 			House* destHouse = nullptr;
+
 			if (!destSector)
 			{ 
 				destSector = new Sector();
-				destSector->name = toAdd->name;
+				destSector->name = toAdd->sector;
 				destStreet = new Street();
-				destStreet->name = toAdd->name;
+				destStreet->name = toAdd->street;
 				destHouse = new House();
 				destHouse->houseNo = toAdd->houseNo;
 				destHouse->insertOccupant(toAdd);
 				destStreet->insertHouse(destHouse);
 				destSector->insertStreet(destStreet);
+				addSector(destSector);
 				return;
 			}
 			
@@ -150,7 +176,7 @@ class CityHierarchy {
 			if (!destStreet)
 			{
 				destStreet = new Street();
-				destStreet->name = toAdd->name;
+				destStreet->name = toAdd->street;
 				destHouse = new House();
 				destHouse->houseNo = toAdd->houseNo;
 				destHouse->insertOccupant(toAdd);
@@ -166,7 +192,6 @@ class CityHierarchy {
 				destHouse->houseNo = toAdd->houseNo;
 				destHouse->insertOccupant(toAdd);
 				destStreet->insertHouse(destHouse);
-				destSector->insertStreet(destStreet);
 				return;
 			}
 
@@ -205,4 +230,68 @@ class CityHierarchy {
 
 			return;
 		}
+
+
+		void printHierarchy()
+		{
+			if (!sectors)
+			{
+				cout << "\033[33mNo sectors exist in the hierarchy.\033[0m\n";
+				return;
+			}
+
+			Sector* currSector = sectors;
+
+			while (currSector)
+			{
+				cout << "Sector: " << currSector->name << "\n";
+
+				Street* currStreet = currSector->streets;
+				if (!currStreet)
+				{
+					cout << "   \033[33m(No streets in this sector)\033[0m\n";
+				}
+
+				while (currStreet)
+				{
+					cout << "   Street: " << currStreet->name << "\n";
+
+					House* currHouse = currStreet->houses;
+					if (!currHouse)
+					{
+						cout << "      \033[33m(No houses on this street)\033[0m\n";
+					}
+
+					while (currHouse)
+					{
+						cout << "      House No: " << currHouse->houseNo << "\n";
+
+						Person* currPerson = currHouse->occupants;
+						if (!currPerson)
+						{
+							cout << "         \033[33m(No occupants in this house)\033[0m\n";
+						}
+
+						while (currPerson)
+						{
+							cout << "         Person: " << currPerson->name
+								<< " | Age: " << currPerson->age
+								<< " | Gender: " << currPerson->gender
+								<< " | CNIC: " << currPerson->CNIC
+								<< "\n";
+
+							currPerson = currPerson->next;
+						}
+
+						currHouse = currHouse->nextHouse;
+					}
+
+					currStreet = currStreet->nextStreet;
+				}
+
+				currSector = currSector->nextSector;
+				cout << "-------------------------------------------------\n";
+			}
+		}
+
 };

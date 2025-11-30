@@ -9,6 +9,15 @@ class EducationSystem {
 private:
 	Database* db;
     CityLogger* logger;
+
+    void pressEnterToContinue() {
+        logger->Prompt("Press Enter to continue...");
+        cin.ignore();
+    }
+
+    void cls() {
+        cout << "\033[2J\033[H";
+    }
 public:
 	MaxHeap schoolMinHeap;
 
@@ -36,48 +45,51 @@ public:
         float rating;
         int numSubjects;
 
-        cout << "\n----------------------------------------\n";
-        cout << "      REGISTER NEW SCHOOL\n";
-        cout << "----------------------------------------\n";
+        cls();
 
-        cout << "Enter School ID: ";
+        logger->Title("REGISTER NEW SCHOOL");
+
+        logger->Prompt("Enter School ID: ");
         cin >> schoolID;
         cin.ignore();
 
-        cout << "Enter School Name: ";
+        logger->Prompt("Enter School Name: ");
         getline(cin, name);
 
-        cout << "Enter School Sector: ";
+        logger->Prompt("Enter School Sector: ");
         getline(cin, sector);
 
-        cout << "Enter School Rating (0.0 - 5.0): ";
+        logger->Prompt("Enter School Rating (0.0 - 5.0): ");
         cin >> rating;
 
-        cout << "Enter Number of Subjects Offered: ";
+        logger->Prompt("Enter Number of Subjects Offered: ");
         cin >> numSubjects;
         cin.ignore();
 
         // Create school object
         School* newSchool = new School(schoolID, name, sector, rating, numSubjects);
 
-        // Input subjects if any
+        // Input subjects
         if (numSubjects > 0) {
-            cout << "Enter the subjects:\n";
+            logger->Prompt("Enter the subjects:");
             for (int i = 0; i < numSubjects; i++) {
-                cout << "  " << (i + 1) << ". ";
+                logger->Prompt("  " + to_string(i + 1) + ". ");
                 getline(cin, newSchool->subjects[i]);
             }
         }
 
-        // Register the school (inserts into heap and DB)
+        // Register the school
         registerSchool(newSchool);
 
-        cout << "\n>>> Success: \"" << name << "\" has been registered.\n\n";
+        logger->Ok("\"" + name + "\" has been registered.");
+
+        pressEnterToContinue();
     }
 
 
+
     void addFacultyHandler() {
-        cout << ">>> Add Faculty - Not implemented yet\n\n";
+       
     }
 
     void addStudentsHandler() {

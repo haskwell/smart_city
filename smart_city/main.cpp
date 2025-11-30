@@ -2,14 +2,55 @@
 #include <ctime>
 
 void seed(SmartCity& city) {
-	//insert 1000 people into population with ages 0 to 100
-	for (int i = 1; i <= 1000; i++) {
+	int totalPeople = 50;
+	int peoplePerSector = 10;
+	int peoplePerHouse = 5;
+
+	int currentSector = 1;
+	int currentHouse = 1;
+	int countInSector = 0;
+	int countInHouse = 0;
+
+	for (int i = 1; i <= totalPeople; i++) {
+
+		string sectorName = "Sector " + to_string(currentSector);
+		string streetName = "Street " + to_string(currentHouse);
+		int houseNo = currentHouse;
+
 		string name = "Citizen " + to_string(i);
 		string cnic = "CIT" + to_string(i);
-		int age = rand() % 101; // age between 0 and 100
-		Person* person = new Person(name, age, (i % 2 == 0) ? 'M' : 'F', cnic, "Street " + to_string(i), i, "Citizen", "Sector " + to_string(i));
+		int age = rand() % 101;
+
+		Person* person = new Person(
+			name,
+			age,
+			(i % 2 == 0) ? 'M' : 'F',
+			cnic,
+			streetName,
+			houseNo,
+			"Citizen",
+			sectorName
+		);
+
 		city.db.people.insert(person);
+		city.population.cityHierarchy.addPerson(person);
+
+		countInHouse++;
+		countInSector++;
+
+		if (countInHouse == peoplePerHouse) {
+			currentHouse++;
+			countInHouse = 0;
+		}
+
+		if (countInSector == peoplePerSector) {
+			currentSector++;
+			currentHouse = 1;      // reset houses for new sector
+			countInSector = 0;
+		}
 	}
+
+
 	//insert 20 pharmacies
 	for (int i = 1; i <= 20; i++) {
 		string name = "Pharmacy " + to_string(i);
@@ -24,35 +65,35 @@ void seed(SmartCity& city) {
 			pharmacy->medicineTable.insert(med);
 		}
 	}
-	//insert 20 hospitals
-	for (int i = 1; i <= 20; i++) {
-		string name = "Hospital " + to_string(i);
-		string id = "HOSP" + to_string(i);
-		//random beds
-		int beds = 20 + (rand() % 30);
-		Hospital* hospital = new Hospital(name, id, beds, "Sector " + to_string(i), 5);
-		city.db.hospitals.insert(*hospital);
-		city.medical.emergencyBedHeap.insert(hospital->id, beds);
-	}
-	//insert 100 doctors into the population and assign to hospitals
-	for (int i = 1; i <= 100; i++) {
-		string name = "Doctor " + to_string(i);
-		string cnic = "DOC" + to_string(i);
-		Doctor* doctor = new Doctor(name, 40 + i, 'M', cnic, "Street " + to_string(i), i, "Doctor", "Sector " + to_string(i), "Specialization " + to_string(i));
-		city.db.people.insert(doctor);
-		string hospitalId = "HOSP" + to_string((i % 20) + 1);
-		Hospital* hospital = city.db.hospitals.search(hospitalId);
-		if (hospital) {
-			hospital->doctorsTable.insert(doctor);
-		}
-	}
+	////insert 20 hospitals
+	//for (int i = 1; i <= 20; i++) {
+	//	string name = "Hospital " + to_string(i);
+	//	string id = "HOSP" + to_string(i);
+	//	//random beds
+	//	int beds = 20 + (rand() % 30);
+	//	Hospital* hospital = new Hospital(name, id, beds, "Sector " + to_string(i), 5);
+	//	city.db.hospitals.insert(*hospital);
+	//	city.medical.emergencyBedHeap.insert(hospital->id, beds);
+	//}
+	////insert 100 doctors into the population and assign to hospitals
+	//for (int i = 1; i <= 100; i++) {
+	//	string name = "Doctor " + to_string(i);
+	//	string cnic = "DOC" + to_string(i);
+	//	Doctor* doctor = new Doctor(name, 40 + i, 'M', cnic, "Street " + to_string(i), i, "Doctor", "Sector " + to_string(i), "Specialization " + to_string(i));
+	//	city.db.people.insert(doctor);
+	//	string hospitalId = "HOSP" + to_string((i % 20) + 1);
+	//	Hospital* hospital = city.db.hospitals.search(hospitalId);
+	//	if (hospital) {
+	//		hospital->doctorsTable.insert(doctor);
+	//	}
+	//}
 
-	//insert ONE doctor into population and assign to hospital
-	Person* doctor = new Doctor("Dr. John Doe", 45, 'M', "DOC1001", "123 Main St", 1, "Doctor", "Sector 1", "Cardiology");
-	city.db.people.insert(doctor);
-	Hospital* hospital = new Hospital("City Hospital", "HOSPP1", 50, "Sector 1", 5);
-	city.db.hospitals.insert(*hospital);
-	hospital->doctorsTable.insert(dynamic_cast<Doctor*>(doctor));
+	////insert ONE doctor into population and assign to hospital
+	//Person* doctor = new Doctor("Dr. John Doe", 45, 'M', "DOC1001", "123 Main St", 1, "Doctor", "Sector 1", "Cardiology");
+	//city.db.people.insert(doctor);
+	//Hospital* hospital = new Hospital("City Hospital", "HOSPP1", 50, "Sector 1", 5);
+	//city.db.hospitals.insert(*hospital);
+	//hospital->doctorsTable.insert(dynamic_cast<Doctor*>(doctor));
 
 
 

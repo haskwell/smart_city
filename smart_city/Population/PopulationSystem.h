@@ -2,12 +2,14 @@
 #include <string>
 #include"../Database/database.h"
 #include "../SmartCity/CityLogger.h"
+#include "CityHierarchy.h"
 using namespace std;
 
 class PopulationSystem {
 private:
 	Database* db;
     CityLogger* logger;
+
 
     void addPerson(Person* p) {
         if (!db) return;
@@ -33,6 +35,7 @@ private:
     }
 
 public:
+    CityHierarchy cityHierarchy;
 	PopulationSystem(Database* database, CityLogger* log) : db(database), logger(log) {}
 
     void addPeopleHandler() {
@@ -90,7 +93,7 @@ public:
         }
 
         db->people.insert(newPerson);
-
+        cityHierarchy.addPerson(newPerson);
         pressEnterToContinue();
     }
 
@@ -205,17 +208,19 @@ public:
 
     void printAllPeople() {
         cls();
-        logger->Title("ALL PEOPLE IN POPULATION");
-        for (int i = 0; i < db->people.tableSize; i++) {
-            PersonNode* current = db->people.table[i];
-            while (current) {
-                Person* person = current->data;
-                logger->Info("Name       : " + person->name);
-                logger->Info("CNIC       : " + person->CNIC);
-                logger->Info("Age        : " + to_string(person->age));
-				current = current->next;
-            }
-        }
+    //    logger->Title("ALL PEOPLE IN POPULATION");
+    //    for (int i = 0; i < db->people.tableSize; i++) {
+    //        PersonNode* current = db->people.table[i];
+    //        while (current) {
+    //            Person* person = current->data;
+    //            logger->Info("Name       : " + person->name);
+    //            logger->Info("CNIC       : " + person->CNIC);
+    //            logger->Info("Age        : " + to_string(person->age));
+				//current = current->next;
+    //        }
+    //    }
+
+        cityHierarchy.printHierarchy();
 		pressEnterToContinue();
     }
 };
