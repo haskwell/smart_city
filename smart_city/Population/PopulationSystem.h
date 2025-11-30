@@ -206,23 +206,64 @@ public:
 
     }
 
-    void printAllPeople() {
+    void printHierarchyHandler() {
         cls();
-    //    logger->Title("ALL PEOPLE IN POPULATION");
-    //    for (int i = 0; i < db->people.tableSize; i++) {
-    //        PersonNode* current = db->people.table[i];
-    //        while (current) {
-    //            Person* person = current->data;
-    //            logger->Info("Name       : " + person->name);
-    //            logger->Info("CNIC       : " + person->CNIC);
-    //            logger->Info("Age        : " + to_string(person->age));
-				//current = current->next;
-    //        }
-    //    }
+        logger->Title("CITY HIERARCHY");
 
-        cityHierarchy.printHierarchy();
-		pressEnterToContinue();
+        if (!cityHierarchy.sectors) {
+            logger->Info("No sectors exist in the hierarchy.");
+            pressEnterToContinue();
+            return;
+        }
+
+        Sector* currSector = cityHierarchy.sectors;
+
+        while (currSector) {
+            logger->Info("Sector: " + currSector->name);
+
+            Street* currStreet = currSector->streets;
+            if (!currStreet) {
+                logger->Info("   (No streets in this sector)");
+            }
+
+            while (currStreet) {
+                logger->Info("   Street: " + currStreet->name);
+
+                House* currHouse = currStreet->houses;
+                if (!currHouse) {
+                    logger->Info("      (No houses on this street)");
+                }
+
+                while (currHouse) {
+                    logger->Info("      House No: " + to_string(currHouse->houseNo));
+
+                    Person* currPerson = currHouse->occupants;
+                    if (!currPerson) {
+                        logger->Info("         (No occupants in this house)");
+                    }
+
+                    while (currPerson) {
+                        logger->Info("         Person: " + currPerson->name +
+                            " | Age: " + to_string(currPerson->age) +
+                            " | Gender: " + string(1, currPerson->gender) +
+                            " | CNIC: " + currPerson->CNIC +
+                            " | Occupation: " + currPerson->occupation);
+                        currPerson = currPerson->next;
+                    }
+
+                    currHouse = currHouse->nextHouse;
+                }
+
+                currStreet = currStreet->nextStreet;
+            }
+
+            currSector = currSector->nextSector;
+            logger->Info("-------------------------------------------------");
+        }
+
+        pressEnterToContinue();
     }
+
 
     void searchHouseHandler() {
         logger->Title("SEARCH HOUSE");

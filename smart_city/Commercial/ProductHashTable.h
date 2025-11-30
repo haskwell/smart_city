@@ -4,10 +4,10 @@ using namespace std;
 class Product {
 public:
     string name;
-    int price;
+    float price;
     string category;
 
-    Product(string n = "", int p = 0, string c = "")
+    Product(string n = "", float p = 0, string c = "")
         : name(n), price(p), category(c)
     {
     }

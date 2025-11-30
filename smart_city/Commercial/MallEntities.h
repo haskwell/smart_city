@@ -1,5 +1,5 @@
 #pragma once
-#include "MallHashTable.h"
+#include "ProductHashTable.h"
 
 class Mall {
 public:
