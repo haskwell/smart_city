@@ -45,4 +45,9 @@ public:
         cout << ">>> Find Nearest Mall - Not implemented yet\n\n";
         pressEnterToContinue();
     }
+
+    //print all malls
+
+    //print all items
+
 };
