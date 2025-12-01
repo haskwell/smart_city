@@ -36,16 +36,57 @@ public:
         }
     }
 
-    int hash(string busNo) { return 0; }
+    //Add products using hash table
+    int hash(string medCategory) {
+		int hashValue = 0;
+		int primeNumber = 17; // to reduce collisions
 
-    void insert(Product b) {}
+        for (int i = 0;  i < medCategory.length(); i++) {
+            hashValue = (hashValue * primeNumber + medCategory[i]) % tableSize;
+		}
 
-    Product* search(string busNo) { return 0; }
+		return hashValue;
+    }
+
+
+    void insert(Product product) {
+        int index = hash(product.name);
+		ProductNode* newNode = new ProductNode(product);
+        if (table[index] == nullptr) {
+            table[index] = newNode;
+        }
+        else {
+            ProductNode* current = table[index];
+            while (current->next) {
+                current = current->next;
+            }
+            current->next = newNode;
+		}
+    }
+
+    //Category-based product search 
+    Product* search(const string& product) {
+		int index = hash(product);
+        ProductNode* current = table[index];
+        while (current) {
+            if (current->data.name == product) {
+                return &current->data;
+            }
+            current = current->next;
+        }
+		return nullptr;
+
+    }
 
     ~ProductHashTable() {
         for (int i = 0; i < tableSize; i++) {
-            delete[]table[i];
+            ProductNode* current = table[i];
+            while (current != nullptr) {
+                ProductNode* prev = current;
+                current = current->next;
+                delete prev;
+            }
         }
-        delete[]table;
-    }
+        delete[] table;
+	}
 };
