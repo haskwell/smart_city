@@ -126,10 +126,9 @@ private:
             cChoice = menu.showCommercialMenu();
             switch (cChoice) {
             case 1: commercial.registerMallsHandler(); break;
-            case 2: commercial.registerShopsHandler(); break;
-            case 3: commercial.addItemsHandler(); break;
-            case 4: commercial.itemSearchHandler(); break;
-            case 5: commercial.findNearestMallHandler(); break;
+            case 2: commercial.addItemsHandler(); break;
+            case 3: commercial.itemSearchHandler(); break;
+            case 4: commercial.findNearestMallHandler(); break;
             }
         } while (cChoice != 0);
     }
