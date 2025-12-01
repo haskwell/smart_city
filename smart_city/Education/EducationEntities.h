@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "../Population/PopulationEntities.h"
+#include "../SmartCity/CityLogger.h"
 using namespace std;
 
 class Student : public Person {
@@ -20,6 +21,21 @@ public:
     {
     }
 };
+
+
+class Faculty : public Person {
+public:
+    string subject;
+    Faculty* nextFaculty;
+    Faculty(string n = "", int a = -99999, char g = 'M',
+        string cnic = "", string s = "", int house = 0, string o = "",
+        string sec = "", string subj = "")
+        : Person(n, a, g, cnic, s, house, o, sec), subject(subj), nextFaculty(nullptr) {
+    }
+
+    ~Faculty() override {}
+};
+
 
 class Class {
 public:
@@ -67,6 +83,7 @@ public:
 class Department {
 public:
     Class* classHead;
+    Faculty* facultyHead;
     Department* nextDepartment;
     string departmentName;
 
@@ -104,6 +121,32 @@ public:
         }
         return nullptr;
     }
+    void insertFaculty(Faculty* toAdd)
+    {
+        if (!facultyHead)
+        {
+            facultyHead = toAdd;
+            return;
+        }
+        Faculty* curr = facultyHead;
+        while (curr->nextFaculty)
+        {
+            curr = curr->nextFaculty;
+        }
+        curr->nextFaculty = toAdd;
+    }
+
+    Faculty* searchFaculty(string name) {
+        Faculty* curr = facultyHead;
+        while (curr)
+        {
+            if (curr->name == name) {
+                return curr;
+            }
+            curr = curr->nextFaculty;
+        }
+        return nullptr;
+    }
 };
 
 class School {
@@ -136,6 +179,26 @@ public:
         else {
             subjects = nullptr;
         }
+    }
+
+    int addStudent(Student* toAdd, string department, string classname)
+    {
+        Department* destDept = searchDepartment(department);
+
+        if (!destDept)
+        {
+            return -1;
+        }
+
+        Class* destClass = destDept->searchClass(classname);
+
+        if (!destClass)
+        {
+            return -2;
+        }
+
+        destClass->addStudent(toAdd);
+        return 0;
     }
 
     // =====================================================
@@ -180,7 +243,8 @@ public:
     void addClass(string deptName, string className)
     {
         Department* dept = searchDepartment(deptName);
-        if (!dept) {
+        if (!dept)
+        {
             cout << "\033[31mDepartment doesn't exist!\033[0m\n";
             return;
         }
@@ -232,7 +296,7 @@ public:
         }
 
         Department* dept = departmentHead;
-        while (dept) 
+        while (dept)
         {
             Class* cls = dept->classHead;
             while (cls) {
