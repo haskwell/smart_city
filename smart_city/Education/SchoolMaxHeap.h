@@ -66,9 +66,9 @@ public:
     int capacity;
     int size;
 
-    MaxHeap(){}
-
-    MaxHeap(int cap) : capacity(cap), size(0) {
+    MaxHeap(int cap = 10) {
+        size = 0;
+		capacity = cap;
         heapArray = new HeapNode * [capacity];
         for (int i = 0; i < capacity; i++) {
             heapArray[i] = nullptr;

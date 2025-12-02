@@ -30,7 +30,12 @@ public:
     }
     School* searchSchoolGraph(string name) {}
     School* searchSchoolSubjects(string subject) {}
-    void showRanking() {}
+
+    void showRanking() {
+        
+        
+        
+    }
 
     void registerSchoolsHandler() {
         string schoolID, name, sector;
