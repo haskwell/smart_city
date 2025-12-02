@@ -120,13 +120,15 @@ private:
         "\t0. Back"
     };
 
-    const string commercialMenu[8] = {
+    const string commercialMenu[9] = {
         "\t=== COMMERCIAL MODULE ===",
         "",
         "\t1. Register Malls",
         "\t2. Add Items to Shops",
         "\t3. Item Search (Category Based)",
         "\t4. Find Nearest Mall",
+        "\t5. List All Malls",
+        "\t6. List All Items",
         "\t0. Back"
     };
 
@@ -190,7 +192,7 @@ public:
     }
 
     int showCommercialMenu() {
-        return getMenuChoice(commercialMenu, 7);
+        return getMenuChoice(commercialMenu, 9);
     }
 
     int showPopulationMenu() {

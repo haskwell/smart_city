@@ -26,11 +26,6 @@ public:
     void registerSchool(const School* s) {
         if (!db) return;
 
-        // If the hash table is uninitialized, create it with default size 101
-        if (db->schools.tableSize == 0) {
-            db->schools = SchoolHashTable(101);
-        }
-
         db->schools.insert(*s);
     }
     School* searchSchoolGraph(string name) {}

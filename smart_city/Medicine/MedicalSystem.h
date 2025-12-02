@@ -35,10 +35,6 @@ public:
             delete h;
             return false;
         }
-        
-        if (db->hospitals.tableSize == 0) {
-            db->hospitals = HospitalHashTable(101);
-        }
 
         db->hospitals.insert(*h);
 		emergencyBedHeap.insert(h->id, h->emergencyBeds);
@@ -52,10 +48,6 @@ public:
             logger->Warning("Pharmacy with ID '" + p->id + "' already exists!");
             delete p;
             return false;
-        }
-        
-        if (db->pharmacies.tableSize == 0) {
-            db->pharmacies = PharmacyHashTable(101);
         }
 
         db->pharmacies.insert(*p);

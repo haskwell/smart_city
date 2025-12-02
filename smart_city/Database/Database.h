@@ -38,6 +38,10 @@ public:
         people.insert(person);
     }
 
+    void insertMall(Mall& mall) {
+        malls.insert(mall);
+    }
+
     // Return pointers so caller can check for nullptr
     Hospital* searchHospital(const string& hospitalID) {
         return hospitals.search(hospitalID);
@@ -53,5 +57,9 @@ public:
 
     Person* searchPerson(const string& personCNIC) {
         return people.search(personCNIC);
+    }
+
+    Mall* searchMall(const string& mallID) {
+        return malls.search(mallID);
     }
 };
