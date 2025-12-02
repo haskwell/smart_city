@@ -92,11 +92,6 @@ public:
         }
     }
 
-    string* getTop3()
-    {
-
-    }
-
     string getMax() const {
         if (size > 0) {
             return heapArray[0]->schoolID;
