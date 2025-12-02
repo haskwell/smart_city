@@ -26,24 +26,19 @@ public:
 
     bool addMall(Mall* mall)
     {
-        if (db != nullptr)
+        if (!db)
         {
             return false;
         }
 
-        if (db->malls.search(mall->mallId))
+        if (db->searchMall(mall->mallId))
         {
 			logger->Warning("Mall with ID '" + mall->mallId + "' already exists!");
             delete mall;
 			return false;
         }
 
-        if (db->malls.tableSize == 0)
-        {
-            db->malls = MallHashTable(101);
-		}
-
-        db->malls.insert(*mall);
+        db->insertMall(*mall);
         
 		return true;
     }
@@ -88,10 +83,6 @@ public:
             return false;
 		}
 
-        if (mall->productTable.tableSize == 0) {
-            mall->productTable.setUptable(101);
-        }
-
         if (mall->productTable.search(product.name)) {
             logger->Warning("Product with name '" + product.name + "' already exists in mall '" + mall->name + "'!");
             return false;
@@ -113,7 +104,7 @@ public:
 		cin >> mallID;
 		cin.ignore();
 
-		Mall* mall = db->malls.search(mallID);
+		Mall* mall = db->searchMall(mallID);
 
         if (mall == nullptr)
         {

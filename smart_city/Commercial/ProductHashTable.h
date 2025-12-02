@@ -26,9 +26,7 @@ public:
     ProductNode** table;
     int tableSize;
 
-    ProductHashTable() : table(nullptr), tableSize(0) {}
-
-    void setUptable(int size) {
+    ProductHashTable(int size = 10) {
         tableSize = size;
         table = new ProductNode * [tableSize];
         for (int i = 0; i < tableSize; i++) {

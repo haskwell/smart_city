@@ -10,13 +10,8 @@ private:
 	Database* db;
     CityLogger* logger;
 
-
     void addPerson(Person* p) {
         if (!db) return;
-        // If the hash table is uninitialized, create it with default size 101
-        if (db->people.tableSize == 0) {
-            db->people = PeopleHashTable(101);
-        }
         db->people.insert(p);
 	}
 

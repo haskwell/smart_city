@@ -129,6 +129,8 @@ private:
             case 2: commercial.addItemsHandler(); break;
             case 3: commercial.itemSearchHandler(); break;
             case 4: commercial.findNearestMallHandler(); break;
+            case 5: commercial.listAllMallsHandler(); break;
+            case 6: commercial.listAllItemsHandler(); break;
             }
         } while (cChoice != 0);
     }

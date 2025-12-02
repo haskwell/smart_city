@@ -2,69 +2,69 @@
 #include <ctime>
 
 void seed(SmartCity& city) {
-	int totalPeople = 50;
-	int peoplePerSector = 10;
-	int peoplePerHouse = 5;
+	//int totalPeople = 50;
+	//int peoplePerSector = 10;
+	//int peoplePerHouse = 5;
 
-	int currentSector = 1;
-	int currentHouse = 1;
-	int countInSector = 0;
-	int countInHouse = 0;
+	//int currentSector = 1;
+	//int currentHouse = 1;
+	//int countInSector = 0;
+	//int countInHouse = 0;
 
-	for (int i = 1; i <= totalPeople; i++) {
+	//for (int i = 1; i <= totalPeople; i++) {
 
-		string sectorName = "Sector " + to_string(currentSector);
-		string streetName = "Street " + to_string(currentHouse);
-		int houseNo = currentHouse;
+	//	string sectorName = "Sector " + to_string(currentSector);
+	//	string streetName = "Street " + to_string(currentHouse);
+	//	int houseNo = currentHouse;
 
-		string name = "Citizen " + to_string(i);
-		string cnic = "CIT" + to_string(i);
-		int age = rand() % 101;
+	//	string name = "Citizen " + to_string(i);
+	//	string cnic = "CIT" + to_string(i);
+	//	int age = rand() % 101;
 
-		Person* person = new Person(
-			name,
-			age,
-			(i % 2 == 0) ? 'M' : 'F',
-			cnic,
-			streetName,
-			houseNo,
-			"Citizen",
-			sectorName
-		);
+	//	Person* person = new Person(
+	//		name,
+	//		age,
+	//		(i % 2 == 0) ? 'M' : 'F',
+	//		cnic,
+	//		streetName,
+	//		houseNo,
+	//		"Citizen",
+	//		sectorName
+	//	);
 
-		city.db.people.insert(person);
-		city.population.cityHierarchy.addPerson(person);
+	//	city.db.people.insert(person);
+	//	city.population.cityHierarchy.addPerson(person);
 
-		countInHouse++;
-		countInSector++;
+	//	countInHouse++;
+	//	countInSector++;
 
-		if (countInHouse == peoplePerHouse) {
-			currentHouse++;
-			countInHouse = 0;
-		}
+	//	if (countInHouse == peoplePerHouse) {
+	//		currentHouse++;
+	//		countInHouse = 0;
+	//	}
 
-		if (countInSector == peoplePerSector) {
-			currentSector++;
-			currentHouse = 1;      // reset houses for new sector
-			countInSector = 0;
-		}
-	}
+	//	if (countInSector == peoplePerSector) {
+	//		currentSector++;
+	//		currentHouse = 1;      // reset houses for new sector
+	//		countInSector = 0;
+	//	}
+	//}
 
 
-	//insert 20 pharmacies
-	for (int i = 1; i <= 20; i++) {
-		string name = "Pharmacy " + to_string(i);
-		string id = "PHARM" + to_string(i);
-		Pharmacy* pharmacy = new Pharmacy(name, id, "Location " + to_string(i), 10);
-		city.db.pharmacies.insert(*pharmacy);
-		for (int j = 1; j <= 3; j++) {
-			string medName = "Medicine " + to_string(j);
-			string formula = "Formula " + to_string(j);
-			float price = 10.0f + j;
-			Medicine med(medName, formula, price);
-			pharmacy->medicineTable.insert(med);
-		}
-	}
+	////insert 20 pharmacies
+	//for (int i = 1; i <= 20; i++) {
+	//	string name = "Pharmacy " + to_string(i);
+	//	string id = "PHARM" + to_string(i);
+	//	Pharmacy* pharmacy = new Pharmacy(name, id, "Location " + to_string(i), 10);
+	//	city.db.pharmacies.insert(*pharmacy);
+	//	for (int j = 1; j <= 3; j++) {
+	//		string medName = "Medicine " + to_string(j);
+	//		string formula = "Formula " + to_string(j);
+	//		float price = 10.0f + j;
+	//		Medicine med(medName, formula, price);
+	//		pharmacy->medicineTable.insert(med);
+	//	}
+	//}
 	////insert 20 hospitals
 	//for (int i = 1; i <= 20; i++) {
 	//	string name = "Hospital " + to_string(i);
@@ -106,6 +106,25 @@ void seed(SmartCity& city) {
 	//pharmacy->medicineTable.insert(med1);
 	//pharmacy->medicineTable.insert(med2);
 	//pharmacy->medicineTable.insert(med3);
+
+	for (int i = 1; i <= 10; i++) {
+		string mallId = "MALL" + to_string(i);
+		string mallName = "Mall " + to_string(i);
+		string mallSector = "Sector " + to_string(i);
+
+		Mall* mall = new Mall(mallId, mallName, mallSector);
+		city.db.malls.insert(*mall);
+
+		for (int j = 1; j <= 100; j++) {
+			string itemName = "Item_" + to_string(i) + "_" + to_string(j);
+			string category = "Category_" + to_string((j % 5) + 1);
+			float price = (rand() % 900) + 100;
+
+			Product p(itemName, price, category);
+			mall->productTable.insert(p);
+		}
+	}
+
 }
 
 int main() {
