@@ -6,17 +6,56 @@ using namespace std;
 
 class HeapNode {
 public:
-    int ranking;
-    string schoolName;
-
-    HeapNode(int rank = 420, string school = "") : ranking(rank), schoolName(school) {}
+    float rating;
+    string schoolID;
+    HeapNode(int rank = 0, string school = "") : rating(rank), schoolID(school) {}
 };
 
 class MaxHeap {
 
-    void swap() {}
+    void swap(int i, int j) {
+        HeapNode* temp = heapArray[i];
+        heapArray[i] = heapArray[j];
+        heapArray[j] = temp;
+    }
 
-    void maxHeapify() {}
+    void maxHeapify(int i)
+    {
+        int l = leftChild(i);
+        int r = rightChild(i);
+        int largest = i;
+
+        if (l < size && heapArray[l]->rating > heapArray[largest]->rating) {
+            largest = l; 
+        }
+        if (r < size && heapArray[r]->rating > heapArray[largest]->rating) {
+            largest = r;
+        }
+
+        if (largest != i) {
+            swap(i, largest);
+            maxHeapify(largest);
+        }
+    }
+
+    void resize() {
+        int newCap = capacity * 2;
+        HeapNode** newArray = new HeapNode * [newCap];
+
+        for (int i = 0; i < newCap; ++i) {
+            newArray[i] = nullptr;
+        }
+
+        for (int i = 0; i < size; ++i) {
+            newArray[i] = heapArray[i];
+        }
+
+        delete[] heapArray;
+
+        heapArray = newArray;
+        capacity = newCap;
+    }
+
 
     int parent(int i) { return (i - 1) / 2; }
     int leftChild(int i) { return (2 * i + 1); }
@@ -36,19 +75,34 @@ public:
         }
     }
 
-    void insert(int stopId, int distance) {
+    void insert(string schoolId, float rating) {
+        if (size == capacity) {
+            resize();
+        }
+        size++;
+        int i = size - 1;
+        heapArray[i] = new HeapNode();
+        heapArray[i]->rating = rating;
+        heapArray[i]->rating = rating;
 
+
+        while (i != 0 && heapArray[parent(i)]->rating < heapArray[i]->rating) {
+            swap(i, parent(i));
+            i = parent(i);
+        }
     }
 
-    HeapNode* extractMin() {
-        return nullptr;
+    string getMax() const {
+        if (size > 0) {
+            return heapArray[0]->schoolID;
+        }
+        return "";
     }
-
     void decreaseKey(int stopId, int newDist) {
 
     }
 
-    bool isEmpty() {
+    bool isEmpty() const {
         return size == 0;
     }
 
