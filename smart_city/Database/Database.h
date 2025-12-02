@@ -3,6 +3,9 @@
 #include "PharmacyHashTable.h"
 #include "SchoolHashTable.h"
 #include "PeopleHashTable.h"
+#include"MallHashTable.h"
+//#include"ShopHashTable.h"
+
 #include <string>
 using namespace std;
 
@@ -12,6 +15,9 @@ public:
     PharmacyHashTable pharmacies;
     SchoolHashTable schools;
     PeopleHashTable people;
+
+    MallHashTable malls;
+	//ShopHashTable shops;
 
     Database() {}
     ~Database() {}

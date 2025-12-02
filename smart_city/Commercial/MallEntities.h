@@ -14,8 +14,8 @@ public:
 	{
 	}
 
-	void insertProduct(Product p){}
-	void searchProduct(Product p){}
-	void searchCategory(Product p, string category){}
+	//void insertProduct(Product p){}
+	//void searchProduct(Product p){}
+	//void searchCategory(Product p, string category){}
 
 };
