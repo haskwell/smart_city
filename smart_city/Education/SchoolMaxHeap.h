@@ -92,18 +92,57 @@ public:
         }
     }
 
+    string* getTop3()
+    {
+
+    }
+
     string getMax() const {
         if (size > 0) {
             return heapArray[0]->schoolID;
         }
         return "";
     }
-    void decreaseKey(int stopId, int newDist) {
-
-    }
 
     bool isEmpty() const {
         return size == 0;
+    }
+
+    string* getTop3()
+    {
+        string* result = new string[3];
+
+        if (size == 0) {
+            result[0] = result[1] = result[2] = "";
+            return result;
+        }
+
+        // Top 1 is always the root
+        result[0] = heapArray[0]->schoolID;
+
+        if (size == 1) {
+            result[1] = result[2] = "";
+            return result;
+        }
+
+        if (size == 2) {
+            result[1] = heapArray[1]->schoolID;
+            result[2] = "";
+            return result;
+        }
+
+        // size >= 3
+        // children of root = index 1 and index 2
+        if (heapArray[1]->rating >= heapArray[2]->rating) {
+            result[1] = heapArray[1]->schoolID;
+            result[2] = heapArray[2]->schoolID;
+        }
+        else {
+            result[1] = heapArray[2]->schoolID;
+            result[2] = heapArray[1]->schoolID;
+        }
+
+        return result;
     }
 
     // Destructor
