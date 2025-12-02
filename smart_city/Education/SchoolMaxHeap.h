@@ -8,7 +8,7 @@ class HeapNode {
 public:
     float rating;
     string schoolID;
-    HeapNode(int rank = 0, string school = "") : rating(rank), schoolName(school) {}
+    HeapNode(int rank = 0, string school = "") : rating(rank), schoolID(school) {}
 };
 
 class MaxHeap {
@@ -113,18 +113,4 @@ public:
         }
         delete[] heapArray;
     }
-};
-
-
-
-#pragma once
-#include<iostream>
-#include<string>
-using namespace std;
-
-class HospitalHeapNode {
-public:
-    string hospitalId;
-    int bedNumber;
-    HospitalHeapNode(string id, int bed) : hospitalId(id), bedNumber(bed) {}
 };
