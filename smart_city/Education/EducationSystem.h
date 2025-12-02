@@ -19,7 +19,7 @@ private:
         cout << "\033[2J\033[H";
     }
 public:
-    MaxHeap schoolMinHeap;
+    MaxHeap schoolMaxHeap;
 
     EducationSystem(Database* d = nullptr, CityLogger* log = nullptr) : db(d), logger(log) {}
 
@@ -32,10 +32,61 @@ public:
     School* searchSchoolSubjects(string subject) {}
 
     void showRanking() {
-        
-        
-        
+        string* top3 = nullptr;
+        top3 = schoolMaxHeap.getTop3();
+        logger->Title("Top 3 Schools by Rating");
+        for (int i = 0; i < 3; i++)
+        {
+            if (top3[i] == "")
+            {
+                continue;
+            }
+
+            School* tempSchool = db->searchSchool(top3[i]);
+            if (tempSchool)
+            {
+                displaySchoolInfo(tempSchool);
+            }
+            cout << "\n\n";
+        }
     }
+
+    void displaySchoolInfo(School* tempSchool) {
+        if (!tempSchool) {
+            logger->Error("Null School Pointer!");
+            return;
+        }
+        logger->Info("School ID: " + tempSchool->schoolID);
+        logger->Info("School Name: " + tempSchool->schoolName);
+        logger->Info("Sector: " + tempSchool->sector);
+        logger->Info("Rating: " + to_string(tempSchool->rating));
+        logger->Info("Max Subjects: " + to_string(tempSchool->maxSubject));
+
+        // Subjects
+        if (tempSchool->subjects && tempSchool->maxSubject > 0) {
+            logger->Info("Subjects Offered:");
+            for (int i = 0; i < tempSchool->maxSubject; i++) {
+                logger->Info("  - " + tempSchool->subjects[i]);
+            }
+        }
+        else {
+            logger->Warning("No Subjects Listed");
+        }
+
+        // Departments
+        if (!tempSchool->departmentHead) {
+            logger->Warning("No Departments Added Yet");
+        }
+        else {
+            logger->Info("Departments:");
+            Department* curr = tempSchool->departmentHead;
+            while (curr) {
+                logger->Info("  - " + curr->departmentName);
+                curr = curr->nextDepartment;
+            }
+        }
+    }
+
 
     void registerSchoolsHandler() {
         string schoolID, name, sector;
@@ -77,7 +128,7 @@ public:
 
         // Register the school
         registerSchool(newSchool);
-
+        schoolMaxHeap.insert(newSchool->schoolID, newSchool->rating);
         logger->Ok("\"" + name + "\" has been registered.");
 
         pressEnterToContinue();
