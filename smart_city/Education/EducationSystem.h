@@ -82,11 +82,36 @@ public:
             Department* curr = tempSchool->departmentHead;
             while (curr) {
                 logger->Info("  - " + curr->departmentName);
+				// Classes in Department
+                if (curr->classHead) {
+                    logger->Info("    Classes:");
+                    Class* classCurr = curr->classHead;
+                    while (classCurr) {
+                        logger->Info("      * " + classCurr->className);
+                        
+						//students in class
+                        if (classCurr->Studenthead) {
+                            logger->Info("        Students:");
+                            Student* studentCurr = classCurr->Studenthead;
+                            while (studentCurr) {
+                                logger->Info("          - " + studentCurr->name + " (CNIC: " + studentCurr->CNIC + ")");
+                                studentCurr = studentCurr->nextStudent;
+                            }
+                        }
+                        else {
+                            logger->Warning("        No Students Added Yet");
+						}
+                        
+                        classCurr = classCurr->nextClass;
+                    }
+                }
+                else {
+                    logger->Warning("    No Classes Added Yet");
+                }
                 curr = curr->nextDepartment;
             }
         }
     }
-
 
     void registerSchoolsHandler() {
         string schoolID, name, sector;
@@ -235,6 +260,10 @@ public:
         }
 
         Student* toAdd = dynamic_cast<Student*>(basePerson);
+        if (!toAdd) {
+			logger->Error("Person with this CNIC is not a Student!");
+			return;
+        }
 
         logger->Prompt("Enter School ID: ");
         getline(cin, schoolId);
@@ -249,7 +278,6 @@ public:
 
         string deptName;
         logger->Prompt("Enter Department Name: ");
-        cin.ignore();
         getline(cin, deptName);
         if (deptName == "")
         {
@@ -302,7 +330,6 @@ public:
             logger->Error("Unknown Error Adding Student!");
         }
         pressEnterToContinue();
-        cls();
     }
     void addDepartmentHandler() {
         cls();
@@ -403,16 +430,13 @@ public:
         cout << ">>> Search School by Subject - Not implemented yet\n\n";
     }
 
-    void rankSchoolsHandler() {
-        cout << ">>> Rank Schools - Not implemented yet\n\n";
-    }
-
     void locateNearestSchoolHandler() {
         cout << ">>> Locate Nearest School - Not implemented yet\n\n";
     }
 
     void listAllSchoolsHandler()
     {
+        cls();
 		for (int i = 0; i < db->schools.tableSize; i++)
         {
             SchoolNode* tempSchool = db->schools.table[i];
@@ -422,5 +446,6 @@ public:
             }
             cout << "\n\n";
         }
+		pressEnterToContinue();
     }
 };
