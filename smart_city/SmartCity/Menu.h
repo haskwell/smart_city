@@ -150,6 +150,7 @@ private:
         "",
         "\t1. Add Utility",
         "\t2. Find Nearest Utility",
+        "\t3. List All Facilities",
         "\t0. Back"
     };
 

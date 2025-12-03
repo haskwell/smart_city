@@ -56,7 +56,9 @@ public:
         BusCompaniesNode* current = table[index];
 
         while (current) {
-            if (current->data.companyName == companyName) return &current->data;
+            if (current->data.companyName == companyName) {
+                return &current->data;
+            }
             current = current->next;
         }
 

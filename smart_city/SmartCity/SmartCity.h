@@ -116,6 +116,7 @@ private:
             switch (pChoice) {
             case 1: publicServices.addFacilityHandler(); break;
             case 2: publicServices.findNearestUtilityHandler(); break;
+            case 3: publicServices.listAllFacility(); break;
             }
         } while (pChoice != 0);
     }

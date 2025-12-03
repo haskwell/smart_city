@@ -1,9 +1,9 @@
 #pragma once
 #include <iostream>
-#include<string>
+#include <string>
 #include "../Database/Database.h"
 #include "../SmartCity/CityLogger.h"
-#include"FacilityEntities.h"
+#include "FacilityEntities.h"
 
 using namespace std;
 

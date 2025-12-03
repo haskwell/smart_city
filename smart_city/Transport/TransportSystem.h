@@ -9,8 +9,8 @@ private:
     void registerCompany(string companyName) {
         if (!db) return;
 
-        BusCompany newCompany(companyName);
-        db->busCompanies.insert(newCompany);
+        BusCompany* com = new BusCompany(companyName);
+        db->busCompanies.insert(*com);
         logger->Ok("Company '" + companyName + "' registered successfully.");
     }
 
