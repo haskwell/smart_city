@@ -134,6 +134,7 @@
     <ClInclude Include="Database\BusHashTable.h" />
     <ClInclude Include="Database\BusStopHashTable.h" />
     <ClInclude Include="Database\Database.h" />
+    <ClInclude Include="Database\FacilityHashTable.h" />
     <ClInclude Include="Database\HospitalHashTable.h" />
     <ClInclude Include="Database\MallHashTable.h" />
     <ClInclude Include="Database\PeopleHashTable.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Population\PopulationHashTable.h" />
     <ClInclude Include="Population\PopulationSystem.h" />
     <ClInclude Include="Population\PopulationTree.h" />
+    <ClInclude Include="Public\FacilityEntities.h" />
     <ClInclude Include="Public\FacilityGraph.h" />
     <ClInclude Include="Public\FacilitySystem.h" />
     <ClInclude Include="SmartCity\CityLogger.h" />

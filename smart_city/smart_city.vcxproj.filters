@@ -170,5 +170,11 @@
     <ClInclude Include="Database\MallHashTable.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
+    <ClInclude Include="Public\FacilityEntities.h">
+      <Filter>Header Files\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\FacilityHashTable.h">
+      <Filter>Header Files\Database</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

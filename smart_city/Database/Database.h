@@ -4,6 +4,8 @@
 #include "SchoolHashTable.h"
 #include "PeopleHashTable.h"
 #include"MallHashTable.h"
+#include"FacilityHashTable.h"
+
 //#include"ShopHashTable.h"
 
 #include <string>
@@ -17,7 +19,9 @@ public:
     PeopleHashTable people;
 
     MallHashTable malls;
-	//ShopHashTable shops;
+
+    FacilityHashTable facilities;
+    //ShopHashTable shops;
 
     Database() {}
     ~Database() {}
@@ -42,6 +46,11 @@ public:
         malls.insert(mall);
     }
 
+    void insertFacility(Facility& facility)
+    {
+        facilities.insert(facility);
+    }
+
     // Return pointers so caller can check for nullptr
     Hospital* searchHospital(const string& hospitalID) {
         return hospitals.search(hospitalID);
@@ -61,5 +70,10 @@ public:
 
     Mall* searchMall(const string& mallID) {
         return malls.search(mallID);
+    }
+
+    Facility* searchFacility(string& facilityId)
+    {
+        return facilities.search(facilityId);
     }
 };
