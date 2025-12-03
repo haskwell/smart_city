@@ -22,6 +22,18 @@ public:
 	virtual ~Person() {}
 };
 
+class BuildingNode {
+public:
+	string type;
+	string ID;
+	BuildingNode* nextBuilding;
+
+	BuildingNode(string t = "", string id = "") : type(t), ID(id), nextBuilding(nullptr) {}
+
+
+
+};
+
 class House {
 public:
 	int houseNo;
@@ -114,15 +126,87 @@ public:
 	string name;
 	Street* streets;
 	Sector* nextSector;
-	Sector(string n = "") : name(n), streets(nullptr), nextSector(nullptr) {}
-	
-	void insertStreet(Street* toAdd){
+	BuildingNode** buildings;
+	int totalBuildings;
+	int schoolIndex = 0;
+	int hospitalIndex = 1;
+	int busStopIndex = 2;
+	int publicFacilityIndex = 3;
+	int malls = 4;
 
+	string schoolTag = "school";
+	string hospitalTag = "hospital";
+	string puclicTag = "public";
+	string mallTag = "mall";
+	string busStopTag = "busStop";
+
+	Sector(string n = "") : name(n), streets(nullptr), nextSector(nullptr), totalBuildings(5) {
+		buildings = new BuildingNode * [5];
+		for (int i = 0; i < totalBuildings; i++)
+		{
+			buildings[i] = nullptr;
+		}
+	}
+
+	void insertBuilding(int index, string typeTag, string ID)
+	{
+		BuildingNode* head = buildings[index];
+
+		// First building
+		if (!head)
+		{
+			buildings[index] = new BuildingNode(typeTag, ID);
+			return;
+		}
+
+		BuildingNode* curr = head;
+
+
+		while (curr->nextBuilding)
+		{
+			if (curr->ID == ID)
+				return;
+
+			curr = curr->nextBuilding;
+		}
+
+
+		if (curr->ID == ID)
+			return;
+		curr->nextBuilding = new BuildingNode(typeTag, ID);
+	}
+
+	void insertSchool(string ID)
+	{
+		insertBuilding(schoolIndex, schoolTag, ID);
+	}
+
+	void insertHospital(string ID)
+	{
+		insertBuilding(hospitalIndex, hospitalTag, ID);
+	}
+
+	void insertBusStop(string ID)
+	{
+		insertBuilding(busStopIndex, busStopTag, ID);
+	}
+
+	void insertPublicFacility(string ID)
+	{
+		insertBuilding(publicFacilityIndex, puclicTag, ID);
+	}
+
+	void insertMall(string ID)
+	{
+		insertBuilding(malls, mallTag, ID);
+	}
+
+	void insertStreet(Street* toAdd) {
 		if (!streets)
 		{
 			streets = toAdd;
 			return;
-		}	
+		}
 
 		Street* curr = nullptr;
 		curr = streets;
@@ -135,7 +219,11 @@ public:
 		curr->nextStreet = toAdd;
 		return;
 	}
-	
+
+	void insertHospital()
+	{
+
+	}
 	Street* searchStreet(string name)
 	{
 		Street* curr = streets;
