@@ -36,7 +36,7 @@ public:
 
 	void addSector(Sector* toAdd)
 	{
-		if (searchSector(toAdd->name));
+		if (searchSector(toAdd->name))
 		{
 			return;
 		}
