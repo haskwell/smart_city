@@ -82,6 +82,14 @@ public:
             newPerson = new Doctor(name, age, gender, CNIC, street, houseNo, occupation, sector, specialization);
             logger->Ok("Doctor '" + name + "' registered with specialization: " + specialization);
         }
+        else if (occupation == "student" || occupation == "Student" || occupation == "STUDENT") {
+			newPerson = new Student(name, age, gender, CNIC, street, houseNo, occupation);
+			logger->Ok("Student '" + name + "' added to population.");
+        }
+        else if (occupation == "faculty" || occupation == "Faculty" || occupation == "FACULTY") {
+			newPerson = new Faculty(name, age, gender, CNIC, street, houseNo, occupation);
+			logger->Ok("Faculty '" + name + "' added to population.");
+        }
         else {
             newPerson = new Person(name, age, gender, CNIC, street, houseNo, occupation, sector);
             logger->Ok("Person '" + name + "' added to population as '" + occupation + "'");

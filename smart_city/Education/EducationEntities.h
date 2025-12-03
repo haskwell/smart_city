@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include "../Population/PopulationEntities.h"
-#include "../SmartCity/CityLogger.h"
 using namespace std;
 
 class Student : public Person {
@@ -87,7 +86,7 @@ public:
     Department* nextDepartment;
     string departmentName;
 
-    Department(string name = "") : nextDepartment(nullptr), classHead(nullptr), departmentName(name) {}
+    Department(string name = "") : facultyHead(nullptr), nextDepartment(nullptr), classHead(nullptr), departmentName(name) {}
 
     //Takes in class object pointer, adds it to LinkedList starting from classHead
     void insertClass(Class* toAdd) {

@@ -74,7 +74,7 @@ private:
         "\t0. Exit"
     };
 
-    const string transportMenu[10] = {
+    const string transportMenu[12] = {
         "\t=== TRANSPORT MODULE ===",
         "",
         "\t1. Register Company",
@@ -84,10 +84,12 @@ private:
         "\t5. Bus Simulation",
         "\t6. Find Shortest Path",
         "\t7. Get Bus Details",
+        "\t8. List All Companies",
+        "\t9. List All Bus Stops",
         "\t0. Back"
     };
 
-    const string educationMenu[11] = {
+    const string educationMenu[12] = {
         "\t=== EDUCATION MODULE ===",
         "",
         "\t1. Register Schools",
@@ -98,6 +100,7 @@ private:
         "\t6. Search School by Subject",
         "\t7. Rank Schools",
         "\t8. Locate Nearest School",
+        "\t9. List All Schools",
         "\t0. Back"
     };
 
@@ -181,11 +184,11 @@ public:
     }
 
     int showTransportMenu() {
-        return getMenuChoice(transportMenu, 10);
+        return getMenuChoice(transportMenu, 12);
     }
 
     int showEducationMenu() {
-        return getMenuChoice(educationMenu, 11);
+        return getMenuChoice(educationMenu, 12);
     }
 
     int showMedicineMenu() {

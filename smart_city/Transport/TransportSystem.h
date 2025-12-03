@@ -215,6 +215,47 @@ public:
         pressEnterToContinue();
     }
 
+    void listAllCompanies() {
+        cls();
+		for (int i = 0; i < db->busCompanies.tableSize; i++) {
+            BusCompaniesNode* current = db->busCompanies.table[i];
+            while (current) {
+                logger->Info("Company: " + current->data.companyName);
+				listAllBusesInCompany(current->data.companyName);
+                current = current->next;
+            }
+        }
+		pressEnterToContinue();
+    }
+
+    void listAllBusesInCompany(const string& companyName) {
+        BusCompany* company = db->busCompanies.search(companyName);
+        if (!company) {
+            logger->Error("Company '" + companyName + "' not found.");
+            return;
+        }
+        BusHashTable& busTable = company->busTable;
+        for (int i = 0; i < busTable.tableSize; i++) {
+            BusNode* current = busTable.table[i];
+            while (current) {
+                logger->Info("Bus Number: " + current->data->busNum);
+                current = current->next;
+            }
+        }
+    }
+
+    void listAllBusStops() {
+        cls();
+		for (int i = 0; i < db->busStops.tableSize; i++) {
+            BusStopNode* current = db->busStops.table[i];
+            while (current) {
+                logger->Info("Bus Stop ID: " + current->data.stopId + ", Name: " + current->data.name);
+                current = current->next;
+            }
+        }
+		pressEnterToContinue();
+    }
+
     void pressEnterToContinue() {
         logger->Prompt("Press Enter to continue...");
         cin.ignore();

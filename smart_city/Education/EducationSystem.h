@@ -155,7 +155,11 @@ public:
         }
 
         Faculty* facultyPtr = dynamic_cast<Faculty*>(basePerson);
-
+		if (!facultyPtr) {
+            logger->Warning("Person with this CNIC is not a Faculty member!");
+            pressEnterToContinue();
+            return;
+        }
 
         string schoolId;
         logger->Prompt("Enter School ID: ");
@@ -405,5 +409,18 @@ public:
 
     void locateNearestSchoolHandler() {
         cout << ">>> Locate Nearest School - Not implemented yet\n\n";
+    }
+
+    void listAllSchoolsHandler()
+    {
+		for (int i = 0; i < db->schools.tableSize; i++)
+        {
+            SchoolNode* tempSchool = db->schools.table[i];
+            if (tempSchool)
+            {
+				displaySchoolInfo(&tempSchool->data);
+            }
+            cout << "\n\n";
+        }
     }
 };

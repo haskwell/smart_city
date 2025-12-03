@@ -66,6 +66,8 @@ private:
             case 5: transport.busSimulation(); break;
             case 6: transport.shortestRouteHandler(); break;
             case 7: transport.searchBusHandler(); break;
+            case 8: transport.listAllCompanies(); break;
+            case 9: transport.listAllBusStops(); break;
             }
         } while (tChoice != 0);
     }
@@ -83,6 +85,7 @@ private:
             case 6: education.searchSchoolBySubjectHandler(); break;
             case 7: education.rankSchoolsHandler(); break;
             case 8: education.locateNearestSchoolHandler(); break;
+            case 9: education.listAllSchoolsHandler(); break;
             }
         } while (eChoice != 0);
     }
