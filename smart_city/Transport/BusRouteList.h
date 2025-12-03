@@ -1,11 +1,13 @@
 #pragma once
+#include <string>
+using namespace std;
 
 class RouteNode {
 public:
-	int stopId;
+	string stopId;
 	RouteNode* next;
 
-	RouteNode(int id): stopId(id), next(nullptr) {}
+	RouteNode(string id): stopId(id), next(nullptr) {}
 };
 
 class BusRouteList {

@@ -1,14 +1,14 @@
 #pragma once
-#include "../Transport/Bus.h"
+#include "Bus.h"
 #include <string>
 using namespace std;
 
 class BusNode {
 public:
-    Bus data;
+    Bus* data;
     BusNode* next;
-
-    BusNode(const Bus& b) : data(b), next(nullptr) {}
+    BusNode(Bus* p) : data(p), next(nullptr) {}
+    ~BusNode() { delete data; }
 };
 
 class BusHashTable {
@@ -16,57 +16,42 @@ public:
     BusNode** table;
     int tableSize;
 
-    // Constructor initializes the table directly
     BusHashTable(int size = 10) : tableSize(size) {
         table = new BusNode * [tableSize];
-        for (int i = 0; i < tableSize; i++) {
-            table[i] = nullptr;
-        }
+        for (int i = 0; i < tableSize; i++) table[i] = nullptr;
     }
 
-    long long hash(const string& busNo) {
-        if (tableSize == 0) return 0;
-
+    int hash(const string& cnic) {
         long long hashValue = 0;
-        int primeNumber = 17;
-
-        for (char c : busNo) {
-            hashValue = (hashValue * primeNumber + c) % tableSize;
-        }
-
+        int primeNumber = 31;
+        for (char c : cnic) hashValue = (hashValue * primeNumber + c) % tableSize;
         return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
     }
 
-    void insert(const Bus& b) {
-        int index = hash(b.busNum);
-        BusNode* newNode = new BusNode(b);
-
-        if (table[index] == nullptr) {
-            table[index] = newNode;
-        }
+    void insert(Bus* bus) {
+        int index = hash(bus->busNum);
+        BusNode* newNode = new BusNode(bus);
+        if (!table[index]) table[index] = newNode;
         else {
             BusNode* temp = table[index];
-            while (temp->next != nullptr) temp = temp->next;
+            while (temp->next) temp = temp->next;
             temp->next = newNode;
         }
     }
 
-    Bus* search(const string& busNo) {
-        int index = hash(busNo);
+    Bus* search(const string& num) {
+        int index = hash(num);
         BusNode* current = table[index];
-
         while (current) {
-            if (current->data.busNum == busNo) return &(current->data);
+            if (current->data->busNum == num) return current->data;
             current = current->next;
         }
         return nullptr;
     }
 
-    // Resize function: doubles table size and rehashes all elements
     void resize(int newSize) {
         BusNode** oldTable = table;
         int oldSize = tableSize;
-
         tableSize = newSize;
         table = new BusNode * [tableSize];
         for (int i = 0; i < tableSize; i++) table[i] = nullptr;
@@ -75,23 +60,22 @@ public:
             BusNode* current = oldTable[i];
             while (current) {
                 BusNode* nextNode = current->next;
-                int index = hash(current->data.busNum);
+                int index = hash(current->data->busNum);
                 current->next = table[index];
                 table[index] = current;
                 current = nextNode;
             }
         }
-
-        delete[] oldTable; // Only delete the old array, nodes are reused
+        delete[] oldTable;
     }
 
     ~BusHashTable() {
         for (int i = 0; i < tableSize; i++) {
             BusNode* current = table[i];
             while (current) {
-                BusNode* prev = current;
+                BusNode* toDelete = current;
                 current = current->next;
-                delete prev;
+                delete toDelete; // deletes Person* automatically via ~BusNode
             }
         }
         delete[] table;

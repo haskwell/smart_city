@@ -114,7 +114,7 @@ private:
         do {
             pChoice = menu.showPublicMenu();
             switch (pChoice) {
-            case 1: publicServices.addUtilityHandler(); break;
+            case 1: publicServices.addFacilityHandler(); break;
             case 2: publicServices.findNearestUtilityHandler(); break;
             }
         } while (pChoice != 0);

@@ -5,6 +5,8 @@
 #include "PeopleHashTable.h"
 #include"MallHashTable.h"
 #include"FacilityHashTable.h"
+#include "BusStopHashTable.h"
+#include "BusCompaniesHashTable.h"
 
 //#include"ShopHashTable.h"
 
@@ -22,6 +24,9 @@ public:
 
     FacilityHashTable facilities;
     //ShopHashTable shops;
+
+	BusCompaniesHashTable busCompanies;
+	BusStopHashTable busStops;
 
     Database() {}
     ~Database() {}
@@ -49,6 +54,11 @@ public:
     void insertFacility(Facility& facility)
     {
         facilities.insert(facility);
+    }
+
+    void insertBusCompany(BusCompany& company)
+    {
+        busCompanies.insert(company);
     }
 
     // Return pointers so caller can check for nullptr

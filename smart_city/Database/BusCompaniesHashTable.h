@@ -1,6 +1,5 @@
 #pragma once
-#include "../Transport/Bus.h"
-#include "BusHashTable.h"
+#include "../Transport/BusCompany.h"
 #include <string>
 using namespace std;
 
@@ -64,7 +63,7 @@ public:
         return nullptr;
     }
 
-    void insertBusToCompany(const string& companyName, Bus b) {
+    void insertBusToCompany(const string& companyName, Bus* b) {
         BusCompany* company = search(companyName);
         if (company) company->busTable.insert(b);
     }

@@ -143,9 +143,6 @@
     <ClInclude Include="Database\BusCompaniesHashTable.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="Database\BusHashTable.h">
-      <Filter>Header Files\Database</Filter>
-    </ClInclude>
     <ClInclude Include="Database\BusStopHashTable.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
@@ -175,6 +172,15 @@
     </ClInclude>
     <ClInclude Include="Database\FacilityHashTable.h">
       <Filter>Header Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\BusHashTable.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\BusCompany.h">
+      <Filter>Header Files\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\BusStop.h">
+      <Filter>Header Files\Transport</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
