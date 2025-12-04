@@ -6,8 +6,9 @@ class BusStop {
 	public:
 	string name;
 	string stopId;
-	float latitude;
-	float longitude;
-	BusStop() : name(""), stopId(""), latitude(0.0), longitude(0.0) {}
-	BusStop(string n, string id, float lat, float lon) : name(n), stopId(id), latitude(lat), longitude(lon) {}
+	string sector;
+	double latitude;
+	double longitude;
+	BusStop() : name(""), stopId(""), latitude(0.0), longitude(0.0), sector("") {}
+	BusStop(string n, string id, string sectorName, double lat, double lon) : name(n), stopId(id),sector(sectorName), latitude(lat), longitude(lon) {}
 };

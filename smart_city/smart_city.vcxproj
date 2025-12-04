@@ -162,6 +162,7 @@
     <ClInclude Include="SmartCity\CityLogger.h" />
     <ClInclude Include="SmartCity\Menu.h" />
     <ClInclude Include="SmartCity\SmartCity.h" />
+    <ClInclude Include="Testing.h" />
     <ClInclude Include="Transport\Bus.h" />
     <ClInclude Include="Transport\BusCompany.h" />
     <ClInclude Include="Transport\BusHashTable.h" />

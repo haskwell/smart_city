@@ -157,6 +157,8 @@ public:
     float rating;
     string sector;
     string schoolID;
+    double latitude;
+    double longitude;
 
     School(string id = 0,
         string n = "",
@@ -164,6 +166,8 @@ public:
         float r = 0.0,
         int subCount = 0)
         : schoolID(id),
+        latitude(0.0),
+        longitude(0.0),
         schoolName(n),
         sector(sec),
         rating(r),
