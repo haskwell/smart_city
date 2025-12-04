@@ -29,9 +29,6 @@ public:
 	BuildingNode* nextBuilding;
 
 	BuildingNode(string t = "", string id = "") : type(t), ID(id), nextBuilding(nullptr) {}
-
-
-
 };
 
 class House {
@@ -76,7 +73,6 @@ public:
 
 
 };
-
 
 class Street {
 public:
@@ -133,15 +129,17 @@ public:
 	int busStopIndex = 2;
 	int publicFacilityIndex = 3;
 	int malls = 4;
+	int pharmacyIndex = 5;
 
 	string schoolTag = "school";
 	string hospitalTag = "hospital";
 	string puclicTag = "public";
 	string mallTag = "mall";
 	string busStopTag = "busStop";
+	string pharmacyTag = "pharmacy";
 
-	Sector(string n = "") : name(n), streets(nullptr), nextSector(nullptr), totalBuildings(5) {
-		buildings = new BuildingNode * [5];
+	Sector(string n = "") : name(n), streets(nullptr), nextSector(nullptr), totalBuildings(6) {
+		buildings = new BuildingNode * [totalBuildings];
 		for (int i = 0; i < totalBuildings; i++)
 		{
 			buildings[i] = nullptr;
@@ -184,6 +182,11 @@ public:
 	void insertHospital(string ID)
 	{
 		insertBuilding(hospitalIndex, hospitalTag, ID);
+	}
+
+	void insertPharmacy(string ID)
+	{
+		insertBuilding(pharmacyIndex, pharmacyTag, ID);
 	}
 
 	void insertBusStop(string ID)

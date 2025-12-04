@@ -10,21 +10,21 @@ private:
         if (!db) return;
 
         BusCompany* com = new BusCompany(companyName);
-        db->busCompanies.insert(*com);
+        db->insertBusCompany(*com);
         logger->Ok("Company '" + companyName + "' registered successfully.");
     }
 
     void registerBus(string busNo, string companyName, string stopId) {
         if (!db) return;
 
-        BusCompany* company = db->busCompanies.search(companyName);
+		BusCompany* company = db->searchBusCompany(companyName);
         if (!company) {
             logger->Error("Company '" + companyName + "' not found.");
             return;
         }
 
         Bus* newBus = new Bus(busNo, companyName);
-        db->busCompanies.insertBusToCompany(companyName, newBus);
+        db->insertBusToCompany(companyName, newBus);
         logger->Ok("Bus '" + busNo + "' registered with company '" + companyName + "'.");
     }
 
@@ -32,34 +32,17 @@ private:
 
     }
 
-    void addBusStop(string name, string stopId, float lat, float lon) {
+    void addBusStop(string name, string stopId, string sector, float lat, float lon) {
         if (!db) return;
 
-        if (db->busStops.search(stopId)) {
+        if (db->searchBusStop(stopId)) {
             logger->Warning("Bus stop with ID " + stopId + " already exists!");
             return;
         }
 
-        BusStop* newStop = new BusStop(name, stopId, lat, lon);
-        db->busStops.insert(*newStop);
+        BusStop* newStop = new BusStop(name, stopId, sector, lat, lon);
+		db->insertBusStop(*newStop);
         logger->Ok("Bus stop '" + name + "' added successfully.");
-    }
-
-    void connectStops(int fromId, int toId, int distance) {
-
-
-    }
-
-    void shortestRoute(int startId, int endId) {
-
-    }
-
-    void addCompany(string name) {
-        if (!db) return;
-
-        BusCompany newCompany(name);
-        db->busCompanies.insert(newCompany);
-        logger->Ok("Company '" + name + "' added successfully.");
     }
 
 public:
@@ -74,7 +57,7 @@ public:
         logger->Prompt("Enter Company Name: ");
         getline(cin, companyName);
 
-        if (db->busCompanies.search(companyName)) {
+        if (db->searchBusCompany(companyName)) {
             logger->Warning("Company '" + companyName + "' already exists!");
             pressEnterToContinue();
             return;
@@ -100,14 +83,14 @@ public:
         logger->Prompt("Enter Company Name: ");
         getline(cin, companyName);
 
-        BusCompany* company = db->busCompanies.search(companyName);
+        BusCompany* company = db->searchBusCompany(companyName);
         if (!company) {
             logger->Error("Company '" + companyName + "' not found. Please register the company first.");
             pressEnterToContinue();
             return;
         }
 
-        if (db->busCompanies.searchBusInCompany(companyName, busNo)) {
+        if (db->searchBusInCompany(companyName, busNo)) {
             logger->Warning("Bus '" + busNo + "' already exists in company '" + companyName + "'!");
             pressEnterToContinue();
             return;
@@ -116,7 +99,7 @@ public:
         logger->Prompt("Enter Starting Bus Stop ID: ");
         getline(cin, stopId);
 
-        BusStop* stop = db->busStops.search(stopId);
+        BusStop* stop = db->searchBusStop(stopId);
         if (!stop) {
             logger->Error("Bus stop with ID " + stopId + " not found. Please add the bus stop first.");
             pressEnterToContinue();
@@ -144,11 +127,15 @@ public:
         logger->Prompt("Enter Bus Stop ID: ");
 		getline(cin, stopId);
 
-        if (db->busStops.search(stopId)) {
+        if (db->searchBusStop(stopId)) {
             logger->Warning("Bus stop with ID " + stopId + " already exists!");
             pressEnterToContinue();
             return;
         }
+
+		logger->Prompt("Enter Sector: ");
+		string sector;
+		getline(cin, sector);
 
         logger->Prompt("Enter Latitude: ");
         cin >> lat;
@@ -157,7 +144,7 @@ public:
         cin >> lon;
         cin.ignore();
 
-        addBusStop(name, stopId, lat, lon);
+        addBusStop(name, stopId, sector, lat, lon);
         logger->Ok(name + " has been added successfully.");
         pressEnterToContinue();
     }
@@ -191,7 +178,7 @@ public:
         logger->Prompt("Enter Company Name: ");
         getline(cin, companyName);
 
-        BusCompany* company = db->busCompanies.search(companyName);
+        BusCompany* company = db->searchBusCompany(companyName);
         if (!company) {
             logger->Error("Company '" + companyName + "' not found.");
             pressEnterToContinue();
@@ -201,7 +188,7 @@ public:
         logger->Prompt("Enter Bus Number: ");
         getline(cin, busNo);
 
-        Bus* bus = db->busCompanies.searchBusInCompany(companyName, busNo);
+        Bus* bus = db->searchBusInCompany(companyName, busNo);
 
         if (bus) {
             logger->Info("Bus Found:");
@@ -217,8 +204,8 @@ public:
 
     void listAllCompanies() {
         cls();
-		for (int i = 0; i < db->busCompanies.tableSize; i++) {
-            BusCompaniesNode* current = db->busCompanies.table[i];
+		for (int i = 0; i < db->getBusCompaniesTableSize(); i++) {
+            BusCompaniesNode* current = db->getBusCompanyAt(i);
             while (current) {
                 logger->Info("Company: " + current->data.companyName);
 				listAllBusesInCompany(current->data.companyName);
@@ -229,7 +216,7 @@ public:
     }
 
     void listAllBusesInCompany(const string& companyName) {
-        BusCompany* company = db->busCompanies.search(companyName);
+        BusCompany* company = db->searchBusCompany(companyName);
         if (!company) {
             logger->Error("Company '" + companyName + "' not found.");
             return;
@@ -246,8 +233,8 @@ public:
 
     void listAllBusStops() {
         cls();
-		for (int i = 0; i < db->busStops.tableSize; i++) {
-            BusStopNode* current = db->busStops.table[i];
+		for (int i = 0; i < db->getBusStopsTableSize(); i++) {
+            BusStopNode* current = db->getBusStopAt(i);
             while (current) {
                 logger->Info("Bus Stop ID: " + current->data.stopId + ", Name: " + current->data.name);
                 current = current->next;

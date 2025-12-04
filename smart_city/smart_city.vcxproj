@@ -132,6 +132,7 @@
     <ClInclude Include="Commercial\MallSystem.h" />
     <ClInclude Include="Database\BusCompaniesHashTable.h" />
     <ClInclude Include="Database\BusStopHashTable.h" />
+    <ClInclude Include="Database\CityHierarchy.h" />
     <ClInclude Include="Database\Database.h" />
     <ClInclude Include="Database\FacilityHashTable.h" />
     <ClInclude Include="Database\HospitalHashTable.h" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Database\PeopleHashTable.h" />
     <ClInclude Include="Database\PharmacyHashTable.h" />
     <ClInclude Include="Database\SchoolHashTable.h" />
+    <ClInclude Include="Database\SectorHashTable.h" />
     <ClInclude Include="Education\EducationEntities.h" />
     <ClInclude Include="Education\EducationSystem.h" />
     <ClInclude Include="Education\SchoolMaxHeap.h" />
@@ -151,7 +153,6 @@
     <ClInclude Include="Medicine\PatientHashTable.h" />
     <ClInclude Include="Medicine\PharmacyGraph.h" />
     <ClInclude Include="Medicine\MedicineHashTable.h" />
-    <ClInclude Include="Population\CityHierarchy.h" />
     <ClInclude Include="Population\PopulationEntities.h" />
     <ClInclude Include="Population\PopulationHashTable.h" />
     <ClInclude Include="Population\PopulationSystem.h" />

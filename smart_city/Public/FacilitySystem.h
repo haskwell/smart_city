@@ -44,7 +44,6 @@ public:
 
     void addFacilityHandler() {
         cls();
-        //cout << ">>> Add Utility - Not implemented yet\n\n";
 
         logger->Title("REGISTER NEW FACILITY");
 
@@ -61,7 +60,11 @@ public:
         logger->Prompt("Enter Facility Type (e.g., Park, Power Plant): ");
         getline(cin, type);
 
-        Facility* newFacility = new Facility(id, name, type);
+		logger->Prompt("Enter Facility Sector: ");
+		string sector;
+		getline(cin, sector);
+
+        Facility* newFacility = new Facility(id, name, type, sector);
 
         if (registerFacility(newFacility))
         {
@@ -77,11 +80,7 @@ public:
 
     void findNearestUtilityHandler() {
         cls();
-        logger->Title("NEAREST UTILITY LOOKUP");
-
         logger->Info(">>> Nearest Utility Lookup - Not implemented yet");
-        // Logic for calculating distance would go here
-
         pressEnterToContinue();
     }
 
@@ -90,19 +89,16 @@ public:
         cls();
         logger->Title("LIST OF ALL PUBLIC FACILITIES");
 
-        // Check if DB exists or if table is empty
-        if (!db || db->facilities.tableSize == 0) {
+        if (!db || db->getFacilityTableSize() == 0) {
             logger->Warning("No facilities registered yet.");
             pressEnterToContinue();
             return;
         }
 
-        // Iterate through the Hash Table
-        for (int i = 0; i < db->facilities.tableSize; i++) {
-            FacilityNode* current = db->facilities.table[i];
+        for (int i = 0; i < db->getFacilityTableSize(); i++) {
+            FacilityNode* current = db->getFacilityAt(i);
 
             while (current) {
-                // Log details for each facility node
                 logger->Info("ID: " + current->data.id + " | Name: " + current->data.name + " | Type: " + current->data.type);
 
                 current = current->next;

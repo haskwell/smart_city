@@ -11,6 +11,7 @@ public:
 	string name;
 	double latitude;
 	double longitude;
+	string sector;
 
-	Facility(string t = "", string i = "", string n = "") : type(t), id(i), name(n), latitude(0.0), longitude(0.0) {}
+	Facility(string t = "", string i = "", string n = "", string s = "") : type(t), id(i), name(n), sector(s), latitude(0.0), longitude(0.0) {}
 };

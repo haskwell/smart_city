@@ -1,5 +1,5 @@
 #pragma once
-#include "PopulationEntities.h"
+#include "../Population/PopulationEntities.h"
 #include <iostream>
 
 class CityHierarchy {

@@ -30,13 +30,13 @@ public:
     bool addHospital(Hospital* h) {
         if (!db) return false;
 
-        if (db->hospitals.search(h->id)) {
+        if (db->searchHospital(h->id)) {
             logger->Warning("Hospital with ID '" + h->id + "' already exists!");
             delete h;
             return false;
         }
 
-        db->hospitals.insert(*h);
+        db->insertHospital(*h);
 		emergencyBedHeap.insert(h->id, h->emergencyBeds);
         return true;
     }
@@ -44,20 +44,20 @@ public:
     bool addPharmacy(Pharmacy* p) {
         if (!db) return false;
 
-        if (db->pharmacies.search(p->id)) {
+        if (db->searchPharmacy(p->id)) {
             logger->Warning("Pharmacy with ID '" + p->id + "' already exists!");
             delete p;
             return false;
         }
 
-        db->pharmacies.insert(*p);
+        db->insertPharmacy(*p);
         return true;
     }
 
     bool addDoctor(Person* p, const string& hospitalID) {
         if (!db) return false;
         Doctor* d = dynamic_cast<Doctor*>(p);
-        Hospital* hospital = db->hospitals.search(hospitalID);
+        Hospital* hospital = db->searchHospital(hospitalID);
         if (hospital) {
             if (hospital->doctorsTable.search(d->name)) {
                 logger->Warning("Doctor '" + d->name + "' is already working at " + hospital->name + "!");
@@ -74,7 +74,7 @@ public:
 
     bool addPatient(Person* p, const string& hospitalID) {
         if (!db) return false;
-        Hospital* hospital = db->hospitals.search(hospitalID);
+        Hospital* hospital = db->searchHospital(hospitalID);
         if (hospital) {
             if (hospital->patientTable.search(p->name)) {
                 logger->Warning("Patient '" + p->name + "' is already admitted to " + hospital->name + "!");
@@ -109,7 +109,7 @@ public:
 
     Doctor* searchDoctor(const string& cnic) {
 
-        Person* p = db->people.search(cnic);
+        Person* p = db->searchPerson(cnic);
         Doctor* d = dynamic_cast<Doctor*>(p);
         if (!d) {
             logger->Error("This person is not a doctor");
@@ -120,7 +120,7 @@ public:
     }
 
     Person* searchPatient(const string& cnic) {
-        return db->people.search(cnic);
+        return db->searchPerson(cnic);
     }
 
     void requestEmergencyBeds(int numBeds) {
@@ -136,7 +136,7 @@ public:
     }
 
     Doctor* searchDoctorInHospital(const string& name, const string& hospitalId) {
-        Hospital* hospital = db->hospitals.search(hospitalId);
+        Hospital* hospital = db->searchHospital(hospitalId);
         if (!hospital) {
             logger->Error("Hospital " + hospitalId + " not found.");
             return nullptr;
@@ -152,7 +152,7 @@ public:
     }
 
     Person* searchPatientInHospital(const string& name, const string& hospitalId) {
-        Hospital* hospital = db->hospitals.search(hospitalId);
+        Hospital* hospital = db->searchHospital(hospitalId);
         if (!hospital) {
             logger->Error("Hospital " + hospitalId + " not found.");
             return nullptr;
@@ -394,7 +394,7 @@ public:
         string pharmId;
         logger->Prompt("Enter Pharmacy name: ");
         getline(cin, pharmId);
-        Pharmacy* pharmacy = db->pharmacies.search(pharmId);
+        Pharmacy* pharmacy = db->searchPharmacy(pharmId);
         if (pharmacy == nullptr) {
             logger->Error("Pharmacy not found in the population database. Please add the pharmacy to the database first.");
 			pressEnterToContinue();
@@ -431,7 +431,7 @@ public:
         logger->Prompt("Enter Pharmacy name the medicine is in: ");
         string pharmId;
         getline(cin, pharmId);
-        Pharmacy* pharmacy = db->pharmacies.search(pharmId);
+        Pharmacy* pharmacy = db->searchPharmacy(pharmId);
         if (!pharmacy) {
             logger->Warning("Pharmacy with ID " + pharmId + " not found.");
             pressEnterToContinue();
@@ -451,8 +451,8 @@ public:
 
         cls();
 
-        for (int i = 0; i < db->hospitals.tableSize; i++) {
-            HospitalNode* current = db->hospitals.table[i];
+        for (int i = 0; i < db->getHospitalTableSize(); i++) {
+            HospitalNode* current = db->getHospitalAt(i);
             while (current) {
                 logger->Info("Hospital ID: " + current->data.id + ", Name: " + current->data.name + ", Sector: " + current->data.sector);
                 current = current->next;
@@ -465,8 +465,8 @@ public:
 
         cls();
 
-        for (int i = 0; i < db->hospitals.tableSize; i++) {
-            HospitalNode* current = db->hospitals.table[i];
+        for (int i = 0; i < db->getHospitalTableSize(); i++) {
+            HospitalNode* current = db->getHospitalAt(i);
             while (current) {
                 logger->Info("Hospital ID: " + current->data.id + ", Name: " + current->data.name);
                 for (int j = 0; j < current->data.doctorsTable.tableSize; j++) {
@@ -486,8 +486,8 @@ public:
 
         cls();
 
-        for (int i = 0; i < db->pharmacies.tableSize; i++) {
-            PharmacyNode* current = db->pharmacies.table[i];
+        for (int i = 0; i < db->getPharmacyTableSize(); i++) {
+            PharmacyNode* current = db->getPharmacyAt(i);
             while (current) {
                 logger->Info("Pharmacy ID: " + current->data.id + ", Name: " + current->data.name + ", Sector: " + current->data.sector);
                 current = current->next;
@@ -500,8 +500,8 @@ public:
 
         cls();
 
-        for (int i = 0; i < db->pharmacies.tableSize; i++) {
-            PharmacyNode* current = db->pharmacies.table[i];
+        for (int i = 0; i < db->getPharmacyTableSize(); i++) {
+            PharmacyNode* current = db->getPharmacyAt(i);
             while (current) {
                 logger->Info("Pharmacy ID: " + current->data.id + ", Name: " + current->data.name);
 

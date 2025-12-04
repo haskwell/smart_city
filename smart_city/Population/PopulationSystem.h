@@ -2,7 +2,6 @@
 #include <string>
 #include"../Database/database.h"
 #include "../SmartCity/CityLogger.h"
-#include "CityHierarchy.h"
 using namespace std;
 
 class PopulationSystem {
@@ -12,12 +11,12 @@ private:
 
     void addPerson(Person* p) {
         if (!db) return;
-        db->people.insert(p);
+		db->insertPerson(p);
 	}
 
     Person* searchPersonByCNIC(const string& cnic) {
         if (!db) return nullptr;
-        return db->people.search(cnic);
+        return db->searchPerson(cnic);
 	}
 
     void pressEnterToContinue() {
@@ -30,7 +29,6 @@ private:
     }
 
 public:
-    CityHierarchy cityHierarchy;
 	PopulationSystem(Database* database, CityLogger* log) : db(database), logger(log) {}
 
     void addPeopleHandler() {
@@ -67,7 +65,7 @@ public:
         logger->Prompt("Enter Occupation: ");
         getline(cin, occupation);
 
-        if (db->people.search(CNIC)) {
+        if (db->searchPerson(CNIC)) {
             logger->Warning("Person with CNIC '" + CNIC + "' already exists in the population!");
             pressEnterToContinue();
             return;
@@ -95,8 +93,7 @@ public:
             logger->Ok("Person '" + name + "' added to population as '" + occupation + "'");
         }
 
-        db->people.insert(newPerson);
-        cityHierarchy.addPerson(newPerson);
+        db->insertPerson(newPerson);
         pressEnterToContinue();
     }
 
@@ -108,7 +105,7 @@ public:
         logger->Prompt("Enter CNIC to search: ");
         getline(cin, cnic);
 
-        Person* person = db->people.search(cnic);
+        Person* person = db->searchPerson(cnic);
 
         if(!person) {
             logger->Warning("No person found with CNIC: " + cnic);
@@ -147,8 +144,8 @@ public:
 		int fortyOneTo60 = 0;
 		int sixtyOnePlus = 0;
 
-        for (int i = 0; i < db->people.tableSize; i++) {
-            PersonNode* current = db->people.table[i];
+        for (int i = 0; i < db->getPeopleTableSize(); i++) {
+            PersonNode* current = db->getPersonAt(i);
             while (current) {
                 int age = current->data->age;
                 if (age >= 1 && age <= 18) oneToEighteen++;
@@ -178,8 +175,8 @@ public:
         int maleCount = 0;
 		int femaleCount = 0;
 
-        for (int i = 0; i < db->people.tableSize; i++) {
-            PersonNode* current = db->people.table[i];
+        for (int i = 0; i < db->getPeopleTableSize(); i++) {
+            PersonNode* current = db->getPersonAt(i);
             while (current) {
                 if (current->data->gender == 'M' || current->data->gender == 'm') {
                     maleCount++;
@@ -213,13 +210,13 @@ public:
         cls();
         logger->Title("CITY HIERARCHY");
 
-        if (!cityHierarchy.sectors) {
+        if (!db->doSectorsExist()) {
             logger->Info("No sectors exist in the hierarchy.");
             pressEnterToContinue();
             return;
         }
 
-        Sector* currSector = cityHierarchy.sectors;
+        Sector* currSector = db->getCityHierarchySectors();
 
         while (currSector) {
             logger->Info("Sector: " + currSector->name);
@@ -259,7 +256,22 @@ public:
 
                 currStreet = currStreet->nextStreet;
             }
-
+			//print buildings in sector
+			BuildingNode** buildings = currSector->buildings;
+			logger->Info("   Buildings in Sector:");
+			for (int i = 0; i < currSector->totalBuildings; i++) {
+				BuildingNode* currBuilding = buildings[i];
+				if (!currBuilding) {
+					logger->Info("      (No buildings of this type)");
+				}
+				else {
+					logger->Info("      " + to_string(i + 1) + ". " + currBuilding->type + "s:");
+					while (currBuilding) {
+						logger->Info("         ID: " + currBuilding->ID);
+						currBuilding = currBuilding->nextBuilding;
+					}
+				}
+			}
             currSector = currSector->nextSector;
             logger->Info("-------------------------------------------------");
         }
@@ -283,7 +295,7 @@ public:
         cin >> houseNo;
         cin.ignore(); // consume leftover newline
 
-        House* house = cityHierarchy.getHouse(sectorName, streetName, houseNo);
+        House* house = db->getHouse(sectorName, streetName, houseNo);
         if (!house) {
             logger->Warning("House not found");
             pressEnterToContinue();
@@ -320,7 +332,7 @@ public:
         string sectorName;
         getline(cin, sectorName);
 
-        Sector* sector = cityHierarchy.searchSector(sectorName);
+        Sector* sector = db->searchSector(sectorName);
         if (!sector) {
             logger->Warning("Sector '" + sectorName + "' not found.");
             pressEnterToContinue();
@@ -370,7 +382,7 @@ public:
         string sectorName;
         getline(cin, sectorName);
 
-        Sector* sector = cityHierarchy.searchSector(sectorName);
+        Sector* sector = db->searchSector(sectorName);
         if (!sector) {
             logger->Warning("Sector '" + sectorName + "' not found in the city hierarchy.");
             pressEnterToContinue();

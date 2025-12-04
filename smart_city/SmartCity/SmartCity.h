@@ -83,7 +83,7 @@ private:
             case 4: education.addDepartmentHandler(); break;
             case 5: education.addClassHandler(); break;
             case 6: education.searchSchoolBySubjectHandler(); break;
-            case 7: education.rankSchoolsHandler(); break;
+            case 7: education.showRanking(); break;
             case 8: education.locateNearestSchoolHandler(); break;
             case 9: education.listAllSchoolsHandler(); break;
             }

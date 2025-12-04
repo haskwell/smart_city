@@ -9,6 +9,5 @@ class BusStop {
 	string sector;
 	double latitude;
 	double longitude;
-	BusStop() : name(""), stopId(""), latitude(0.0), longitude(0.0), sector("") {}
-	BusStop(string n, string id, string sectorName, double lat, double lon) : name(n), stopId(id),sector(sectorName), latitude(lat), longitude(lon) {}
+	BusStop(string n = "", string id = "", string sectorName = "", double lat = 0.0f, double lon = 0.0f) : name(n), stopId(id), sector(sectorName), latitude(lat), longitude(lon) {}
 };
