@@ -12,6 +12,8 @@ using namespace std;
 
 class SmartCity {
 public:
+    Database* db;
+
     Menu menu;
     TransportSystem transport;
     EducationSystem education;
@@ -22,17 +24,15 @@ public:
 
 	CityLogger logger;
 
-    Database* db;
-
     SmartCity()
-        : transport(db, &logger),
+        : db(new Database()),
+        transport(db, &logger),
         education(db, &logger),
         medical(db, &logger),
         commercial(db, &logger),
         population(db, &logger),
         publicServices(db, &logger)
     {
-        db = new Database();
     }
 
     void run() {
