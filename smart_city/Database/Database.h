@@ -32,12 +32,12 @@ class Database {
 public:
 
     Database() {
-		sectorGrid.setUpGrid(625, 625);
+		sectorGrid.setUpGrid(5, 5);
     }
 
     void convertToGlobal(int &x, int &y, int gX, int gY) {
-        x = gX + x;
-        y = gY + y;
+        x = gX * 625 + x * 25;
+        y = gY * 625 + y * 25;
     }
 
     ~Database() {}
@@ -108,17 +108,6 @@ public:
         sectorGrid.addSectorIntoGrid(sec->name);
     }
 
-    void insertMall(Mall& mall) {
-        malls.insert(mall);
-        Coords secCoords = ensureSectorExists(mall.sector);
-        Sector* sec = sectors.search(mall.sector);
-        Coords localCoords = sec->insertMall(mall.mallId);
-        convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
-        mall.latitude = localCoords.x;
-        mall.longitude = localCoords.y;
-        cityGraph.add(mall.mallId, mall.latitude, mall.longitude, cityGraph.commercialTag);
-    }
-
     void insertSector(Sector& sector) {
         sectors.insert(sector);
         cityHierarchy.addSector(&sector);
@@ -142,6 +131,17 @@ public:
 		cityGraph.printEntireGraph();
     }
 
+    void insertMall(Mall& mall) {
+        malls.insert(mall);
+        Coords secCoords = ensureSectorExists(mall.sector);
+        Sector* sec = sectors.search(mall.sector);
+        Coords localCoords = sec->insertMall(mall.mallId);
+        convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
+        mall.latitude = localCoords.x;
+        mall.longitude = localCoords.y;
+        cityGraph.add(mall.mallId, mall.latitude, mall.longitude, cityGraph.commercialTag);
+    }
+
     void insertFacility(Facility& facility) {
         facilities.insert(facility);
         Coords secCoords = ensureSectorExists(facility.sector);
@@ -150,6 +150,7 @@ public:
         convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
         facility.latitude = localCoords.x;
         facility.longitude = localCoords.y;
+        cityGraph.add(facility.id, facility.latitude, facility.longitude, cityGraph.publicFacilityTag);
     }
 
     void insertBusCompany(BusCompany& company) {

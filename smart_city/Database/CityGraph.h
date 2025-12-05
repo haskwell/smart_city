@@ -47,7 +47,7 @@ public:
 
     GraphNode* adjacencyList;
 
-    GraphManager(double thresh = 30.0f)
+    GraphManager(double thresh = 100.0f)
         : threshold(thresh),
         schoolTag("school"),
         hospitalTag("hospital"),
@@ -222,6 +222,48 @@ public:
             typeHead = typeHead->next;
         }
 
+    }
+
+    void makeEdge(GraphNode* src)
+    {
+        if (!src) return;
+
+        GraphNode* typeHead = adjacencyList;
+
+        while (typeHead)
+        {
+            GraphNode* target = typeHead;
+
+            while (target)
+            {
+                if (target != src)
+                {
+                    double distance = calculateDistance(
+                        src->latitude, src->longitude,
+                        target->latitude, target->longitude
+                    );
+
+                    if (distance <= threshold)
+                    {
+                        //source to target edge
+                        EdgeNode* e1 = new EdgeNode(distance);
+                        e1->to = target;
+                        e1->nextEdge = src->edgeHead;
+                        src->edgeHead = e1;
+
+                        //target to source edge
+                        EdgeNode* e2 = new EdgeNode(distance);
+                        e2->to = src;
+                        e2->nextEdge = target->edgeHead;
+                        target->edgeHead = e2;
+                    }
+                }
+
+                target = target->nextType;
+            }
+
+            typeHead = typeHead->next;
+        }
     }
 
     void printEntireGraph() {
