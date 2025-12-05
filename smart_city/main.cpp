@@ -191,10 +191,58 @@
 //
 //}
 
+void seed(SmartCity& city)
+{
+	Database& db = *city.db;
+	//insert 10 busstops 
+	for (int i = 1; i <= 10; i++)
+	{
+		string stopId = "S" + to_string(i);
+		string name = "Stop " + to_string(i);
+		float lat = 30.0f + static_cast<float>(rand() % 100) / 100.0f; 	// random-ish coords
+		float lon = 70.0f + static_cast<float>(rand() % 100) / 100.0f;
+		BusStop* stop = new BusStop(name, stopId, "", lat, lon);
+		db.insertBusStop(*stop);
+	}
+
+	//add 5 bus companies
+	vector<string> companies = {
+		"MetroLine",
+		"CityMove",
+		"UrbanRide",
+		"RapidTransit",
+		"SkyBus"
+	};
+	for (auto& name : companies) {
+		BusCompany* c = new BusCompany(name);
+		db.insertBusCompany(*c);
+	}
+	//add 20 buses, each company gets 4 buses, with valide routes
+	int busCounter = 1;
+	for (auto& companyName : companies) {
+		for (int i = 0; i < 4; i++) {
+			string busNo = "B" + to_string(busCounter++);
+			Bus* bus = new Bus(busNo, companyName);
+			//assign random route of 5 stops
+			for (int j = 0; j < 5; j++)
+			{
+				int stopIndex = 1 + rand() % 10; //stops from S1 to S10
+				string stopId = "S" + to_string(stopIndex);
+				bus->addStop(stopId);
+			}
+			// Insert into that company's bus hash table
+			db.insertBusToCompany(companyName, bus);
+		}
+	}
+
+ 
+
+}
+
 int main() {
 	srand(static_cast<unsigned int>(time(0)));
 	SmartCity city;
-	//seed(city);
+	seed(city);
     city.run();
     return 0;
 }

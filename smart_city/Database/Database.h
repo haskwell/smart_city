@@ -42,6 +42,10 @@ public:
 		return cityHierarchy.getHouse(sectorName, streetName, houseNo);
 	}
 
+    BusCompaniesHashTable& getBuses() 
+    {
+        return busCompanies;
+    }
     void ensureSectorExists(const string& sectorName) {
         if (sectors.search(sectorName) == nullptr) {
             Sector* newSector = new Sector();
