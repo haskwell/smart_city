@@ -23,13 +23,10 @@ public:
 
     EducationSystem(Database* d = nullptr, CityLogger* log = nullptr) : db(d), logger(log) {}
 
-    void registerSchool(const School* s) {
+    void registerSchool(School* s) {
         if (!db) return;
-
-        db->schools.insert(*s);
+        db->insertSchool(*s);
     }
-    School* searchSchoolGraph(string name) {}
-    School* searchSchoolSubjects(string subject) {}
 
     void showRanking() {
         string* top3 = nullptr;
@@ -437,9 +434,9 @@ public:
     void listAllSchoolsHandler()
     {
         cls();
-		for (int i = 0; i < db->schools.tableSize; i++)
+		for (int i = 0; i < db->getSchoolTableSize(); i++)
         {
-            SchoolNode* tempSchool = db->schools.table[i];
+            SchoolNode* tempSchool = db->getSchoolAt(i);
             if (tempSchool)
             {
 				displaySchoolInfo(&tempSchool->data);

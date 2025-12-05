@@ -33,11 +33,6 @@ private:
         return stringToInt(input);
     }
 
-    void pressEnterToContinue() {
-        cout << "\nPress Enter to continue...";
-        cin.ignore();
-    }
-
     void printMenu(const string s[], int len) {
         cout << clearScreen;
         for (int i = 0; i < len; i++) {
@@ -63,7 +58,7 @@ private:
         cout << endl;
     }
 
-    const string mainMenu[8] = {
+    const string mainMenu[9] = {
         "\t=== SMART CITY MANAGEMENT SYSTEM ===",
         "\t1. Transport Module",
         "\t2. Education Module",
@@ -71,6 +66,7 @@ private:
         "\t4. Public Services Module",
         "\t5. Commercial Module",
         "\t6. Population Module",
+        "\t7. Print Graph",
         "\t0. Exit"
     };
 
@@ -135,7 +131,7 @@ private:
         "\t0. Back"
     };
 
-    const string populationMenu[10] = {
+    const string populationMenu[12] = {
         "\t=== POPULATION MODULE ===",
         "",
         "\t1. Add People",
@@ -145,6 +141,8 @@ private:
 		"\t5. Search Street",
 		"\t6. Search House",
         "\t7. Print All People",
+        "\t8. Print Sectors Table",
+        "\t9. Print Sectors Buildings Grid",
         "\t0. Back"
     };
 
@@ -180,7 +178,7 @@ public:
     Menu() : errorFlag(false) {}
 
     int showMainMenu() {
-        return getMenuChoice(mainMenu, 8);
+        return getMenuChoice(mainMenu, 9);
     }
 
     int showTransportMenu() {
@@ -200,10 +198,15 @@ public:
     }
 
     int showPopulationMenu() {
-        return getMenuChoice(populationMenu, 10);
+        return getMenuChoice(populationMenu, 12);
     }
 
     int showPublicMenu() {
         return getMenuChoice(publicMenu, 6);
+    }
+
+    void pressEnterToContinue() {
+        cout << "\nPress Enter to continue...";
+        cin.ignore();
     }
 };

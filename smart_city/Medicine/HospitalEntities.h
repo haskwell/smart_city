@@ -15,6 +15,8 @@ public:
     string sector;
     string* specialization;
     int totalSpecializations;
+    double latitude;
+    double longitude;
 
     PatientHashTable patientTable;
     DoctorsHashTable doctorsTable;
@@ -26,6 +28,8 @@ public:
         int specCount = 0)
         : name(n),
         id(i),
+        latitude(0.0),
+        longitude(0.0),
         occupiedBeds(0), 
         emergencyBeds(beds),
         sector(sec),
@@ -61,7 +65,8 @@ public:
     string sector;
     Medicine* medicine;
     int totalMedicines;
-
+    double latitude;
+    double longitude;
     MedicineHashTable medicineTable;
 
     Pharmacy(string i = "",
@@ -71,6 +76,8 @@ public:
         : id(i),
         name(n),
         sector(sec),
+        latitude(0.0),
+        longitude(0.0),
         totalMedicines(medCount)
     {
         if (totalMedicines > 0) {

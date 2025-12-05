@@ -12,6 +12,8 @@ using namespace std;
 
 class SmartCity {
 public:
+    Database* db;
+
     Menu menu;
     TransportSystem transport;
     EducationSystem education;
@@ -22,16 +24,14 @@ public:
 
 	CityLogger logger;
 
-public:
-    Database db;
-
     SmartCity()
-        : transport(&db, &logger),
-        education(&db, &logger),
-        medical(&db, &logger),
-        commercial(&db, &logger),
-        population(&db, &logger),
-        publicServices(&db, &logger)
+        : db(new Database()),
+        transport(db, &logger),
+        education(db, &logger),
+        medical(db, &logger),
+        commercial(db, &logger),
+        population(db, &logger),
+        publicServices(db, &logger)
     {
     }
 
@@ -46,13 +46,16 @@ public:
             case 4: runPublicServices(); break;
             case 5: runCommercial(); break;
             case 6: runPopulation(); break;
+            case 7: printCityGraph(); break;
             case 0:
                 cout << "Thank you for using Smart City Management System!\nGoodbye!\n";
                 break;
             }
         } while (choice != 0);
     }
-
+    ~SmartCity() {
+        delete db;
+    }
 private:
     void runTransport() {
         int tChoice;
@@ -83,7 +86,7 @@ private:
             case 4: education.addDepartmentHandler(); break;
             case 5: education.addClassHandler(); break;
             case 6: education.searchSchoolBySubjectHandler(); break;
-            case 7: education.rankSchoolsHandler(); break;
+            case 7: education.showRanking(); break;
             case 8: education.locateNearestSchoolHandler(); break;
             case 9: education.listAllSchoolsHandler(); break;
             }
@@ -151,7 +154,16 @@ private:
             case 5: population.searchStreetHandler(); break;
             case 6: population.searchHouseHandler(); break;
             case 7: population.printHierarchyHandler(); break;
+            case 8: population.printSectorGridHandler(); break;
+            case 9: population.printBuildingsGridHandler(); break;
             }
         } while (popChoice != 0);
     }
+
+    void printCityGraph() {
+        logger.Title("CITY GRAPH ADJACENCY LIST");
+        db->printEntireGraph();
+        logger.Info("End of City Graph");
+        menu.pressEnterToContinue();
+	}
 };

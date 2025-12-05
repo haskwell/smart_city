@@ -156,7 +156,7 @@ public:
         cin >> mallID;
         cin.ignore();
 
-        Mall* mall = db->malls.search(mallID);
+        Mall* mall = db->searchMall(mallID);
 
         if (mall == nullptr)
         {
@@ -219,14 +219,14 @@ public:
         cls();
         logger->Title("LIST OF ALL MALLS");
 
-        if (!db || db->malls.tableSize == 0) {
+        if (!db || db->getMallTableSize() == 0) {
             logger->Warning("No malls registered yet.");
             pressEnterToContinue();
             return;
         }
 
-        for (int i = 0; i < db->malls.tableSize; i++) {
-            MallNode* current = db->malls.table[i];
+        for (int i = 0; i < db->getMallTableSize(); i++) {
+            MallNode* current = db->getMallAt(i);
             while (current) {
                 logger->Info("Mall ID: " + current->data.mallId +
                     ", Name: " + current->data.name +
@@ -243,8 +243,8 @@ public:
 
         if (!db) return;
 
-        for (int i = 0; i < db->malls.tableSize; i++) {
-            MallNode* mallNode = db->malls.table[i];
+        for (int i = 0; i < db->getMallTableSize(); i++) {
+            MallNode* mallNode = db->getMallAt(i);
             while (mallNode) {
                 logger->Info(">> Mall: " + mallNode->data.name + " (" + mallNode->data.sector + ")");
 
