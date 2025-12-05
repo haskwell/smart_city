@@ -46,6 +46,7 @@ public:
             case 4: runPublicServices(); break;
             case 5: runCommercial(); break;
             case 6: runPopulation(); break;
+            case 7: printCityGraph(); break;
             case 0:
                 cout << "Thank you for using Smart City Management System!\nGoodbye!\n";
                 break;
@@ -153,7 +154,16 @@ private:
             case 5: population.searchStreetHandler(); break;
             case 6: population.searchHouseHandler(); break;
             case 7: population.printHierarchyHandler(); break;
+            case 8: population.printSectorGridHandler(); break;
+            case 9: population.printBuildingsGridHandler(); break;
             }
         } while (popChoice != 0);
     }
+
+    void printCityGraph() {
+        logger.Title("CITY GRAPH ADJACENCY LIST");
+        db->printEntireGraph();
+        logger.Info("End of City Graph");
+        menu.pressEnterToContinue();
+	}
 };

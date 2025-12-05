@@ -179,17 +179,20 @@
     <ClInclude Include="Transport\BusStop.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="Testing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Database\CityHierarchy.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
     <ClInclude Include="Database\SectorHashTable.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="Header.h">
+    <ClInclude Include="Database\SectorGrid.h">
       <Filter>Header Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\CityGraph.h">
+      <Filter>Header Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Transport\StopSimulator.h">
+      <Filter>Header Files\Transport</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

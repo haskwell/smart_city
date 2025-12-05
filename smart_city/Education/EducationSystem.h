@@ -23,7 +23,7 @@ public:
 
     EducationSystem(Database* d = nullptr, CityLogger* log = nullptr) : db(d), logger(log) {}
 
-    void registerSchool(const School* s) {
+    void registerSchool(School* s) {
         if (!db) return;
         db->insertSchool(*s);
     }

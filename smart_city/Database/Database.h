@@ -9,6 +9,8 @@
 #include "BusCompaniesHashTable.h"
 #include "SectorHashTable.h"
 #include "CityHierarchy.h"
+#include "SectorGrid.h"
+#include "CityGraph.h"
 #include <string>
 using namespace std;
 
@@ -22,12 +24,22 @@ class Database {
     BusCompaniesHashTable busCompanies;
     BusStopHashTable busStops;
     SectorHashTable sectors;
+	SectorGrid sectorGrid;
 
     CityHierarchy cityHierarchy;
+	GraphManager cityGraph;
 
 public:
 
-    Database() {}
+    Database() {
+		sectorGrid.setUpGrid(625, 625);
+    }
+
+    void convertToGlobal(int &x, int &y, int gX, int gY) {
+        x = gX + x;
+        y = gY + y;
+    }
+
     ~Database() {}
 
     bool doSectorsExist() {
@@ -42,59 +54,102 @@ public:
 		return cityHierarchy.getHouse(sectorName, streetName, houseNo);
 	}
 
-    void ensureSectorExists(const string& sectorName) {
+    Coords ensureSectorExists(const string& sectorName) {
         if (sectors.search(sectorName) == nullptr) {
             Sector* newSector = new Sector();
             newSector->name = sectorName;
             sectors.insert(*newSector);
             cityHierarchy.addSector(newSector);
+            return sectorGrid.addSectorIntoGrid(newSector->name);
+        }
+        else {
+            return sectorGrid.getCoordsBySector(sectorName);
         }
     }
 
-    void insertHospital(const Hospital& hospital) {
+    void insertHospital(Hospital& hospital) {
         hospitals.insert(hospital);
-        ensureSectorExists(hospital.sector);
+        Coords secCoords = ensureSectorExists(hospital.sector);   // Get sector's top-left coordinates
         Sector* sec = sectors.search(hospital.sector);
-        sec->insertHospital(hospital.id);
+        Coords localCoords = sec->insertHospital(hospital.id);    // Local sector coordinates
+        convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
+        hospital.latitude = localCoords.x;
+        hospital.longitude = localCoords.y;
+        cityGraph.add(hospital.id, hospital.latitude, hospital.longitude, cityGraph.hospitalTag);
     }
 
-    void insertPharmacy(const Pharmacy& pharmacy) {
+    void insertPharmacy(Pharmacy& pharmacy) {
         pharmacies.insert(pharmacy);
-        ensureSectorExists(pharmacy.sector);
+        Coords secCoords = ensureSectorExists(pharmacy.sector);
         Sector* sec = sectors.search(pharmacy.sector);
-        sec->insertPharmacy(pharmacy.id);
+        Coords localCoords = sec->insertPharmacy(pharmacy.id);
+        convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
+        pharmacy.latitude = localCoords.x;
+        pharmacy.longitude = localCoords.y;
+        cityGraph.add(pharmacy.id, pharmacy.latitude, pharmacy.longitude, cityGraph.pharmacyTag);
     }
 
-    void insertSchool(const School& school) {
+    void insertSchool(School& school) {
         schools.insert(school);
-        ensureSectorExists(school.sector);
+        Coords secCoords = ensureSectorExists(school.sector);
         Sector* sec = sectors.search(school.sector);
-        sec->insertSchool(school.schoolID);
+        Coords localCoords = sec->insertSchool(school.schoolID);
+        convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
+        school.latitude = localCoords.x;
+        school.longitude = localCoords.y;
+        cityGraph.add(school.schoolID, school.latitude, school.longitude, cityGraph.schoolTag);
     }
 
     void insertPerson(Person* person) {
         people.insert(person);
         cityHierarchy.addPerson(person);
         ensureSectorExists(person->sector);
+		Sector* sec = sectors.search(person->sector);
+        sectorGrid.addSectorIntoGrid(sec->name);
     }
 
     void insertMall(Mall& mall) {
         malls.insert(mall);
-        ensureSectorExists(mall.sector);
+        Coords secCoords = ensureSectorExists(mall.sector);
         Sector* sec = sectors.search(mall.sector);
-        sec->insertMall(mall.mallId);
+        Coords localCoords = sec->insertMall(mall.mallId);
+        convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
+        mall.latitude = localCoords.x;
+        mall.longitude = localCoords.y;
+        cityGraph.add(mall.mallId, mall.latitude, mall.longitude, cityGraph.commercialTag);
     }
 
     void insertSector(Sector& sector) {
         sectors.insert(sector);
         cityHierarchy.addSector(&sector);
+		sectorGrid.addSectorIntoGrid(sector.name);
+    }
+
+    void printSectorsInGrid() {
+        for (int i = 0; i < sectorGrid.rows; i++) {
+            for (int j = 0; j < sectorGrid.cols; j++) {
+                if (sectorGrid.grid[i][j] != "") {
+                    cout << sectorGrid.grid[i][j] << "\t";
+                } else {
+                    cout << "-\t";
+                }
+            }
+            cout << endl;
+        }
+	}
+
+    void printEntireGraph() {
+		cityGraph.printEntireGraph();
     }
 
     void insertFacility(Facility& facility) {
         facilities.insert(facility);
-        ensureSectorExists(facility.sector);
-		Sector* sec = sectors.search(facility.sector);
-		sec->insertPublicFacility(facility.id);
+        Coords secCoords = ensureSectorExists(facility.sector);
+        Sector* sec = sectors.search(facility.sector);
+        Coords localCoords = sec->insertPublicFacility(facility.id);
+        convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
+        facility.latitude = localCoords.x;
+        facility.longitude = localCoords.y;
     }
 
     void insertBusCompany(BusCompany& company) {
@@ -103,10 +158,14 @@ public:
 
     void insertBusStop(BusStop& busStop) {
         busStops.insert(busStop);
-		ensureSectorExists(busStop.sector);
-		Sector* sec = sectors.search(busStop.sector);
-		sec->insertBusStop(busStop.stopId);
+        Coords secCoords = ensureSectorExists(busStop.sector);
+        Sector* sec = sectors.search(busStop.sector);
+        Coords localCoords = sec->insertBusStop(busStop.stopId);
+        convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
+        busStop.latitude = localCoords.x;
+        busStop.longitude = localCoords.y;
     }
+
 
     Hospital* searchHospital(const string& hospitalID) {
         return hospitals.search(hospitalID);
@@ -151,6 +210,15 @@ public:
     void insertBusToCompany(const string& companyName, Bus* b) {
         busCompanies.insertBusToCompany(companyName, b);
 	}
+
+    void makeEdges() {
+		cityGraph.makeEdges();
+    }
+
+    BusCompaniesHashTable& getBuses()
+    {
+        return busCompanies;
+    }
 
     // Get hash table sizes
     int getHospitalTableSize() { return hospitals.tableSize; }

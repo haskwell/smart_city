@@ -1,6 +1,7 @@
 #pragma once
 #include"../Database/Database.h"
 #include "../SmartCity/CityLogger.h"
+#include <iostream>
 class TransportSystem {
 private:
     Database* db;
@@ -157,7 +158,40 @@ public:
     }
 
     void busSimulation() {
-        logger->Info(">>> Bus Simulation - Not implemented yet");
+        cls();
+        logger->Title("Bus Simulation");
+        BusCompaniesHashTable& busCompanies = db->getBuses();
+        BusCompaniesNode** companiesTable = busCompanies.table;
+        int tableSize = busCompanies.tableSize;
+        int i = 0;
+        while (i < tableSize)
+        {
+            BusCompaniesNode* companyNode = companiesTable[i];
+            while (companyNode)
+            {
+                BusNode** busTable = companyNode->data.busTable.table;
+                int busTableSize = companyNode->data.busTable.tableSize;
+                int j = 0;
+
+                while (j < busTableSize)
+                {
+                    BusNode* currBus = busTable[j];
+                    while (currBus)
+                    {
+                        string* stopInfo = currBus->data->Simulate();
+                        logger->Info("Bus Number: " + currBus->data->busNum);
+                        logger->Info("\t\t\tCurrent Stop: " + stopInfo[0]);
+                        logger->Info("\t\t\tNextStop: " + stopInfo[1]);
+                        currBus = currBus->next;
+                        delete[] stopInfo;
+                    }
+
+                    j++;
+                }
+                companyNode = companyNode->next;
+            }
+            i++;
+        }
         pressEnterToContinue();
     }
 

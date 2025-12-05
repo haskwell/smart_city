@@ -2,6 +2,12 @@
 #include <string>
 using namespace std;
 
+struct Coords {
+	int x;
+	int y;
+	Coords(int x = 0, int y = 0) : x(x), y(y) {}
+};
+
 class Person {
 public:
 	string name;
@@ -117,8 +123,33 @@ public:
 	}
 };
 
+class GridNode {
+public:
+	string type;
+	string buildingID;
+	int xPos;
+	int yPos;
+	GridNode(int x = 0, int y = 0, string buildingID = "", string t = "") : type(t), xPos(x), yPos(y), buildingID(buildingID) {}
+};
+
+
+
 class Sector {
 public:
+	
+	int rows = 5;
+	int cols = 5;
+
+	int gridSize = rows * cols;
+
+	int centerX = rows / 2;
+	int centerY = cols / 2;
+
+	int currentX = centerX;
+	int currentY = centerY;
+
+	GridNode** buildingsGrid;
+
 	string name;
 	Street* streets;
 	Sector* nextSector;
@@ -143,6 +174,15 @@ public:
 		for (int i = 0; i < totalBuildings; i++)
 		{
 			buildings[i] = nullptr;
+		}
+		buildingsGrid = new GridNode * [rows];
+		for(int i = 0; i < rows; i++)
+		{
+			buildingsGrid[i] = new GridNode[cols];
+			for (int j = 0; j < cols; j++)
+			{
+				buildingsGrid[i][j] = GridNode(i, j, "");
+			}
 		}
 	}
 
@@ -174,34 +214,77 @@ public:
 		curr->nextBuilding = new BuildingNode(typeTag, ID);
 	}
 
-	void insertSchool(string ID)
+	void printBuildingsGrid()
+	{
+		for (int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j < cols; j++)
+			{
+				if (buildingsGrid[i][j].buildingID != "")
+				{
+					cout << "[" << buildingsGrid[i][j].type << ": " << buildingsGrid[i][j].buildingID << "] ";
+				}
+				else
+				{
+					cout << "[Empty] ";
+				}
+			}
+			cout << endl;
+		}
+	}
+
+	Coords insertIntoGrid(string ID, string typeTag) {
+
+		// now insert into grid
+		// in order
+
+		for (int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j < cols; j++)
+			{
+				if (buildingsGrid[i][j].buildingID == "")
+				{
+					buildingsGrid[i][j] = GridNode(i, j, ID, typeTag);
+					return Coords(i, j);
+				}
+			}
+		}
+	}
+
+	Coords insertSchool(string ID)
 	{
 		insertBuilding(schoolIndex, schoolTag, ID);
+		return insertIntoGrid(ID, schoolTag);
 	}
 
-	void insertHospital(string ID)
+	Coords insertHospital(string ID)
 	{
 		insertBuilding(hospitalIndex, hospitalTag, ID);
+		return insertIntoGrid(ID, hospitalTag);
 	}
 
-	void insertPharmacy(string ID)
+	Coords insertPharmacy(string ID)
 	{
 		insertBuilding(pharmacyIndex, pharmacyTag, ID);
+		return insertIntoGrid(ID, pharmacyTag);
 	}
 
-	void insertBusStop(string ID)
+	Coords insertBusStop(string ID)
 	{
 		insertBuilding(busStopIndex, busStopTag, ID);
+		return insertIntoGrid(ID, busStopTag);
 	}
 
-	void insertPublicFacility(string ID)
+	Coords insertPublicFacility(string ID)
 	{
 		insertBuilding(publicFacilityIndex, puclicTag, ID);
+		return insertIntoGrid(ID, puclicTag);
 	}
 
-	void insertMall(string ID)
+	Coords insertMall(string ID)
 	{
 		insertBuilding(malls, mallTag, ID);
+		return insertIntoGrid(ID, mallTag);
 	}
 
 	void insertStreet(Street* toAdd) {

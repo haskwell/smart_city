@@ -424,4 +424,27 @@ public:
         }
         pressEnterToContinue();
     }
+
+    void printSectorGridHandler() {
+        cls();
+        logger->Title("SECTOR GRID");
+        db->printSectorsInGrid();
+        pressEnterToContinue();
+	}
+
+    void printBuildingsGridHandler() {
+        cls();
+        logger->Title("SECTOR BUILDINGS");
+		string sectorName;
+		logger->Prompt("Enter Sector Name: ");
+		getline(cin, sectorName);
+        Sector* sector = db->searchSector(sectorName);
+        if (!sector) {
+            logger->Warning("Sector '" + sectorName + "' not found.");
+            pressEnterToContinue();
+            return;
+        }
+        sector->printBuildingsGrid();
+        pressEnterToContinue();
+	}
 };
