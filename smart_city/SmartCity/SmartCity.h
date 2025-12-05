@@ -22,17 +22,17 @@ public:
 
 	CityLogger logger;
 
-public:
-    Database db;
+    Database* db;
 
     SmartCity()
-        : transport(&db, &logger),
-        education(&db, &logger),
-        medical(&db, &logger),
-        commercial(&db, &logger),
-        population(&db, &logger),
-        publicServices(&db, &logger)
+        : transport(db, &logger),
+        education(db, &logger),
+        medical(db, &logger),
+        commercial(db, &logger),
+        population(db, &logger),
+        publicServices(db, &logger)
     {
+        db = new Database();
     }
 
     void run() {
@@ -52,7 +52,9 @@ public:
             }
         } while (choice != 0);
     }
-
+    ~SmartCity() {
+        delete db;
+    }
 private:
     void runTransport() {
         int tChoice;
