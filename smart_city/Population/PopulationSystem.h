@@ -6,18 +6,18 @@ using namespace std;
 
 class PopulationSystem {
 private:
-	Database* db;
+    Database* db;
     CityLogger* logger;
 
-    void addPerson(Person* p) {
-        if (!db) return;
-		db->insertPerson(p);
-	}
+    int addPerson(Person* p) {
+        if (db->searchPerson(p->CNIC)) return 1;
+        db->insertPerson(p);
+        return 0;
+    }
 
     Person* searchPersonByCNIC(const string& cnic) {
-        if (!db) return nullptr;
         return db->searchPerson(cnic);
-	}
+    }
 
     void pressEnterToContinue() {
         logger->Prompt("Press Enter to continue...");
@@ -29,120 +29,109 @@ private:
     }
 
 public:
-	PopulationSystem(Database* database, CityLogger* log) : db(database), logger(log) {}
-
+    PopulationSystem(Database* database, CityLogger* log) : db(database), logger(log) {}
     void addPeopleHandler() {
         cls();
         logger->Title("ADD NEW PERSON");
-
         string name, CNIC, street, sector, occupation, specialization;
         int age, houseNo;
         char gender;
 
         logger->Prompt("Enter Name: ");
         getline(cin, name);
-
         logger->Prompt("Enter Age: ");
         cin >> age;
-
         logger->Prompt("Enter Gender (M/F): ");
         cin >> gender;
         cin.ignore();
-
         logger->Prompt("Enter CNIC: ");
         getline(cin, CNIC);
-
         logger->Prompt("Enter Street: ");
         getline(cin, street);
-
         logger->Prompt("Enter Sector: ");
         getline(cin, sector);
-
         logger->Prompt("Enter House Number: ");
         cin >> houseNo;
         cin.ignore();
-
         logger->Prompt("Enter Occupation: ");
         getline(cin, occupation);
 
+        if (name == "" || CNIC == "" || street == "" || sector == "" || occupation == "" || houseNo <= 0) {
+            logger->Warning("All fields must be filled correctly!");
+            return pressEnterToContinue();
+        }
+
         if (db->searchPerson(CNIC)) {
-            logger->Warning("Person with CNIC '" + CNIC + "' already exists in the population!");
-            pressEnterToContinue();
-            return;
+            logger->Warning("Person with CNIC '" + CNIC + "' already exists!");
+            return pressEnterToContinue();
         }
 
         Person* newPerson = nullptr;
-
         if (occupation == "doctor" || occupation == "Doctor" || occupation == "DOCTOR") {
             logger->Prompt("Enter Doctor Specialization: ");
             getline(cin, specialization);
-
             newPerson = new Doctor(name, age, gender, CNIC, street, houseNo, occupation, sector, specialization);
             logger->Ok("Doctor '" + name + "' registered with specialization: " + specialization);
         }
         else if (occupation == "student" || occupation == "Student" || occupation == "STUDENT") {
-			newPerson = new Student(name, age, gender, CNIC, street, houseNo, occupation);
-			logger->Ok("Student '" + name + "' added to population.");
+            newPerson = new Student(name, age, gender, CNIC, street, houseNo, occupation);
+            logger->Ok("Student '" + name + "' added to population.");
         }
         else if (occupation == "faculty" || occupation == "Faculty" || occupation == "FACULTY") {
-			newPerson = new Faculty(name, age, gender, CNIC, street, houseNo, occupation);
-			logger->Ok("Faculty '" + name + "' added to population.");
+            newPerson = new Faculty(name, age, gender, CNIC, street, houseNo, occupation);
+            logger->Ok("Faculty '" + name + "' added to population.");
         }
         else {
             newPerson = new Person(name, age, gender, CNIC, street, houseNo, occupation, sector);
             logger->Ok("Person '" + name + "' added to population as '" + occupation + "'");
         }
 
-        db->insertPerson(newPerson);
+        int code = addPerson(newPerson);
+        if (code == 0) {}
+        else if (code == 1) logger->Warning("Person already exists!");
+        else logger->Error("Database missing!");
         pressEnterToContinue();
     }
-
     void searchByCNICHandler() {
         cls();
         logger->Title("SEARCH PERSON BY CNIC");
-
         string cnic;
         logger->Prompt("Enter CNIC to search: ");
         getline(cin, cnic);
 
-        Person* person = db->searchPerson(cnic);
-
-        if(!person) {
-            logger->Warning("No person found with CNIC: " + cnic);
-			pressEnterToContinue();
-			return;
+        if (cnic == "") {
+            logger->Warning("CNIC cannot be empty!");
+            return pressEnterToContinue();
         }
-        
+
+        Person* person = searchPersonByCNIC(cnic);
+        if (!person) {
+            logger->Warning("No person found with CNIC: " + cnic);
+            return pressEnterToContinue();
+        }
+
+        logger->Ok("Person Found!");
+        logger->Info("Name        : " + person->name);
+        logger->Info("CNIC        : " + person->CNIC);
+        logger->Info("Age         : " + to_string(person->age));
+        logger->Info("Gender      : " + string(1, person->gender));
+        logger->Info("Occupation  : " + person->occupation);
+        logger->Info("Address     : House #" + to_string(person->houseNo) + ", " + person->street + ", " + person->sector);
+
         if (person->occupation == "doctor" || person->occupation == "Doctor" || person->occupation == "DOCTOR") {
             Doctor* doc = dynamic_cast<Doctor*>(person);
-            logger->Ok("Person Found!");
-            logger->Info("Name           : " + person->name);
-            logger->Info("CNIC           : " + person->CNIC);
-            logger->Info("Age            : " + to_string(person->age));
-            logger->Info("Gender         : " + string(1, person->gender));
-            logger->Info("Occupation     : " + person->occupation);
-            logger->Info("Address        : House #" + to_string(person->houseNo) + ", " + person->street + ", " + person->sector);
             logger->Info("Specialization : " + doc->specialization);
-        }
-        else {
-			logger->Ok("Person Found!");
-            logger->Info("Name         : " + person->name);
-            logger->Info("CNIC         : " + person->CNIC);
-            logger->Info("Age          : " + to_string(person->age));
-            logger->Info("Gender       : " + string(1, person->gender));
-            logger->Info("Occupation   : " + person->occupation);
-            logger->Info("Address      : House #" + to_string(person->houseNo) + ", " + person->street + ", " + person->sector);
         }
         pressEnterToContinue();
     }
 
     void generateAgeReport() {
 
-		int oneToEighteen = 0;
-		int nineteenTo25 = 0;
-		int twentySixTo40 = 0;
-		int fortyOneTo60 = 0;
-		int sixtyOnePlus = 0;
+        int oneToEighteen = 0;
+        int nineteenTo25 = 0;
+        int twentySixTo40 = 0;
+        int fortyOneTo60 = 0;
+        int sixtyOnePlus = 0;
 
         for (int i = 0; i < db->getPeopleTableSize(); i++) {
             PersonNode* current = db->getPersonAt(i);
@@ -157,23 +146,23 @@ public:
             }
         }
 
-		logger->Info("Population Age Report:");
-		logger->Info("Age 1-18      : " + to_string(oneToEighteen));
-		logger->Info("Age 19-25     : " + to_string(nineteenTo25));
-		logger->Info("Age 26-40     : " + to_string(twentySixTo40));
-		logger->Info("Age 41-60     : " + to_string(fortyOneTo60));
-		logger->Info("Age 61+       : " + to_string(sixtyOnePlus));
+        logger->Info("Population Age Report:");
+        logger->Info("Age 1-18      : " + to_string(oneToEighteen));
+        logger->Info("Age 19-25     : " + to_string(nineteenTo25));
+        logger->Info("Age 26-40     : " + to_string(twentySixTo40));
+        logger->Info("Age 41-60     : " + to_string(fortyOneTo60));
+        logger->Info("Age 61+       : " + to_string(sixtyOnePlus));
 
     }
 
     void occupationSummaryReport() {
-        
-    
+
+
     }
 
     void genderRatioReport() {
         int maleCount = 0;
-		int femaleCount = 0;
+        int femaleCount = 0;
 
         for (int i = 0; i < db->getPeopleTableSize(); i++) {
             PersonNode* current = db->getPersonAt(i);
@@ -189,18 +178,18 @@ public:
 
         }
         logger->Info("Gender Ratio Report");
-		logger->Info("Men     : " + to_string(maleCount));
-		logger->Info("Women   : " + to_string(femaleCount));
-    
+        logger->Info("Men     : " + to_string(maleCount));
+        logger->Info("Women   : " + to_string(femaleCount));
+
     }
 
     void generateReportHandler() {
         cls();
-		generateAgeReport();
+        generateAgeReport();
         logger->Info("\n");
         logger->Info("\n");
         logger->Info("\n");
-		genderRatioReport();
+        genderRatioReport();
 
         pressEnterToContinue();
 
@@ -223,11 +212,11 @@ public:
 
             Street* currStreet = currSector->streets;
             if (!currStreet) {
-                logger->Info("   (No streets in this sector)");
+                logger->Info("    (No streets in this sector)");
             }
 
             while (currStreet) {
-                logger->Info("   Street: " + currStreet->name);
+                logger->Info("    Street: " + currStreet->name);
 
                 House* currHouse = currStreet->houses;
                 if (!currHouse) {
@@ -239,11 +228,11 @@ public:
 
                     Person* currPerson = currHouse->occupants;
                     if (!currPerson) {
-                        logger->Info("         (No occupants in this house)");
+                        logger->Info("        (No occupants in this house)");
                     }
 
                     while (currPerson) {
-                        logger->Info("         Person: " + currPerson->name +
+                        logger->Info("          Person: " + currPerson->name +
                             " | Age: " + to_string(currPerson->age) +
                             " | Gender: " + string(1, currPerson->gender) +
                             " | CNIC: " + currPerson->CNIC +
@@ -256,22 +245,21 @@ public:
 
                 currStreet = currStreet->nextStreet;
             }
-			//print buildings in sector
-			BuildingNode** buildings = currSector->buildings;
-			logger->Info("   Buildings in Sector:");
-			for (int i = 0; i < currSector->totalBuildings; i++) {
-				BuildingNode* currBuilding = buildings[i];
-				if (!currBuilding) {
-					logger->Info("      (No buildings of this type)");
-				}
-				else {
-					logger->Info("      " + to_string(i + 1) + ". " + currBuilding->type + "s:");
-					while (currBuilding) {
-						logger->Info("         ID: " + currBuilding->ID);
-						currBuilding = currBuilding->nextBuilding;
-					}
-				}
-			}
+            BuildingNode** buildings = currSector->buildings;
+            logger->Info("    Buildings in Sector:");
+            for (int i = 0; i < currSector->totalBuildings; i++) {
+                BuildingNode* currBuilding = buildings[i];
+                if (!currBuilding) {
+                    logger->Info("      (No buildings of this type)");
+                }
+                else {
+                    logger->Info("      " + to_string(i + 1) + ". " + currBuilding->type + "s:");
+                    while (currBuilding) {
+                        logger->Info("          ID: " + currBuilding->ID);
+                        currBuilding = currBuilding->nextBuilding;
+                    }
+                }
+            }
             currSector = currSector->nextSector;
             logger->Info("-------------------------------------------------");
         }
@@ -293,7 +281,7 @@ public:
         logger->Prompt("Enter House Number: ");
         int houseNo;
         cin >> houseNo;
-        cin.ignore(); // consume leftover newline
+        cin.ignore();
 
         House* house = db->getHouse(sectorName, streetName, houseNo);
         if (!house) {
@@ -309,15 +297,15 @@ public:
 
         Person* currPerson = house->occupants;
         if (!currPerson) {
-            logger->Info("   (No occupants in this house)");
+            logger->Info("    (No occupants in this house)");
         }
         else {
             while (currPerson) {
-                logger->Info("   Name: " + currPerson->name);
-                logger->Info("   Age: " + to_string(currPerson->age));
-                logger->Info("   Gender: " + string(1, currPerson->gender));
-                logger->Info("   CNIC: " + currPerson->CNIC);
-                logger->Info("   Occupation: " + currPerson->occupation);
+                logger->Info("    Name: " + currPerson->name);
+                logger->Info("    Age: " + to_string(currPerson->age));
+                logger->Info("    Gender: " + string(1, currPerson->gender));
+                logger->Info("    CNIC: " + currPerson->CNIC);
+                logger->Info("    Occupation: " + currPerson->occupation);
                 logger->Info("----------------------");
                 currPerson = currPerson->next;
             }
@@ -355,11 +343,11 @@ public:
 
         House* currHouse = street->houses;
         if (!currHouse) {
-            logger->Info("   (No houses in this street)");
+            logger->Info("    (No houses in this street)");
         }
         else {
             while (currHouse) {
-                logger->Info("   House No: " + to_string(currHouse->houseNo));
+                logger->Info("    House No: " + to_string(currHouse->houseNo));
                 Person* currPerson = currHouse->occupants;
                 if (!currPerson) {
                     logger->Info("      (No occupants in this house)");
@@ -394,11 +382,11 @@ public:
 
         Street* currStreet = sector->streets;
         if (!currStreet) {
-            logger->Info("   (No streets in this sector)");
+            logger->Info("    (No streets in this sector)");
         }
         else {
             while (currStreet) {
-                logger->Info("   Street: " + currStreet->name);
+                logger->Info("    Street: " + currStreet->name);
                 House* currHouse = currStreet->houses;
                 if (!currHouse) {
                     logger->Info("      (No houses in this street)");
@@ -408,11 +396,11 @@ public:
                         logger->Info("      House No: " + to_string(currHouse->houseNo));
                         Person* currPerson = currHouse->occupants;
                         if (!currPerson) {
-                            logger->Info("         (No occupants)");
+                            logger->Info("        (No occupants)");
                         }
                         else {
                             while (currPerson) {
-                                logger->Info("         Name: " + currPerson->name);
+                                logger->Info("          Name: " + currPerson->name);
                                 currPerson = currPerson->next;
                             }
                         }
@@ -430,14 +418,14 @@ public:
         logger->Title("SECTOR GRID");
         db->printSectorsInGrid();
         pressEnterToContinue();
-	}
+    }
 
     void printBuildingsGridHandler() {
         cls();
         logger->Title("SECTOR BUILDINGS");
-		string sectorName;
-		logger->Prompt("Enter Sector Name: ");
-		getline(cin, sectorName);
+        string sectorName;
+        logger->Prompt("Enter Sector Name: ");
+        getline(cin, sectorName);
         Sector* sector = db->searchSector(sectorName);
         if (!sector) {
             logger->Warning("Sector '" + sectorName + "' not found.");
@@ -446,5 +434,5 @@ public:
         }
         sector->printBuildingsGrid();
         pressEnterToContinue();
-	}
+    }
 };

@@ -23,7 +23,7 @@ private:
 public:
 	MallSystem(Database* database = nullptr, CityLogger* log = nullptr) : db(database), logger(log) {}
 
-
+    //convert this to int AND REMOVE DB NULLPTR CHECK
     bool addMall(Mall* mall)
     {
         if (!db)
@@ -44,7 +44,7 @@ public:
     }
 
   
-
+    // ADD INPUT VALIDATION
     void registerMallsHandler() {
         cls();
         //cout << ">>> Register Malls - Not implemented yet\n\n";
@@ -77,7 +77,7 @@ public:
         pressEnterToContinue();
     }
 
-
+    //convert this to int AND REMOVE DB NULLPTR CHECK
     bool addProduct(Product product, Mall* mall) {
         if (db == nullptr || mall == nullptr) {
             return false;
@@ -94,6 +94,7 @@ public:
         return true;
     }
 
+    //convert this to int AND REMOVE DB NULLPTR CHECK
     void addItemsHandler() {
         cls();
         //cout << ">>> Add Items to Shops - Not implemented yet\n\n";
@@ -143,6 +144,7 @@ public:
         pressEnterToContinue();
     }
 
+    // ADD INPUT VALIDATION
     void itemSearchHandler() {
         cls();
         //cout << ">>> Item Search (Category Based) - Not implemented yet\n\n";
@@ -200,6 +202,7 @@ public:
         pressEnterToContinue();
     }
 
+    //LEAVE THIS ALONE
     void findNearestMallHandler() {
         cls();
         //cout << ">>> Find Nearest Mall - Not implemented yet\n\n";
@@ -211,10 +214,7 @@ public:
         pressEnterToContinue();
     }
 
-    //print all malls
-
-    //print all items
-
+    //REMOVE DB NULLPTR CHECK
     void listAllMallsHandler() {
         cls();
         logger->Title("LIST OF ALL MALLS");
@@ -240,8 +240,6 @@ public:
     void listAllItemsHandler() {
         cls();
         logger->Title("LIST ALL ITEMS IN ALL MALLS");
-
-        if (!db) return;
 
         for (int i = 0; i < db->getMallTableSize(); i++) {
             MallNode* mallNode = db->getMallAt(i);

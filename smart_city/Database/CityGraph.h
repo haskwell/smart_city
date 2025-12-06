@@ -51,7 +51,7 @@ public:
 
     GraphNode* adjacencyList;
 
-    GraphManager(double thresh = 100.0f)
+    GraphManager(double thresh = 1000.0f)
         : threshold(thresh),
         schoolTag("school"),
         hospitalTag("hospital"),

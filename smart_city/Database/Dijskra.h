@@ -274,15 +274,16 @@ public:
 		printPath(endNode);
 	}
 
-	void findShortestDistanceByType(string startID, string targetType)
+	string findShortestDistanceByType(string startID, string targetType)
 	{
 		resetGraphState();
 
 		GraphNode* startNode = findNodeByID(startID);
+		GraphNode* targetNode = nullptr;
 
 		if (startNode == nullptr)	
 		{
-			return;
+			return "";
 		}
 
 		GraphMinHeap pq(2000);
@@ -302,8 +303,8 @@ public:
 			current->isVisited = true;
 
 			if (current->type == targetType) {
-				printPath(current);
-				return;
+				targetNode = current;
+				break;
 			}
 
 			EdgeNode* edge = current->edgeHead;
@@ -323,6 +324,23 @@ public:
 				edge = edge->nextEdge;
 			}
 		}
+
+		ManualStack pathStack(100);
+		GraphNode* curr = targetNode;
+		while (curr != nullptr) {
+			pathStack.push(curr->ID);
+			curr = curr->previous;
+		}
+
+		string pathStr = "";
+		while (!pathStack.isEmpty()) {
+			pathStr += pathStack.top();
+			pathStack.pop();
+			if (!pathStack.isEmpty())
+				pathStr += " -> ";
+		}
+
+		return pathStr;
 	}
 
 	void printPath(GraphNode* endNode)

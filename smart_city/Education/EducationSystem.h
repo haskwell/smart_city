@@ -23,6 +23,7 @@ public:
 
     EducationSystem(Database* d = nullptr, CityLogger* log = nullptr) : db(d), logger(log) {}
 
+    //convert this to int AND REMOVE DB NULLPTR CHECK
     void registerSchool(School* s) {
         if (!db) return;
         db->insertSchool(*s);
@@ -110,6 +111,7 @@ public:
         }
     }
 
+    //ADD INPUT VALIDATION
     void registerSchoolsHandler() {
         string schoolID, name, sector;
         float rating;
@@ -155,6 +157,8 @@ public:
 
         pressEnterToContinue();
     }
+
+    //ADD INPUT VALIDATION
     void addFacultyHandler() {
         cls();
         logger->Title("Register Faculty");
@@ -234,6 +238,8 @@ public:
         pressEnterToContinue();
         cls();
     }
+
+    //ADD INPUT VALIDATION
     void addStudentsHandler() {
         string schoolId;
 
@@ -328,6 +334,8 @@ public:
         }
         pressEnterToContinue();
     }
+
+    //ADD INPUT VALIDATION
     void addDepartmentHandler() {
         cls();
         logger->Title("ADD NEW DEPARTMENT");
@@ -367,6 +375,8 @@ public:
         cls();
         return;
     }
+
+    //ADD INPUT VALIDATION
     void addClassHandler() {
         cls();
         logger->Title("ADD NEW CLASS");
@@ -423,10 +433,12 @@ public:
         return;
     }
 
+    //implement this by using a simple search over the hash table
     void searchSchoolBySubjectHandler() {
         cout << ">>> Search School by Subject - Not implemented yet\n\n";
     }
 
+    //LEAVE THIS ALONE
     void locateNearestSchoolHandler() {
         cout << ">>> Locate Nearest School - Not implemented yet\n\n";
     }

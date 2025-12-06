@@ -65,9 +65,9 @@ private:
             case 1: transport.registerCompanyHandler(); break;
             case 2: transport.registerBusHandler(); break;
             case 3: transport.addBusStopHandler(); break;
-            case 4: transport.connectStopsHandler(); break;
-            case 5: transport.busSimulation(); break;
-            case 6: transport.shortestRouteHandler(); break;
+            case 4: transport.addBusRouteHandler(); break;
+            case 5: transport.busSimulationWrapper(); break;
+            case 6: transport.findShortestPathByTypeHandler(); break;
             case 7: transport.searchBusHandler(); break;
             case 8: transport.listAllCompanies(); break;
             case 9: transport.listAllBusStops(); break;
@@ -107,10 +107,11 @@ private:
             case 7: medical.searchPatientHandler(); break;
             case 8: medical.searchMedicineHandler(); break;
             case 9: medical.nearestHospitalLookupHandler(); break;
-            case 10: medical.listAllHospitalsHandler(); break;
-            case 11: medical.listAllDoctorsHandler(); break;
-            case 12: medical.listAllPharmaciesHandler(); break;
-            case 13: medical.listAllMedicinesHandler(); break;
+            case 10: medical.nearestPharmacyLookupHandler(); break;
+            case 11: medical.listAllHospitalsHandler(); break;
+            case 12: medical.listAllDoctorsHandler(); break;
+            case 13: medical.listAllPharmaciesHandler(); break;
+            case 14: medical.listAllMedicinesHandler(); break;
             }
         } while (mChoice != 0);
     }

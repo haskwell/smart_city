@@ -6,44 +6,40 @@ class TransportSystem {
 private:
     Database* db;
     CityLogger* logger;
-
-    void registerCompany(string companyName) {
-        if (!db) return;
-
-        BusCompany* com = new BusCompany(companyName);
-        db->insertBusCompany(*com);
-        logger->Ok("Company '" + companyName + "' registered successfully.");
+    //0 -> success
+    //1, 2 -> item missing
+    int registerCompany(string companyName) {
+        if (db->searchBusCompany(companyName))
+            return 1;
+        db->insertBusCompany(*new BusCompany(companyName));
+        return 0;
     }
 
-    void registerBus(string busNo, string companyName, string stopId) {
-        if (!db) return;
-
-		BusCompany* company = db->searchBusCompany(companyName);
-        if (!company) {
-            logger->Error("Company '" + companyName + "' not found.");
-            return;
-        }
-
-        Bus* newBus = new Bus(busNo, companyName);
-        db->insertBusToCompany(companyName, newBus);
-        logger->Ok("Bus '" + busNo + "' registered with company '" + companyName + "'.");
+    int registerBus(string busNo, string companyName, string stopId) {
+        BusCompany* cmp = db->searchBusCompany(companyName);
+        if (!cmp) return 2;
+        if (db->searchBusInCompany(companyName, busNo))
+            return 1;
+        if (!db->searchBusStop(stopId))
+            return 2;
+        db->insertBusToCompany(companyName, new Bus(busNo, companyName));
+        return 0;
     }
 
-    void addBusStopInRoute(string busNo, int stopId) {
-
+    int addBusStop(string name, string stopId, string sector, float lat, float lon) {
+        if (db->searchBusStop(stopId))
+            return 1;
+        db->insertBusStop(*new BusStop(name, stopId, sector, lat, lon));
+        return 0;
     }
 
-    void addBusStop(string name, string stopId, string sector, float lat, float lon) {
-        if (!db) return;
-
-        if (db->searchBusStop(stopId)) {
-            logger->Warning("Bus stop with ID " + stopId + " already exists!");
-            return;
-        }
-
-        BusStop* newStop = new BusStop(name, stopId, sector, lat, lon);
-		db->insertBusStop(*newStop);
-        logger->Ok("Bus stop '" + name + "' added successfully.");
+    int addBusRoute(string companyName, string busNo, string stopId) {
+        Bus* bus = db->searchBusInCompany(companyName, busNo);
+        if (!bus) return 1;
+        BusStop* stop = db->searchBusStop(stopId);
+        if (!stop) return 2;
+        bus->addStop(stopId);
+        return 0;
     }
 
 public:
@@ -51,109 +47,62 @@ public:
 
     void registerCompanyHandler() {
         cls();
-
         logger->Title("REGISTER NEW BUS COMPANY");
-
-        string companyName;
+        string name;
         logger->Prompt("Enter Company Name: ");
-        getline(cin, companyName);
-
-        if (db->searchBusCompany(companyName)) {
-            logger->Warning("Company '" + companyName + "' already exists!");
-            pressEnterToContinue();
-            return;
+        getline(cin, name);
+        if (name == "") {
+            logger->Warning("Company name cannot be empty!");
+            return pressEnterToContinue();
         }
-
-        registerCompany(companyName);
-        logger->Ok(companyName + " has been registered successfully.");
+        int code = registerCompany(name);
+        if (code == 0) logger->Ok("Registered Successfully!");
+        else if (code == 1) logger->Warning("Company already exists!");
+        else logger->Error("Database Missing!");
         pressEnterToContinue();
     }
 
     void registerBusHandler() {
         cls();
-
-        logger->Title("REGISTER NEW BUS");
-
-        string busNo, companyName;
-        string stopId;
-
+        logger->Title("REGISTER BUS");
+        string busNo, company, stopId;
         logger->Prompt("Enter Bus Number: ");
-        cin >> busNo;
-        cin.ignore();
-
+        getline(cin, busNo);
         logger->Prompt("Enter Company Name: ");
-        getline(cin, companyName);
-
-        BusCompany* company = db->searchBusCompany(companyName);
-        if (!company) {
-            logger->Error("Company '" + companyName + "' not found. Please register the company first.");
-            pressEnterToContinue();
-            return;
-        }
-
-        if (db->searchBusInCompany(companyName, busNo)) {
-            logger->Warning("Bus '" + busNo + "' already exists in company '" + companyName + "'!");
-            pressEnterToContinue();
-            return;
-        }
-
-        logger->Prompt("Enter Starting Bus Stop ID: ");
+        getline(cin, company);
+        logger->Prompt("Enter Initial Stop ID: ");
         getline(cin, stopId);
-
-        BusStop* stop = db->searchBusStop(stopId);
-        if (!stop) {
-            logger->Error("Bus stop with ID " + stopId + " not found. Please add the bus stop first.");
-            pressEnterToContinue();
-            return;
+        if (busNo == "" || company == "" || stopId == "") {
+            logger->Warning("All fields must be filled!");
+            return pressEnterToContinue();
         }
-
-        registerBus(busNo, companyName, stopId);
-
-        logger->Ok("Bus '" + busNo + "' has been registered with company '" + companyName + "'.");
+        int code = registerBus(busNo, company, stopId);
+        if (code == 0) logger->Ok("Bus added successfully!");
+        else if (code == 1) logger->Warning("Bus already exists in that company!");
+        else if (code == 2) logger->Error("Company or Bus Stop not found!");
         pressEnterToContinue();
     }
 
     void addBusStopHandler() {
         cls();
-
-        logger->Title("ADD NEW BUS STOP");
-
-        string name;
-        string stopId;
+        logger->Title("ADD BUS STOP");
+        string name, stopId, sector, la, lo;
         float lat, lon;
-
-        logger->Prompt("Enter Bus Stop Name: ");
-        getline(cin, name);
-
-        logger->Prompt("Enter Bus Stop ID: ");
-		getline(cin, stopId);
-
-        if (db->searchBusStop(stopId)) {
-            logger->Warning("Bus stop with ID " + stopId + " already exists!");
-            pressEnterToContinue();
-            return;
+        logger->Prompt("Enter Stop Name: "); getline(cin, name);
+        logger->Prompt("Enter Stop ID: "); getline(cin, stopId);
+        logger->Prompt("Enter Sector: "); getline(cin, sector);
+        logger->Prompt("Enter Latitude: "); getline(cin, la);
+        logger->Prompt("Enter Longitude: "); getline(cin, lo);
+        if (name == "" || stopId == "" || sector == "" || la == "" || lo == "") {
+            logger->Warning("All fields must be filled!");
+            return pressEnterToContinue();
         }
-
-		logger->Prompt("Enter Sector: ");
-		string sector;
-		getline(cin, sector);
-
-        logger->Prompt("Enter Latitude: ");
-        cin >> lat;
-
-        logger->Prompt("Enter Longitude: ");
-        cin >> lon;
-        cin.ignore();
-
-        addBusStop(name, stopId, sector, lat, lon);
-        logger->Ok(name + " has been added successfully.");
-        pressEnterToContinue();
-    }
-
-    void connectStopsHandler() {
-        cls();
-        logger->Prompt("Not implemented");
-
+        lat = stof(la);
+        lon = stof(lo);
+        int code = addBusStop(name, stopId, sector, lat, lon);
+        if (code == 0) logger->Ok("Bus Stop Added!");
+        else if (code == 1) logger->Warning("Bus Stop already exists!");
+        else logger->Error("Database Missing!");
         pressEnterToContinue();
     }
 
@@ -172,7 +121,6 @@ public:
                 BusNode** busTable = companyNode->data.busTable.table;
                 int busTableSize = companyNode->data.busTable.tableSize;
                 int j = 0;
-
                 while (j < busTableSize)
                 {
                     BusNode* currBus = busTable[j];
@@ -185,7 +133,6 @@ public:
                         currBus = currBus->next;
                         delete[] stopInfo;
                     }
-
                     j++;
                 }
                 companyNode = companyNode->next;
@@ -195,35 +142,98 @@ public:
         pressEnterToContinue();
     }
 
-    void shortestRouteHandler() {
-        cls();
+    void busSimulationWrapper() {
+        string cmd = "";
+        while (true) {
+            cls();
+            logger->Title("BUS SIMULATION - LIVE");
+            busSimulation();
+            logger->Prompt("\n[N] Next State    [Q] Quit Simulation : ");
+            getline(cin, cmd);
+            if (cmd == "q" || cmd == "Q") {
+                logger->Ok("Simulation Ended.");
+                pressEnterToContinue();
+                break;
+            }
+        }
+    }
 
-        logger->Prompt("Not implemented");
+    void addBusRouteHandler() {
+        cls();
+        logger->Title("ADD BUS ROUTE");
+        string companyName, busNo;
+        logger->Prompt("Enter Company Name: ");
+        getline(cin, companyName);
+        logger->Prompt("Enter Bus Number: ");
+        getline(cin, busNo);
+        if (companyName == "" || busNo == "") {
+            logger->Warning("Company name & Bus number cannot be empty!");
+            return pressEnterToContinue();
+        }
+        Bus* bus = db->searchBusInCompany(companyName, busNo);
+        if (!bus) {
+            logger->Error("Bus not found! Register bus first.");
+            return pressEnterToContinue();
+        }
+        logger->Info("\nEnter Stop IDs one-by-one.");
+        logger->Info("Type  'done'  when finished.\n");
+        while (true) {
+            string stopId;
+            logger->Prompt("Enter Stop ID: ");
+            getline(cin, stopId);
+            if (stopId == "done" || stopId == "DONE")
+                break;
+            if (stopId == "") {
+                logger->Warning("Stop ID cannot be empty!");
+                continue;
+            }
+            int code = addBusRoute(companyName, busNo, stopId);
+            if (code == 0) logger->Ok("Stop added to route.");
+            else if (code == 1) logger->Error("Bus not found anymore?");
+            else if (code == 2) logger->Warning("Stop doesn't exist in database!");
+        }
+        logger->Ok("\nRoute successfully updated for bus " + busNo);
+        pressEnterToContinue();
+    }
+
+    void findShortestPathByTypeHandler() {
+        cls();
+        logger->Title("FIND SHORTEST PATH TO BUS STOP");
+        string startID;
+        logger->Prompt("Enter Start Node ID: ");
+        getline(cin, startID);
+        string targetType = db->getBusStopTag();
+        if (startID == "") {
+            logger->Warning("Both fields must be filled!");
+            pressEnterToContinue();
+            return;
+        }
+        string path = db->findPathByType(startID, targetType);
+        if (path == "") {
+            logger->Warning("No path found.");
+        }
+        else {
+            logger->Info("Shortest Path: " + path);
+        }
+        logger->Info(path);
         pressEnterToContinue();
     }
 
     void searchBusHandler() {
         cls();
-
         logger->Title("SEARCH BUS");
-
         string busNo, companyName;
-
         logger->Prompt("Enter Company Name: ");
         getline(cin, companyName);
-
         BusCompany* company = db->searchBusCompany(companyName);
         if (!company) {
             logger->Error("Company '" + companyName + "' not found.");
             pressEnterToContinue();
             return;
         }
-
         logger->Prompt("Enter Bus Number: ");
         getline(cin, busNo);
-
         Bus* bus = db->searchBusInCompany(companyName, busNo);
-
         if (bus) {
             logger->Info("Bus Found:");
             logger->Info("Bus Number: " + bus->busNum);
@@ -238,15 +248,15 @@ public:
 
     void listAllCompanies() {
         cls();
-		for (int i = 0; i < db->getBusCompaniesTableSize(); i++) {
+        for (int i = 0; i < db->getBusCompaniesTableSize(); i++) {
             BusCompaniesNode* current = db->getBusCompanyAt(i);
             while (current) {
                 logger->Info("Company: " + current->data.companyName);
-				listAllBusesInCompany(current->data.companyName);
+                listAllBusesInCompany(current->data.companyName);
                 current = current->next;
             }
         }
-		pressEnterToContinue();
+        pressEnterToContinue();
     }
 
     void listAllBusesInCompany(const string& companyName) {
@@ -267,14 +277,14 @@ public:
 
     void listAllBusStops() {
         cls();
-		for (int i = 0; i < db->getBusStopsTableSize(); i++) {
+        for (int i = 0; i < db->getBusStopsTableSize(); i++) {
             BusStopNode* current = db->getBusStopAt(i);
             while (current) {
                 logger->Info("Bus Stop ID: " + current->data.stopId + ", Name: " + current->data.name);
                 current = current->next;
             }
         }
-		pressEnterToContinue();
+        pressEnterToContinue();
     }
 
     void pressEnterToContinue() {
@@ -285,9 +295,4 @@ public:
     void cls() {
         cout << "\033[2J\033[H";
     }
-
-    ~TransportSystem() {
-
-    }
-
 };

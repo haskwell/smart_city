@@ -76,7 +76,7 @@ private:
         "\t1. Register Company",
         "\t2. Register Bus with Route",
         "\t3. Add Bus Stop",
-        "\t4. Connect Stops",
+        "\t4. Add Bus Route",
         "\t5. Bus Simulation",
         "\t6. Find Shortest Path",
         "\t7. Get Bus Details",
@@ -100,7 +100,7 @@ private:
         "\t0. Back"
     };
 
-    const string medicineMenu[16] = {
+    const string medicineMenu[17] = {
         "\t=== MEDICINE MODULE ===",
         "",
         "\t1. Register Hospitals",
@@ -112,10 +112,11 @@ private:
         "\t7. Search Patient",
         "\t8. Search Medicine",
         "\t9. Nearest Hospital Lookup",
-        "\t10. List All Hospitals",
-        "\t11. List All Doctors",
-        "\t12. List All Pharmacies",
-        "\t13. List All Medicines",
+        "\t10. Nearest Pharmacy Lookup",
+        "\t12. List All Hospitals",
+        "\t13. List All Doctors",
+        "\t14. List All Pharmacies",
+        "\t15. List All Medicines",
         "\t0. Back"
     };
 
@@ -190,7 +191,7 @@ public:
     }
 
     int showMedicineMenu() {
-        return getMenuChoice(medicineMenu, 16);
+        return getMenuChoice(medicineMenu, 17);
     }
 
     int showCommercialMenu() {

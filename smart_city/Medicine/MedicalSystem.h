@@ -11,7 +11,7 @@ public:
     Database* db;
     CityLogger* logger;
 
-	HospitalMaxHeap emergencyBedHeap;
+    HospitalMaxHeap emergencyBedHeap;
 
     void pressEnterToContinue() {
         logger->Prompt("Press Enter to continue...");
@@ -20,7 +20,7 @@ public:
 
     void cls() {
         cout << "\033[2J\033[H";
-	}
+    }
 
 public:
     MedicalSystem(Database* database = nullptr,
@@ -37,7 +37,7 @@ public:
         }
 
         db->insertHospital(*h);
-		emergencyBedHeap.insert(h->id, h->emergencyBeds);
+        emergencyBedHeap.insert(h->id, h->emergencyBeds);
         return true;
     }
 
@@ -91,7 +91,7 @@ public:
 
     bool addMedicine(const Medicine& m, Pharmacy* pharmacy) {
         if (!db) return false;
-        
+
         if (pharmacy) {
             if (pharmacy->medicineTable.search(m.name)) {
                 logger->Warning("Medicine '" + m.name + "' already exists in " + pharmacy->name + "!");
@@ -238,7 +238,7 @@ public:
             logger->Error("Registration Failed.");
             pressEnterToContinue();
             return;
-		}
+        }
 
         if (totalMedicines > 0) {
             logger->Prompt("Enter the " + to_string(totalMedicines) + " medicines below:");
@@ -258,11 +258,11 @@ public:
         }
 
         logger->Ok(name + " has been registered.");
-		pressEnterToContinue();
+        pressEnterToContinue();
     }
 
     void addDoctorHandler() {
-    
+
         cls();
 
         logger->Title("REGISTER NEW DOCTOR");
@@ -311,9 +311,9 @@ public:
         cin.ignore();
         bool added = addPatient(newPatient, hospitalID);
         if (!added) {
-			logger->Error("Registration Failed.");
+            logger->Error("Registration Failed.");
             pressEnterToContinue();
-			return;
+            return;
         }
         logger->Ok("Patient " + newPatient->name + " has been added to Hospital ID " + hospitalID + ".");
         pressEnterToContinue();
@@ -330,7 +330,7 @@ public:
         bool beds = emergencyBedHeap.updateBedCount(bedsRequired, hospitalId);
         if (!beds) {
             logger->Error("Not enough beds available");
-			pressEnterToContinue();
+            pressEnterToContinue();
             return;
         }
         else {
@@ -397,7 +397,7 @@ public:
         Pharmacy* pharmacy = db->searchPharmacy(pharmId);
         if (pharmacy == nullptr) {
             logger->Error("Pharmacy not found in the population database. Please add the pharmacy to the database first.");
-			pressEnterToContinue();
+            pressEnterToContinue();
             return;
         }
         string name, formula;
@@ -412,9 +412,9 @@ public:
         cin.ignore();
         bool added = addMedicine(m, pharmacy);
         if (!added) {
-			logger->Error("Failed to add medicine.");
+            logger->Error("Failed to add medicine.");
             pressEnterToContinue();
-			return;
+            return;
         }
         logger->Ok("Medicine " + name + " has been added to Pharmacy " + pharmacy->name + ".");
         pressEnterToContinue();
@@ -520,10 +520,48 @@ public:
     }
 
     void nearestHospitalLookupHandler() {
-
         cls();
+        logger->Title("FIND SHORTEST PATH TO HOSPITAL");
+        string startID;
+        logger->Prompt("Enter Start Node ID: ");
+        getline(cin, startID);
+        string targetType = db->getHospitalTag();
+        if (startID.empty()) {
+            logger->Warning("Empty Field!");
+            pressEnterToContinue();
+            return;
+        }
+        string path = db->findPathByType(startID, targetType);
+        if (path.empty()) {
+            logger->Warning("No path found.");
+        }
+        else {
+            logger->Info("Shortest Path: " + path);
+        }
+        logger->Info(path);
+        pressEnterToContinue();
+    }
 
-        logger->Info(">>> Nearest Hospital Lookup - Not implemented yet");
+    void nearestPharmacyLookupHandler() {
+        cls();
+        logger->Title("FIND SHORTEST PATH TO PHARMACY");
+        string startID;
+        logger->Prompt("Enter Start Node ID: ");
+        getline(cin, startID);
+        string targetType = db->getPharmacyTag();
+        if (startID.empty()) {
+            logger->Warning("Empty Field!");
+            pressEnterToContinue();
+            return;
+        }
+        string path = db->findPathByType(startID, targetType);
+        if (path.empty()) {
+            logger->Warning("No path found.");
+        }
+        else {
+            logger->Info("Shortest Path: " + path);
+        }
+        logger->Info(path);
         pressEnterToContinue();
     }
 };

@@ -65,9 +65,6 @@
     <ClInclude Include="Population\PopulationSystem.h">
       <Filter>Header Files\Population</Filter>
     </ClInclude>
-    <ClInclude Include="Population\PopulationTree.h">
-      <Filter>Header Files\Population</Filter>
-    </ClInclude>
     <ClInclude Include="Public\FacilityGraph.h">
       <Filter>Header Files\Public</Filter>
     </ClInclude>
@@ -80,9 +77,6 @@
     <ClInclude Include="Transport\BusRouteList.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
-    <ClInclude Include="Transport\BusStopGraph.h">
-      <Filter>Header Files\Transport</Filter>
-    </ClInclude>
     <ClInclude Include="Transport\PassengerQueue.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
@@ -90,9 +84,6 @@
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
     <ClInclude Include="Transport\TransportSystem.h">
-      <Filter>Header Files\Transport</Filter>
-    </ClInclude>
-    <ClInclude Include="Transport\BusMinHeap.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
     <ClInclude Include="Medicine\DoctorsHashTable.h">

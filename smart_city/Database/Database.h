@@ -11,6 +11,7 @@
 #include "CityHierarchy.h"
 #include "SectorGrid.h"
 #include "CityGraph.h"
+#include "Dijskra.h"
 #include <string>
 using namespace std;
 
@@ -29,9 +30,12 @@ class Database {
     CityHierarchy cityHierarchy;
 	GraphManager cityGraph;
 
+    CityPathFinder* pathFinder;
+
 public:
 
     Database() {
+        pathFinder = new CityPathFinder(&cityGraph);
 		sectorGrid.setUpGrid(5, 5);
     }
 
@@ -165,6 +169,7 @@ public:
         convertToGlobal(localCoords.x, localCoords.y, secCoords.x, secCoords.y);
         busStop.latitude = localCoords.x;
         busStop.longitude = localCoords.y;
+        cityGraph.add(busStop.name, busStop.latitude, busStop.longitude, cityGraph.busStopTag);
     }
 
 
@@ -241,5 +246,29 @@ public:
     BusCompaniesNode* getBusCompanyAt(int i) { return busCompanies.table[i]; }
     SectorNode* getSectorAt(int i) { return sectors.table[i]; }
     BusStopNode* getBusStopAt(int i) { return busStops.table[i]; }
+
+    string findPathByType(string startId, string type) {
+        return pathFinder->findShortestDistanceByType(startId, type);
+    }
+
+    string getBusStopTag() {
+        return cityGraph.busStopTag;
+    }
+
+    string getFacilityTag() {
+        return cityGraph.publicFacilityTag;
+    }
+
+    string getEducationTag() {
+        return cityGraph.schoolTag;
+    }
+
+    string getHospitalTag() {
+        return cityGraph.hospitalTag;
+    }
+
+    string getPharmacyTag() {
+        return cityGraph.pharmacyTag;
+    }
 
 };

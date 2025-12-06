@@ -159,7 +159,6 @@
     <ClInclude Include="Population\PopulationEntities.h" />
     <ClInclude Include="Population\PopulationHashTable.h" />
     <ClInclude Include="Population\PopulationSystem.h" />
-    <ClInclude Include="Population\PopulationTree.h" />
     <ClInclude Include="Public\FacilityEntities.h" />
     <ClInclude Include="Public\FacilityGraph.h" />
     <ClInclude Include="Public\FacilitySystem.h" />
@@ -169,10 +168,8 @@
     <ClInclude Include="Transport\Bus.h" />
     <ClInclude Include="Transport\BusCompany.h" />
     <ClInclude Include="Transport\BusHashTable.h" />
-    <ClInclude Include="Transport\BusMinHeap.h" />
     <ClInclude Include="Transport\BusRouteList.h" />
     <ClInclude Include="Transport\BusStop.h" />
-    <ClInclude Include="Transport\BusStopGraph.h" />
     <ClInclude Include="Transport\PassengerQueue.h" />
     <ClInclude Include="Transport\RouteHistoryStack.h" />
     <ClInclude Include="Transport\StopSimulator.h" />
