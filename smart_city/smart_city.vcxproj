@@ -135,6 +135,7 @@
     <ClInclude Include="Database\CityGraph.h" />
     <ClInclude Include="Database\CityHierarchy.h" />
     <ClInclude Include="Database\Database.h" />
+    <ClInclude Include="Database\Dijkstra.h" />
     <ClInclude Include="Database\FacilityHashTable.h" />
     <ClInclude Include="Database\SectorGrid.h" />
     <ClInclude Include="Database\HospitalHashTable.h" />

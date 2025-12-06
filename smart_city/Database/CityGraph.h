@@ -25,14 +25,19 @@ public:
 
     EdgeNode* edgeHead;    //Edge list head
 
+	// for Dijkstra's algotithm
+    double minDistance;
+    GraphNode* previous;
+    bool isVisited;
+
     GraphNode(string t = "", string id = "", double lat = 0.0, double longi = 0.0)
-        : type(t), ID(id),
-        next(nullptr),
-        latitude(lat),
-        longitude(longi),
-        nextType(nullptr),
-        edgeHead(nullptr) {
-    }
+        : type(t), ID(id), next(nullptr), latitude(lat), longitude(longi),
+        nextType(nullptr), edgeHead(nullptr),
+        // Initialize new variables
+        minDistance(1000000000.0), // Initialize to a large number
+        previous(nullptr),
+        isVisited(false)
+    {}
 };
 
 class GraphManager {

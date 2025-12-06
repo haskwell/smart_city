@@ -194,5 +194,8 @@
     <ClInclude Include="Transport\StopSimulator.h">
       <Filter>Header Files\Transport</Filter>
     </ClInclude>
+    <ClInclude Include="Database\Dijkstra.h">
+      <Filter>Header Files\Database</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
