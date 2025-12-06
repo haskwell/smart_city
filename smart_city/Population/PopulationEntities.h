@@ -132,21 +132,20 @@ public:
 	GridNode(int x = 0, int y = 0, string buildingID = "", string t = "") : type(t), xPos(x), yPos(y), buildingID(buildingID) {}
 };
 
-
-
 class Sector {
 public:
 	
 	int rows = 5;
 	int cols = 5;
-
+	int count = 0;
 	int gridSize = rows * cols;
 
-	int centerX = rows / 2;
-	int centerY = cols / 2;
-
-	int currentX = centerX;
-	int currentY = centerY;
+	unsigned int seed = 123456;
+	unsigned int randomNumber() {
+		//Linear Congruential Generator
+		seed = (21433103u * seed + 32183u) % 2143245289u;
+		return seed;
+	}
 
 	GridNode** buildingsGrid;
 
@@ -237,18 +236,35 @@ public:
 
 		// now insert into grid
 		// in order
+		if (count >= rows * cols) {
+			return Coords(-1, -1);
+		}
 
-		for (int i = 0; i < rows; i++)
-		{
-			for (int j = 0; j < cols; j++)
+		int total = rows * cols;
+
+		for (int k = 0; k < total; k++) {
+			int i = randomNumber() % rows;
+			int j = randomNumber() % cols;
+
+			if (buildingsGrid[i][j].buildingID == "")
 			{
-				if (buildingsGrid[i][j].buildingID == "")
-				{
-					buildingsGrid[i][j] = GridNode(i, j, ID, typeTag);
-					return Coords(i, j);
-				}
+				buildingsGrid[i][j] = GridNode(i, j, ID, typeTag);
+				count++;
+				return Coords(i, j);
 			}
 		}
+		//for (int i = 0; i < rows; i++)
+		//{
+		//	for (int j = 0; j < cols; j++)
+		//	{
+		//		if (buildingsGrid[i][j].buildingID == "")
+		//		{
+		//			buildingsGrid[i][j] = GridNode(i, j, ID, typeTag);
+		//			return Coords(i, j);
+		//		}
+		//	}
+		//}
+		return Coords(-1, -1);
 	}
 
 	Coords insertSchool(string ID)
@@ -306,10 +322,6 @@ public:
 		return;
 	}
 
-	void insertHospital()
-	{
-
-	}
 	Street* searchStreet(string name)
 	{
 		Street* curr = streets;
