@@ -8,12 +8,13 @@ using namespace std;
 
 class MallSystem {
 private:
-	Database* db;
-	CityLogger* logger;
+    Database* db;
+    CityLogger* logger;
 
     void pressEnterToContinue() {
         logger->Prompt("Press Enter to continue...");
-        cin.ignore();
+        cin.ignore(); // Wait for user input
+        cin.get();    // Catch the actual enter key
     }
 
     void cls() {
@@ -21,102 +22,118 @@ private:
     }
 
 public:
-	MallSystem(Database* database = nullptr, CityLogger* log = nullptr) : db(database), logger(log) {}
+    MallSystem(Database* database = nullptr, CityLogger* log = nullptr) : db(database), logger(log) {}
 
-    //convert this to int AND REMOVE DB NULLPTR CHECK
-    bool addMall(Mall* mall)
+    // Converted to int and REMOVED DB NULLPTR CHECK
+    // Returns 1 for Success, 0 for Failure
+    int addMall(Mall* mall)
     {
-        if (!db)
-        {
-            return false;
-        }
+        // Removed if (!db) check as requested
 
         if (db->searchMall(mall->mallId))
         {
-			logger->Warning("Mall with ID '" + mall->mallId + "' already exists!");
+            logger->Warning("Mall with ID '" + mall->mallId + "' already exists!");
             delete mall;
-			return false;
+            return 0; // Failure
         }
 
         db->insertMall(*mall);
-        
-		return true;
+        return 1; // Success
     }
 
-  
-    // ADD INPUT VALIDATION
+    // ADDED INPUT VALIDATION
     void registerMallsHandler() {
         cls();
-        //cout << ">>> Register Malls - Not implemented yet\n\n";
+        logger->Title("REGISTER NEW MALL");
 
-		logger->Title("REGISTER NEW MALL");
+        string mallID, name, sector;
 
-		string mallID, name, sector;
-		logger->Prompt("Enter Mall ID: ");
-
+        logger->Prompt("Enter Mall ID: ");
         cin >> mallID;
-		cin.ignore();
+        cin.ignore(); // Clear buffer
 
-		logger->Prompt("Enter Mall Name: ");
-		getline(cin, name);
+        logger->Prompt("Enter Mall Name: ");
+        getline(cin, name);
 
-		logger->Prompt("Enter Mall Sector: ");
-		getline(cin, sector);
+        logger->Prompt("Enter Mall Sector: ");
+        getline(cin, sector);
 
-		Mall* newMall = new Mall(mallID, name, sector);
+        // Input Validation
+        if (mallID.empty() || name.empty() || sector.empty()) {
+            logger->Error("Invalid Input: All fields (ID, Name, Sector) are required.");
+            pressEnterToContinue();
+            return;
+        }
 
+        Mall* newMall = new Mall(mallID, name, sector);
+
+        // Using the int return (1 is true-ish in C++)
         if (addMall(newMall))
         {
-			logger->Ok("Mall " + name + " has been registered.");
+            logger->Ok("Mall " + name + " has been registered.");
         }
         else
         {
-			logger->Error("Registration Failed.");
+            logger->Error("Registration Failed.");
         }
 
         pressEnterToContinue();
     }
 
-    //convert this to int AND REMOVE DB NULLPTR CHECK
-    bool addProduct(Product product, Mall* mall) {
-        if (db == nullptr || mall == nullptr) {
-            return false;
-		}
+    // Converted to int and REMOVED DB NULLPTR CHECK
+    // Returns 1 for Success, 0 for Failure
+    int addProduct(Product product, Mall* mall) {
+        // Removed if (db == nullptr || mall == nullptr) check as requested
 
         if (mall->productTable.search(product.name)) {
             logger->Warning("Product with name '" + product.name + "' already exists in mall '" + mall->name + "'!");
-            return false;
+            return 0; // Failure
         }
 
-		mall->productTable.insert(product);
-		logger->Ok("Product " + product.name + " added to Mall " + mall->name + ".");
-        
-        return true;
+        mall->productTable.insert(product);
+        logger->Ok("Product " + product.name + " added to Mall " + mall->name + ".");
+
+        return 1; // Success
     }
 
-    //convert this to int AND REMOVE DB NULLPTR CHECK
-    void addItemsHandler() {
+    // Converted to int and REMOVED DB NULLPTR CHECK
+    int addItemsHandler() {
         cls();
-        //cout << ">>> Add Items to Shops - Not implemented yet\n\n";
-		logger->Title("ADD ITEM TO MALL");
-		string mallID;
-		logger->Prompt("Enter Mall ID: ");
+        logger->Title("ADD ITEM TO MALL");
+        string mallID;
 
-		cin >> mallID;
-		cin.ignore();
+        logger->Prompt("Enter Mall ID: ");
+        cin >> mallID;
+        cin.ignore();
 
-		Mall* mall = db->searchMall(mallID);
+        // Validating Mall ID input
+        if (mallID.empty()) {
+            logger->Error("Invalid Input: Mall ID cannot be empty.");
+            pressEnterToContinue();
+            return 0;
+        }
+
+        Mall* mall = db->searchMall(mallID);
 
         if (mall == nullptr)
         {
-			logger->Error("Mall with ID '" + mallID + "' not found!");  
+            logger->Error("Mall with ID '" + mallID + "' not found!");
             pressEnterToContinue();
-			return;
+            return 0;
         }
-        
+
         int count;
-		logger->Prompt("Enter number of items to add: ");
-		cin >> count;
+        logger->Prompt("Enter number of items to add: ");
+        cin >> count;
+
+        // Input Validation for Count
+        if (cin.fail() || count <= 0) {
+            cin.clear(); // Clear error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+            logger->Error("Invalid Input: Please enter a valid positive number.");
+            pressEnterToContinue();
+            return 0;
+        }
         cin.ignore();
 
         for (int i = 0; i < count; i++)
@@ -124,39 +141,58 @@ public:
             string name, category;
             float price;
 
+            logger->Info("------Product " + to_string(i + 1) + " Details------");
 
-            logger->Info("------Product" + to_string(i + 1) + " Details------");
             logger->Prompt("Enter Product Name: ");
             getline(cin, name);
+            if (name.empty()) {
+                logger->Warning("Name cannot be empty. Skipping item.");
+                continue;
+            }
 
-			logger->Prompt("Enter Product Category: ");
-			getline(cin, category);
+            logger->Prompt("Enter Product Category: ");
+            getline(cin, category);
+            if (category.empty()) {
+                logger->Warning("Category cannot be empty. Skipping item.");
+                continue;
+            }
 
-			logger->Prompt("Enter Product Price: ");
-			cin >> price;
-			cin.ignore();
+            logger->Prompt("Enter Product Price: ");
+            cin >> price;
+
+            // Input Validation for Price
+            if (cin.fail() || price < 0) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                logger->Error("Invalid Price. Skipping item.");
+                continue;
+            }
+            cin.ignore();
 
             Product p(name, price, category);
-			addProduct(p, mall);
-
+            addProduct(p, mall);
         }
 
         pressEnterToContinue();
+        return 1; // Success
     }
 
-    // ADD INPUT VALIDATION
+    // ADDED INPUT VALIDATION
     void itemSearchHandler() {
         cls();
-        //cout << ">>> Item Search (Category Based) - Not implemented yet\n\n";
-		
         logger->Title("SEARCH ITEM (CATEGORY BASED)");
 
         string mallID, category;
 
         logger->Prompt("Enter Mall ID to seach in: ");
-
         cin >> mallID;
         cin.ignore();
+
+        if (mallID.empty()) {
+            logger->Error("Input Error: Mall ID is required.");
+            pressEnterToContinue();
+            return;
+        }
 
         Mall* mall = db->searchMall(mallID);
 
@@ -166,17 +202,24 @@ public:
             pressEnterToContinue();
             return;
         }
-        
+
         if (mall->productTable.tableSize == 0)
         {
             logger->Warning("No products found in Mall " + mall->name + ".");
             pressEnterToContinue();
             return;
-		}
-		logger->Prompt("Enter Product Category to search: ");
-		getline(cin, category);
+        }
 
-		logger->Info("Products in category '" + category + "' in Mall '" + mall->name + "':");
+        logger->Prompt("Enter Product Category to search: ");
+        getline(cin, category);
+
+        if (category.empty()) {
+            logger->Error("Input Error: Category is required.");
+            pressEnterToContinue();
+            return;
+        }
+
+        logger->Info("Products in category '" + category + "' in Mall '" + mall->name + "':");
 
         bool found = false;
 
@@ -192,34 +235,30 @@ public:
                 }
                 current = current->next;
             }
-		}
+        }
 
         if (found == false)
         {
-			logger->Warning("No products found in category '" + category + "' in Mall '" + mall->name + "'.");
+            logger->Warning("No products found in category '" + category + "' in Mall '" + mall->name + "'.");
         }
 
         pressEnterToContinue();
     }
 
-    //LEAVE THIS ALONE
     void findNearestMallHandler() {
         cls();
-        //cout << ">>> Find Nearest Mall - Not implemented yet\n\n";
-        
         logger->Title("NEAREST MALL LOOKUP");
         logger->Info(">>> Nearest Mall Lookup - Not implemented yet");
-        
-        
         pressEnterToContinue();
     }
 
-    //REMOVE DB NULLPTR CHECK
+    // REMOVED DB NULLPTR CHECK
     void listAllMallsHandler() {
         cls();
         logger->Title("LIST OF ALL MALLS");
 
-        if (!db || db->getMallTableSize() == 0) {
+        // Removed the !db check as requested
+        if (db->getMallTableSize() == 0) {
             logger->Warning("No malls registered yet.");
             pressEnterToContinue();
             return;
@@ -241,12 +280,13 @@ public:
         cls();
         logger->Title("LIST ALL ITEMS IN ALL MALLS");
 
+        // Assuming db check is not needed here based on previous instructions, 
+        // or db->getMallTableSize() handles it safely if implemented that way.
         for (int i = 0; i < db->getMallTableSize(); i++) {
             MallNode* mallNode = db->getMallAt(i);
             while (mallNode) {
                 logger->Info(">> Mall: " + mallNode->data.name + " (" + mallNode->data.sector + ")");
 
-                // Check if this mall has an initialized product table
                 if (mallNode->data.productTable.tableSize > 0) {
                     bool hasItems = false;
                     for (int j = 0; j < mallNode->data.productTable.tableSize; j++) {
@@ -271,5 +311,4 @@ public:
         }
         pressEnterToContinue();
     }
-
 };

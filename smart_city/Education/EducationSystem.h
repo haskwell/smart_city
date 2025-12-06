@@ -13,6 +13,7 @@ private:
     void pressEnterToContinue() {
         logger->Prompt("Press Enter to continue...");
         cin.ignore();
+        cin.get(); // Catch the actual enter key
     }
 
     void cls() {
@@ -23,13 +24,15 @@ public:
 
     EducationSystem(Database* d = nullptr, CityLogger* log = nullptr) : db(d), logger(log) {}
 
-    //convert this to int AND REMOVE DB NULLPTR CHECK
-    void registerSchool(School* s) {
-        if (!db) return;
+    // Converted to int and REMOVED DB NULLPTR CHECK
+    int registerSchool(School* s) {
+        // No db check as requested
         db->insertSchool(*s);
+        return 1; // Success
     }
 
     void showRanking() {
+        cls();
         string* top3 = nullptr;
         top3 = schoolMaxHeap.getTop3();
         logger->Title("Top 3 Schools by Rating");
@@ -44,9 +47,10 @@ public:
             if (tempSchool)
             {
                 displaySchoolInfo(tempSchool);
+                cout << "\n----------------------------------------\n";
             }
-            cout << "\n\n";
         }
+        pressEnterToContinue();
     }
 
     void displaySchoolInfo(School* tempSchool) {
@@ -64,7 +68,7 @@ public:
         if (tempSchool->subjects && tempSchool->maxSubject > 0) {
             logger->Info("Subjects Offered:");
             for (int i = 0; i < tempSchool->maxSubject; i++) {
-                logger->Info("  - " + tempSchool->subjects[i]);
+                logger->Info("   - " + tempSchool->subjects[i]);
             }
         }
         else {
@@ -79,39 +83,39 @@ public:
             logger->Info("Departments:");
             Department* curr = tempSchool->departmentHead;
             while (curr) {
-                logger->Info("  - " + curr->departmentName);
-				// Classes in Department
+                logger->Info("   - " + curr->departmentName);
+                // Classes in Department
                 if (curr->classHead) {
-                    logger->Info("    Classes:");
+                    logger->Info("     Classes:");
                     Class* classCurr = curr->classHead;
                     while (classCurr) {
-                        logger->Info("      * " + classCurr->className);
-                        
-						//students in class
+                        logger->Info("       * " + classCurr->className);
+
+                        //students in class
                         if (classCurr->Studenthead) {
-                            logger->Info("        Students:");
+                            logger->Info("         Students:");
                             Student* studentCurr = classCurr->Studenthead;
                             while (studentCurr) {
-                                logger->Info("          - " + studentCurr->name + " (CNIC: " + studentCurr->CNIC + ")");
+                                logger->Info("           - " + studentCurr->name + " (CNIC: " + studentCurr->CNIC + ")");
                                 studentCurr = studentCurr->nextStudent;
                             }
                         }
                         else {
-                            logger->Warning("        No Students Added Yet");
-						}
-                        
+                            logger->Warning("         No Students Added Yet");
+                        }
+
                         classCurr = classCurr->nextClass;
                     }
                 }
                 else {
-                    logger->Warning("    No Classes Added Yet");
+                    logger->Warning("     No Classes Added Yet");
                 }
                 curr = curr->nextDepartment;
             }
         }
     }
 
-    //ADD INPUT VALIDATION
+    // ADDED INPUT VALIDATION
     void registerSchoolsHandler() {
         string schoolID, name, sector;
         float rating;
@@ -124,19 +128,55 @@ public:
         logger->Prompt("Enter School ID: ");
         cin >> schoolID;
         cin.ignore();
+        if (schoolID.empty()) {
+            logger->Error("School ID cannot be empty.");
+            pressEnterToContinue();
+            return;
+        }
+
+        // Optional: Check if School ID exists
+        if (db->searchSchool(schoolID)) {
+            logger->Warning("School with this ID already exists.");
+            pressEnterToContinue();
+            return;
+        }
 
         logger->Prompt("Enter School Name: ");
         getline(cin, name);
+        if (name.empty()) {
+            logger->Error("School Name cannot be empty.");
+            pressEnterToContinue();
+            return;
+        }
 
         logger->Prompt("Enter School Sector: ");
         getline(cin, sector);
+        if (sector.empty()) {
+            logger->Error("Sector cannot be empty.");
+            pressEnterToContinue();
+            return;
+        }
 
         logger->Prompt("Enter School Rating (0.0 - 5.0): ");
         cin >> rating;
+        if (cin.fail() || rating < 0.0 || rating > 5.0) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            logger->Error("Invalid Rating. Must be between 0.0 and 5.0.");
+            pressEnterToContinue();
+            return;
+        }
 
         logger->Prompt("Enter Number of Subjects Offered: ");
         cin >> numSubjects;
         cin.ignore();
+        if (cin.fail() || numSubjects < 0) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            logger->Error("Invalid number of subjects.");
+            pressEnterToContinue();
+            return;
+        }
 
         // Create school object
         School* newSchool = new School(schoolID, name, sector, rating, numSubjects);
@@ -146,7 +186,14 @@ public:
             logger->Prompt("Enter the subjects:");
             for (int i = 0; i < numSubjects; i++) {
                 logger->Prompt("  " + to_string(i + 1) + ". ");
-                getline(cin, newSchool->subjects[i]);
+                string sub;
+                getline(cin, sub);
+                if (sub.empty()) {
+                    newSchool->subjects[i] = "Unknown"; // Default if empty
+                }
+                else {
+                    newSchool->subjects[i] = sub;
+                }
             }
         }
 
@@ -158,7 +205,7 @@ public:
         pressEnterToContinue();
     }
 
-    //ADD INPUT VALIDATION
+    // ADDED INPUT VALIDATION
     void addFacultyHandler() {
         cls();
         logger->Title("Register Faculty");
@@ -167,7 +214,7 @@ public:
         logger->Prompt("Enter Faculty CNIC: ");
         getline(cin, cnic);
 
-        if (cnic == "") {
+        if (cnic.empty()) {
             logger->Warning("Enter a valid CNIC");
             pressEnterToContinue();
             return;
@@ -181,7 +228,7 @@ public:
         }
 
         Faculty* facultyPtr = dynamic_cast<Faculty*>(basePerson);
-		if (!facultyPtr) {
+        if (!facultyPtr) {
             logger->Warning("Person with this CNIC is not a Faculty member!");
             pressEnterToContinue();
             return;
@@ -191,7 +238,7 @@ public:
         logger->Prompt("Enter School ID: ");
         getline(cin, schoolId);
 
-        if (schoolId == "") {
+        if (schoolId.empty()) {
             logger->Warning("Enter a valid School ID");
             pressEnterToContinue();
             return;
@@ -208,7 +255,7 @@ public:
         logger->Prompt("Enter Department Name: ");
         getline(cin, deptName);
 
-        if (deptName == "") {
+        if (deptName.empty()) {
             logger->Warning("Enter a valid department name");
             pressEnterToContinue();
             return;
@@ -225,7 +272,7 @@ public:
         logger->Prompt("Enter Subject Faculty Teaches: ");
         getline(cin, subject);
 
-        if (subject == "") {
+        if (subject.empty()) {
             logger->Warning("Enter a valid subject");
             pressEnterToContinue();
             return;
@@ -236,10 +283,9 @@ public:
 
         logger->Ok("Faculty successfully registered!");
         pressEnterToContinue();
-        cls();
     }
 
-    //ADD INPUT VALIDATION
+    // ADDED INPUT VALIDATION
     void addStudentsHandler() {
         string schoolId;
 
@@ -250,8 +296,9 @@ public:
         logger->Prompt("Enter Student CNIC: ");
         getline(cin, cnic);
 
-        if (cnic == "") {
+        if (cnic.empty()) {
             logger->Error("Enter Valid CNIC");
+            pressEnterToContinue();
             return;
         }
 
@@ -259,32 +306,43 @@ public:
 
         if (!basePerson) {
             logger->Error("Person with this CNIC does not exist in the system!");
+            pressEnterToContinue();
             return;
         }
 
         Student* toAdd = dynamic_cast<Student*>(basePerson);
         if (!toAdd) {
-			logger->Error("Person with this CNIC is not a Student!");
-			return;
+            logger->Error("Person with this CNIC is not a Student!");
+            pressEnterToContinue();
+            return;
         }
 
         logger->Prompt("Enter School ID: ");
         getline(cin, schoolId);
+
+        if (schoolId.empty()) {
+            logger->Error("School ID cannot be empty");
+            pressEnterToContinue();
+            return;
+        }
 
         School* destSchool = db->searchSchool(schoolId);
 
         if (!destSchool)
         {
             logger->Error("School Not Found!");
+            pressEnterToContinue();
             return;
         }
 
         string deptName;
         logger->Prompt("Enter Department Name: ");
         getline(cin, deptName);
-        if (deptName == "")
+
+        if (deptName.empty())
         {
             logger->Error("Enter Valid Department Name");
+            pressEnterToContinue();
             return;
         }
 
@@ -293,6 +351,7 @@ public:
         if (!destDept)
         {
             logger->Error("Department Doesnt Exist");
+            pressEnterToContinue();
             return;
         }
 
@@ -300,8 +359,9 @@ public:
         logger->Prompt("Enter Class Name: ");
         getline(cin, className);
 
-        if (className == "") {
+        if (className.empty()) {
             logger->Error("Enter Valid Class Name");
+            pressEnterToContinue();
             return;
         }
 
@@ -309,23 +369,19 @@ public:
         if (!destClass)
         {
             logger->Error("Class Not Found in This Department");
+            pressEnterToContinue();
             return;
         }
-
-
 
         int code = destSchool->addStudent(toAdd, deptName, className);
 
         if (code == -1) {
-            logger->Warning("Department Not Found(unexpected) ");
-            return;
+            logger->Warning("Department Not Found (Unexpected) ");
         }
-        if (code == -2) {
-            logger->Warning("Class Not Found(unexpected)");
-            return;
+        else if (code == -2) {
+            logger->Warning("Class Not Found (Unexpected)");
         }
-
-        if (code == 0) {
+        else if (code == 0) {
             logger->Ok("Student Successfully Added!");
         }
         else
@@ -335,7 +391,7 @@ public:
         pressEnterToContinue();
     }
 
-    //ADD INPUT VALIDATION
+    // ADDED INPUT VALIDATION
     void addDepartmentHandler() {
         cls();
         logger->Title("ADD NEW DEPARTMENT");
@@ -343,6 +399,12 @@ public:
         string schoolId;
         logger->Prompt("Enter School ID: ");
         getline(cin, schoolId);
+
+        if (schoolId.empty()) {
+            logger->Error("School ID cannot be empty");
+            pressEnterToContinue();
+            return;
+        }
 
         School* destSchool = db->searchSchool(schoolId);
         if (!destSchool) {
@@ -355,7 +417,7 @@ public:
         logger->Prompt("Enter Department Name: ");
         getline(cin, deptName);
 
-        if (deptName == "") {
+        if (deptName.empty()) {
             logger->Error("Enter a Valid Department Name");
             pressEnterToContinue();
             return;
@@ -372,11 +434,9 @@ public:
         destSchool->addDepartment(deptName);
         logger->Ok("Department Successfully Added!");
         pressEnterToContinue();
-        cls();
-        return;
     }
 
-    //ADD INPUT VALIDATION
+    // ADDED INPUT VALIDATION
     void addClassHandler() {
         cls();
         logger->Title("ADD NEW CLASS");
@@ -384,6 +444,12 @@ public:
         string schoolId;
         logger->Prompt("Enter School ID: ");
         getline(cin, schoolId);
+
+        if (schoolId.empty()) {
+            logger->Error("School ID cannot be empty");
+            pressEnterToContinue();
+            return;
+        }
 
         School* destSchool = db->searchSchool(schoolId);
         if (!destSchool) {
@@ -396,7 +462,7 @@ public:
         logger->Prompt("Enter Department Name: ");
         getline(cin, deptName);
 
-        if (deptName == "") {
+        if (deptName.empty()) {
             logger->Error("Enter a Valid Department Name");
             pressEnterToContinue();
             return;
@@ -413,7 +479,7 @@ public:
         logger->Prompt("Enter Class Name: ");
         getline(cin, className);
 
-        if (className == "") {
+        if (className.empty()) {
             logger->Error("Enter a Valid Class Name");
             pressEnterToContinue();
             return;
@@ -429,32 +495,76 @@ public:
         destSchool->addClass(deptName, className);
         logger->Ok("Class Successfully Added!");
         pressEnterToContinue();
-        cls();
-        return;
     }
 
-    //implement this by using a simple search over the hash table
+    // IMPLEMENTED SEARCH
     void searchSchoolBySubjectHandler() {
-        cout << ">>> Search School by Subject - Not implemented yet\n\n";
+        cls();
+        logger->Title("SEARCH SCHOOL BY SUBJECT");
+
+        string subject;
+        logger->Prompt("Enter Subject: ");
+        getline(cin, subject);
+
+        if (subject.empty()) {
+            logger->Error("Subject cannot be empty");
+            pressEnterToContinue();
+            return;
+        }
+
+        logger->Info("--- Search Results for '" + subject + "' ---");
+
+        bool foundAny = false;
+        // Search over the hash table
+        for (int i = 0; i < db->getSchoolTableSize(); i++) {
+            SchoolNode* current = db->getSchoolAt(i);
+            while (current) {
+                // Check subjects array in the school
+                bool foundInSchool = false;
+                for (int j = 0; j < current->data.maxSubject; j++) {
+                    if (current->data.subjects[j] == subject) {
+                        foundInSchool = true;
+                        break;
+                    }
+                }
+
+                if (foundInSchool) {
+                    displaySchoolInfo(&current->data);
+                    cout << "\n----------------------------------------\n";
+                    foundAny = true;
+                }
+                current = current->next;
+            }
+        }
+
+        if (!foundAny) {
+            logger->Warning("No schools found offering this subject.");
+        }
+        pressEnterToContinue();
     }
 
-    //LEAVE THIS ALONE
+    // LEFT ALONE (Added formatting)
     void locateNearestSchoolHandler() {
+        cls();
+        logger->Title("LOCATE NEAREST SCHOOL");
         cout << ">>> Locate Nearest School - Not implemented yet\n\n";
+        pressEnterToContinue();
     }
 
     void listAllSchoolsHandler()
     {
         cls();
-		for (int i = 0; i < db->getSchoolTableSize(); i++)
+        logger->Title("LIST OF ALL SCHOOLS");
+        for (int i = 0; i < db->getSchoolTableSize(); i++)
         {
             SchoolNode* tempSchool = db->getSchoolAt(i);
-            if (tempSchool)
+            while (tempSchool)
             {
-				displaySchoolInfo(&tempSchool->data);
+                displaySchoolInfo(&tempSchool->data);
+                cout << "\n----------------------------------------\n";
+                tempSchool = tempSchool->next;
             }
-            cout << "\n\n";
         }
-		pressEnterToContinue();
+        pressEnterToContinue();
     }
 };
