@@ -274,6 +274,57 @@ public:
 		printPath(endNode);
 	}
 
+	void findShortestDistanceByType(string startID, string targetType)
+	{
+		resetGraphState();
+
+		GraphNode* startNode = findNodeByID(startID);
+
+		if (startNode == nullptr)	
+		{
+			return;
+		}
+
+		GraphMinHeap pq(2000);
+
+		startNode->minDistance = 0.0;
+		pq.insert(startNode);
+
+		while (!pq.isEmpty())
+		{
+			GraphNode* current = pq.extractMin();
+
+			if (current->isVisited == true)
+			{
+				continue;
+			}
+
+			current->isVisited = true;
+
+			if (current->type == targetType) {
+				printPath(current);
+				return;
+			}
+
+			EdgeNode* edge = current->edgeHead;
+
+			while (edge != nullptr)
+			{
+				GraphNode* neighbor = edge->to;
+				double newDist = current->minDistance + edge->weight;
+
+				if (newDist < neighbor->minDistance)
+				{
+					neighbor->minDistance = newDist;
+					neighbor->previous = current;
+					pq.insert(neighbor);
+				}
+
+				edge = edge->nextEdge;
+			}
+		}
+	}
+
 	void printPath(GraphNode* endNode)
 	{
 		// If distance is still "Infinity", no path was found

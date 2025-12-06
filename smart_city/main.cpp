@@ -4,75 +4,77 @@
 void seed(SmartCity& city) {
     Database& db = *city.db;
 
-    // Create 25 sectors: S1, S2, ..., S25
-    vector<string> sectors;
-    for (int s = 1; s <= 25; s++) {
-        sectors.push_back("S" + to_string(s));
-    }
+    // Define 5 sectors
+    vector<string> sectors = { "S1", "S2", "S3", "S4", "S5" };
 
-    for (const string& sector : sectors) {
-        // 5 hospitals per sector
-        for (int i = 1; i <= 5; i++) {
-            Hospital hospital(
-                "H" + sector + to_string(i),
-                "Hospital " + to_string(i),
-                50 + i * 5,
-                sector,
-                3
-            );
-            db.insertHospital(hospital);
+    for (int i = 0; i < sectors.size(); i++) {
+        const string& sector = sectors[i];
+
+        switch (i) {
+        case 0: // Sector S1: Hospitals
+            for (int j = 1; j <= 5; j++) {
+                Hospital hospital(
+                    "H" + sector + to_string(j),
+                    "Hospital " + to_string(j),
+                    50 + j * 5,
+                    sector,
+                    3
+                );
+                db.insertHospital(hospital);
+            }
+            break;
+
+        case 1: // Sector S2: Pharmacies
+            for (int j = 1; j <= 5; j++) {
+                Pharmacy pharmacy(
+                    "P" + sector + to_string(j),
+                    "Pharmacy " + to_string(j),
+                    sector
+                );
+                db.insertPharmacy(pharmacy);
+            }
+            break;
+
+        case 2: // Sector S3: Schools
+            for (int j = 1; j <= 5; j++) {
+                School school(
+                    "Sch" + sector + to_string(j),
+                    "School " + to_string(j),
+                    sector,
+                    3.5 + (j % 2),
+                    5
+                );
+                db.insertSchool(school);
+            }
+            break;
+
+        case 3: // Sector S4: Malls
+            for (int j = 1; j <= 5; j++) {
+                Mall mall(
+                    "M" + sector + to_string(j),
+                    "Mall " + to_string(j),
+                    sector
+                );
+                db.insertMall(mall);
+            }
+            break;
+
+        case 4: // Sector S5: Facilities
+            for (int j = 1; j <= 5; j++) {
+                Facility facility(
+                    "Facility",
+                    "F" + sector + to_string(j),
+                    "Facility " + to_string(j),
+                    sector
+                );
+                db.insertFacility(facility);
+            }
+            break;
         }
-
-        // 5 pharmacies per sector
-        for (int i = 1; i <= 5; i++) {
-            Pharmacy pharmacy(
-                "P" + sector + to_string(i),
-                "Pharmacy " + to_string(i),
-                sector
-            );
-            db.insertPharmacy(pharmacy);
-        }
-
-        // 5 schools per sector
-        for (int i = 1; i <= 5; i++) {
-            School school(
-                "S" + sector + to_string(i),
-                "School " + to_string(i),
-                sector,
-                3.5 + (i % 2),
-                5
-            );
-            db.insertSchool(school);
-        }
-
-        // 5 malls per sector
-        for (int i = 1; i <= 5; i++) {
-            Mall mall(
-                "M" + sector + to_string(i),
-                "Mall " + to_string(i),
-                sector
-            );
-            db.insertMall(mall);
-        }
-
-        // 5 facilities per sector
-        for (int i = 1; i <= 5; i++) {
-            Facility facility(
-                "Facility",               // type
-                "F" + sector + to_string(i), // id
-                "Facility " + to_string(i),  // name
-                sector                       // sector
-            );
-            db.insertFacility(facility);
-        }
-
-
     }
 
     db.makeEdges();
 }
-
-
 
 int main() {
 	srand(static_cast<unsigned int>(time(0)));
