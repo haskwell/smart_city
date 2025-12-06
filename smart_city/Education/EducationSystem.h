@@ -13,7 +13,6 @@ private:
     void pressEnterToContinue() {
         logger->Prompt("Press Enter to continue...");
         cin.ignore();
-        cin.get(); // Catch the actual enter key
     }
 
     void cls() {
@@ -24,11 +23,9 @@ public:
 
     EducationSystem(Database* d = nullptr, CityLogger* log = nullptr) : db(d), logger(log) {}
 
-    // Converted to int and REMOVED DB NULLPTR CHECK
     int registerSchool(School* s) {
-        // No db check as requested
         db->insertSchool(*s);
-        return 1; // Success
+        return 0;
     }
 
     void showRanking() {
@@ -115,7 +112,6 @@ public:
         }
     }
 
-    // ADDED INPUT VALIDATION
     void registerSchoolsHandler() {
         string schoolID, name, sector;
         float rating;
@@ -134,7 +130,6 @@ public:
             return;
         }
 
-        // Optional: Check if School ID exists
         if (db->searchSchool(schoolID)) {
             logger->Warning("School with this ID already exists.");
             pressEnterToContinue();
@@ -178,10 +173,8 @@ public:
             return;
         }
 
-        // Create school object
         School* newSchool = new School(schoolID, name, sector, rating, numSubjects);
 
-        // Input subjects
         if (numSubjects > 0) {
             logger->Prompt("Enter the subjects:");
             for (int i = 0; i < numSubjects; i++) {
@@ -189,7 +182,7 @@ public:
                 string sub;
                 getline(cin, sub);
                 if (sub.empty()) {
-                    newSchool->subjects[i] = "Unknown"; // Default if empty
+                    newSchool->subjects[i] = "Unknown";
                 }
                 else {
                     newSchool->subjects[i] = sub;
@@ -197,7 +190,6 @@ public:
             }
         }
 
-        // Register the school
         registerSchool(newSchool);
         schoolMaxHeap.insert(newSchool->schoolID, newSchool->rating);
         logger->Ok("\"" + name + "\" has been registered.");
@@ -205,7 +197,6 @@ public:
         pressEnterToContinue();
     }
 
-    // ADDED INPUT VALIDATION
     void addFacultyHandler() {
         cls();
         logger->Title("Register Faculty");
@@ -285,7 +276,6 @@ public:
         pressEnterToContinue();
     }
 
-    // ADDED INPUT VALIDATION
     void addStudentsHandler() {
         string schoolId;
 
@@ -391,7 +381,6 @@ public:
         pressEnterToContinue();
     }
 
-    // ADDED INPUT VALIDATION
     void addDepartmentHandler() {
         cls();
         logger->Title("ADD NEW DEPARTMENT");
@@ -436,7 +425,6 @@ public:
         pressEnterToContinue();
     }
 
-    // ADDED INPUT VALIDATION
     void addClassHandler() {
         cls();
         logger->Title("ADD NEW CLASS");
@@ -497,7 +485,6 @@ public:
         pressEnterToContinue();
     }
 
-    // IMPLEMENTED SEARCH
     void searchSchoolBySubjectHandler() {
         cls();
         logger->Title("SEARCH SCHOOL BY SUBJECT");
@@ -515,11 +502,9 @@ public:
         logger->Info("--- Search Results for '" + subject + "' ---");
 
         bool foundAny = false;
-        // Search over the hash table
         for (int i = 0; i < db->getSchoolTableSize(); i++) {
             SchoolNode* current = db->getSchoolAt(i);
             while (current) {
-                // Check subjects array in the school
                 bool foundInSchool = false;
                 for (int j = 0; j < current->data.maxSubject; j++) {
                     if (current->data.subjects[j] == subject) {
@@ -543,11 +528,26 @@ public:
         pressEnterToContinue();
     }
 
-    // LEFT ALONE (Added formatting)
     void locateNearestSchoolHandler() {
         cls();
-        logger->Title("LOCATE NEAREST SCHOOL");
-        cout << ">>> Locate Nearest School - Not implemented yet\n\n";
+        logger->Title("FIND SHORTEST PATH TO SCHOOL");
+        string startID;
+        logger->Prompt("Enter Start Node ID: ");
+        getline(cin, startID);
+        string targetType = db->getEducationTag();
+        if (startID == "") {
+            logger->Warning("Empty Field!");
+            pressEnterToContinue();
+            return;
+        }
+        string path = db->findPathByType(startID, targetType);
+        if (path == "") {
+            logger->Warning("No path found.");
+        }
+        else {
+            logger->Info("Shortest Path: " + path);
+        }
+        logger->Info(path);
         pressEnterToContinue();
     }
 

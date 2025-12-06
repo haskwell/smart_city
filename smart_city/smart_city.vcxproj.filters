@@ -44,9 +44,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Commercial\MallGraph.h">
-      <Filter>Header Files\Commercial</Filter>
-    </ClInclude>
     <ClInclude Include="Commercial\ProductHashTable.h">
       <Filter>Header Files\Commercial</Filter>
     </ClInclude>
@@ -64,9 +61,6 @@
     </ClInclude>
     <ClInclude Include="Population\PopulationSystem.h">
       <Filter>Header Files\Population</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\FacilityGraph.h">
-      <Filter>Header Files\Public</Filter>
     </ClInclude>
     <ClInclude Include="Public\FacilitySystem.h">
       <Filter>Header Files\Public</Filter>
@@ -115,12 +109,6 @@
     </ClInclude>
     <ClInclude Include="Commercial\MallEntities.h">
       <Filter>Header Files\Commercial</Filter>
-    </ClInclude>
-    <ClInclude Include="Medicine\HospitalGraph.h">
-      <Filter>Header Files\Medicine</Filter>
-    </ClInclude>
-    <ClInclude Include="Medicine\PharmacyGraph.h">
-      <Filter>Header Files\Medicine</Filter>
     </ClInclude>
     <ClInclude Include="Education\EducationEntities.h">
       <Filter>Header Files\Education</Filter>

@@ -204,7 +204,7 @@ public:
         getline(cin, startID);
         string targetType = db->getBusStopTag();
         if (startID == "") {
-            logger->Warning("Both fields must be filled!");
+            logger->Warning("Empty Field!");
             pressEnterToContinue();
             return;
         }

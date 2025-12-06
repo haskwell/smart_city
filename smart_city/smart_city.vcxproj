@@ -127,7 +127,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Commercial\MallEntities.h" />
-    <ClInclude Include="Commercial\MallGraph.h" />
     <ClInclude Include="Commercial\ProductHashTable.h" />
     <ClInclude Include="Commercial\MallSystem.h" />
     <ClInclude Include="Database\BusCompaniesHashTable.h" />
@@ -149,18 +148,15 @@
     <ClInclude Include="Education\SchoolMaxHeap.h" />
     <ClInclude Include="Medicine\DoctorsHashTable.h" />
     <ClInclude Include="Medicine\HospitalEntities.h" />
-    <ClInclude Include="Medicine\HospitalGraph.h" />
     <ClInclude Include="Medicine\HospitalMaxHeap.h" />
     <ClInclude Include="Medicine\MedicalSystem.h" />
     <ClInclude Include="Medicine\Medicine.h" />
     <ClInclude Include="Medicine\PatientHashTable.h" />
-    <ClInclude Include="Medicine\PharmacyGraph.h" />
     <ClInclude Include="Medicine\MedicineHashTable.h" />
     <ClInclude Include="Population\PopulationEntities.h" />
     <ClInclude Include="Population\PopulationHashTable.h" />
     <ClInclude Include="Population\PopulationSystem.h" />
     <ClInclude Include="Public\FacilityEntities.h" />
-    <ClInclude Include="Public\FacilityGraph.h" />
     <ClInclude Include="Public\FacilitySystem.h" />
     <ClInclude Include="SmartCity\CityLogger.h" />
     <ClInclude Include="SmartCity\Menu.h" />

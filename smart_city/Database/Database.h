@@ -270,5 +270,8 @@ public:
     string getPharmacyTag() {
         return cityGraph.pharmacyTag;
     }
+    string getMallTag() {
+        return cityGraph.commercialTag;
+    }
 
 };
