@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include "../Population/PopulationEntities.h"
 #include "DoctorsHashTable.h"
 #include "PatientHashTable.h"
 #include "MedicineHashTable.h"
@@ -45,11 +44,6 @@ public:
         }
     }
 
-    void addPatient(Person* toAdd){}
-    void addDoctor(Person* toAdd) {}
-    bool requestEmergencybed(int noOfbeds){}
-
-
     ~Hospital() {
         if (specialization != nullptr) {
             delete[] specialization;
@@ -87,7 +81,7 @@ public:
             medicine = nullptr;
         }
     }
-    void addMedicine(){}
+
     ~Pharmacy() {
         if (medicine != nullptr) {
             delete[] medicine;

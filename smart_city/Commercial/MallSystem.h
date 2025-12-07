@@ -76,17 +76,15 @@ public:
 
     int addProduct(Product product, Mall* mall) {
         if (mall->productTable.search(product.name)) {
-            logger->Warning("Product with name '" + product.name + "' already exists in mall '" + mall->name + "'!");
             return 1;
         }
 
         mall->productTable.insert(product);
-        logger->Ok("Product " + product.name + " added to Mall " + mall->name + ".");
 
         return 0;
     }
 
-    int addItemsHandler() {
+    void addItemsHandler() {
         cls();
         logger->Title("ADD ITEM TO MALL");
         string mallID;
@@ -98,7 +96,6 @@ public:
         if (mallID.empty()) {
             logger->Error("Invalid Input: Mall ID cannot be empty.");
             pressEnterToContinue();
-            return 0;
         }
 
         Mall* mall = db->searchMall(mallID);
@@ -107,7 +104,6 @@ public:
         {
             logger->Error("Mall with ID '" + mallID + "' not found!");
             pressEnterToContinue();
-            return 0;
         }
 
         int count;
@@ -119,7 +115,6 @@ public:
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             logger->Error("Invalid Input: Please enter a valid positive number.");
             pressEnterToContinue();
-            return 0;
         }
         cin.ignore();
 
@@ -147,20 +142,23 @@ public:
             logger->Prompt("Enter Product Price: ");
             cin >> price;
 
-            if (cin.fail() || price < 0) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            if (price < 0) {
                 logger->Error("Invalid Price. Skipping item.");
                 continue;
             }
             cin.ignore();
 
             Product p(name, price, category);
-            addProduct(p, mall);
+            bool added = addProduct(p, mall);
+            if (added) {
+                logger->Ok("Product successfully added");
+            }
+            else {
+                logger->Error("Product could not be added");
+            }
         }
 
         pressEnterToContinue();
-        return 0;
     }
 
     void itemSearchHandler() {

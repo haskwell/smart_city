@@ -29,7 +29,9 @@ private:
     }
 
 public:
+    
     PopulationSystem(Database* database, CityLogger* log) : db(database), logger(log) {}
+    
     void addPeopleHandler() {
         cls();
         logger->Title("ADD NEW PERSON");
@@ -74,11 +76,11 @@ public:
             logger->Ok("Doctor '" + name + "' registered with specialization: " + specialization);
         }
         else if (occupation == "student" || occupation == "Student" || occupation == "STUDENT") {
-            newPerson = new Student(name, age, gender, CNIC, street, houseNo, occupation);
+            newPerson = new Student(name, age, gender, CNIC, street, houseNo, occupation, 0.0, sector);
             logger->Ok("Student '" + name + "' added to population.");
         }
         else if (occupation == "faculty" || occupation == "Faculty" || occupation == "FACULTY") {
-            newPerson = new Faculty(name, age, gender, CNIC, street, houseNo, occupation);
+            newPerson = new Faculty(name, age, gender, CNIC, street, houseNo, occupation, sector);
             logger->Ok("Faculty '" + name + "' added to population.");
         }
         else {
@@ -87,11 +89,11 @@ public:
         }
 
         int code = addPerson(newPerson);
-        if (code == 0) {}
-        else if (code == 1) logger->Warning("Person already exists!");
+        if (code == 1) logger->Warning("Person already exists!");
         else logger->Error("Database missing!");
         pressEnterToContinue();
     }
+
     void searchByCNICHandler() {
         cls();
         logger->Title("SEARCH PERSON BY CNIC");
@@ -155,11 +157,6 @@ public:
 
     }
 
-    void occupationSummaryReport() {
-
-
-    }
-
     void genderRatioReport() {
         int maleCount = 0;
         int femaleCount = 0;
@@ -188,9 +185,7 @@ public:
         generateAgeReport();
         logger->Info("\n");
         logger->Info("\n");
-        logger->Info("\n");
         genderRatioReport();
-
         pressEnterToContinue();
 
     }
@@ -434,5 +429,110 @@ public:
         }
         sector->printBuildingsGrid();
         pressEnterToContinue();
+    }
+
+    sf::Color getColorFromDensity(int count, int maxCount) {
+        if (maxCount == 0) return sf::Color(255, 255, 204);
+        int intensity = (count * 255) / maxCount;
+        if (intensity > 255) intensity = 255;
+        return sf::Color(intensity, 0, 0);
+    }
+
+    void drawPopulationHeatmap() {
+        sf::RenderWindow window(sf::VideoMode(1000, 900), "City Population Heatmap");
+
+        sf::Font font;
+        if (!font.loadFromFile("arial.ttf")) {
+            return;
+        }
+        // Count max population first for color normalization
+        int maxPopulation = 0;
+        Sector* s = db->getCityHierarchySectors();
+        while (s->nextSector) {
+            int total = 0;
+            Street* street = s->streets;
+            while (street) {
+                House* house = street->houses;
+                while (house) {
+                    Person* p = house->occupants;
+                    while (p) {
+                        total++;
+                        p = p->next;
+                    }
+                    house = house->nextHouse;
+                }
+                street = street->nextStreet;
+            }
+            if (total > maxPopulation) maxPopulation = total;
+            s = s->nextSector;
+        }
+
+        int sectorWidth = 150;
+        int sectorHeight = 150;
+        int margin = 20;
+        int startX = 50;
+        int startY = 50;
+
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+            }
+
+            window.clear(sf::Color::White);
+
+            int xOffset = 0;
+            int yOffset = 0;
+            int sectorsPerRow = 5;
+
+            s = db->getCityHierarchySectors();
+            int idx = 0;
+            while (s->nextSector) {
+                int total = 0;
+                Street* street = s->streets;
+                while (street) {
+                    House* house = street->houses;
+                    while (house) {
+                        Person* p = house->occupants;
+                        while (p) {
+                            total++;
+                            p = p->next;
+                        }
+                        house = house->nextHouse;
+                    }
+                    street = street->nextStreet;
+                }
+
+                // Position
+                xOffset = (idx % sectorsPerRow) * (sectorWidth + margin);
+                yOffset = (idx / sectorsPerRow) * (sectorHeight + margin);
+
+                // Draw rectangle
+                sf::RectangleShape rect(sf::Vector2f(sectorWidth, sectorHeight));
+                rect.setPosition(startX + xOffset, startY + yOffset);
+                rect.setFillColor(getColorFromDensity(total, maxPopulation));
+                rect.setOutlineColor(sf::Color::Black);
+                rect.setOutlineThickness(2);
+                window.draw(rect);
+
+                // Draw sector name
+                sf::Text text(s->name, font, 14);
+                text.setPosition(startX + xOffset + 5, startY + yOffset - 20);
+                text.setFillColor(sf::Color::Black);
+                window.draw(text);
+
+                // Draw population count
+                sf::Text popText(std::to_string(total), font, 16);
+                popText.setPosition(startX + xOffset + 50, startY + yOffset + sectorHeight / 2 - 10);
+                popText.setFillColor(sf::Color::Black);
+                window.draw(popText);
+
+                s = s->nextSector;
+                idx++;
+            }
+
+            window.display();
+        }
     }
 };

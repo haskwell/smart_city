@@ -70,7 +70,7 @@ private:
         "\t0. Exit"
     };
 
-    const string transportMenu[12] = {
+    const string transportMenu[13] = {
         "\t=== TRANSPORT MODULE ===",
         "",
         "\t1. Register Company",
@@ -82,6 +82,7 @@ private:
         "\t7. Get Bus Details",
         "\t8. List All Companies",
         "\t9. List All Bus Stops",
+        "\t10. Show Bus History",
         "\t0. Back"
     };
 
@@ -132,7 +133,7 @@ private:
         "\t0. Back"
     };
 
-    const string populationMenu[12] = {
+    const string populationMenu[13] = {
         "\t=== POPULATION MODULE ===",
         "",
         "\t1. Add People",
@@ -144,6 +145,7 @@ private:
         "\t7. Print All People",
         "\t8. Print Sectors Table",
         "\t9. Print Sectors Buildings Grid",
+        "\t10. Population Heatmap",
         "\t0. Back"
     };
 
@@ -183,7 +185,7 @@ public:
     }
 
     int showTransportMenu() {
-        return getMenuChoice(transportMenu, 12);
+        return getMenuChoice(transportMenu, 13);
     }
 
     int showEducationMenu() {
@@ -199,7 +201,7 @@ public:
     }
 
     int showPopulationMenu() {
-        return getMenuChoice(populationMenu, 12);
+        return getMenuChoice(populationMenu, 13);
     }
 
     int showPublicMenu() {

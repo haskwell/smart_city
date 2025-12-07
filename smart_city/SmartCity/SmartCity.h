@@ -6,8 +6,9 @@
 #include "../Commercial/MallSystem.h"
 #include "../Population/PopulationSystem.h"
 #include "../Public/FacilitySystem.h"
+#include "../Database/Database.h"
 #include "CityLogger.h"
-
+#include <fstream>
 using namespace std;
 
 class SmartCity {
@@ -71,6 +72,7 @@ private:
             case 7: transport.searchBusHandler(); break;
             case 8: transport.listAllCompanies(); break;
             case 9: transport.listAllBusStops(); break;
+            case 10: transport.printBusHistory(); break;
             }
         } while (tChoice != 0);
     }
@@ -157,6 +159,7 @@ private:
             case 7: population.printHierarchyHandler(); break;
             case 8: population.printSectorGridHandler(); break;
             case 9: population.printBuildingsGridHandler(); break;
+            case 10: population.drawPopulationHeatmap(); break;
             }
         } while (popChoice != 0);
     }
@@ -167,263 +170,621 @@ private:
         logger.Info("End of City Graph");
         menu.pressEnterToContinue();
 	}
-	public:
-		int randInt(int min, int max) {
-			if (max <= min) return min;
-			return (db->randomNumber() % (max - min + 1)) + min;
-		}
+public:
+    void seedFromCSV() {
 
-		int randChoice(int n) {
-			if (n <= 0) return 0;
-			return db->randomNumber() % n;
-		}
+        ifstream fileStops("stops.csv");
+        if (!fileStops.is_open()) {
+            cout << "Could not open stops.csv!\n";
+            return;
+        }
 
-		char randGender() {
-			return (db->randomNumber() % 2) ? 'M' : 'F';
-		}
+        string line;
+        getline(fileStops, line);
 
-		string makeCNIC(int idx) {
-			unsigned int r = db->randomNumber();
-			return "CNIC-" + to_string(r) + "-" + to_string(idx);
-		}
+        while (getline(fileStops, line)) {
+            if (line.empty()) continue;
 
-		void seedData() {
-			// Prepare sector names and ensure they exist
-			const int sectorsCount = 10;
-			string sectors[10];
-			for (int i = 0; i < sectorsCount; ++i) {
-				sectors[i] = "Sector-" + to_string(i + 1);
-				db->ensureSectorExists(sectors[i]);
-			}
+            int pos1 = line.find(',');
+            int pos2 = line.find(',', pos1 + 1);
 
-			// Prepare street names
-			string streets[20];
-			for (int i = 0; i < 20; ++i) {
-				streets[i] = "Street-" + to_string(i + 1);
-			}
+            string stopId = line.substr(0, pos1);
+            string name = line.substr(pos1 + 1, pos2 - pos1 - 1);
+            string coords = line.substr(pos2 + 1);
 
-			// 1) Create 200 random-occupation people (excluding doctor/student/faculty)
-			string occupations[] = { "engineer", "teacher_assistant", "clerk", "driver", "chef",
-				"barber", "plumber", "electrician", "security", "salesman", "artist", "carpenter" };
-			int occupationsCount = 12;
+            // Remove quotes
+            if (!coords.empty() && coords.front() == '"') coords.erase(0, 1);
+            if (!coords.empty() && coords.back() == '"') coords.pop_back();
 
-			for (int i = 0; i < 200; ++i) {
-				string name = "Citizen-" + to_string(i + 1);
-				int age = randInt(20, 65);
-				char g = randGender();
-				string cnic = makeCNIC(i + 1);
-				string sector = sectors[randChoice(sectorsCount)];
-				string street = streets[randChoice(20)];
-				int houseNo = randInt(1, 200);
-				string occ = occupations[randChoice(occupationsCount)];
+            // Parse latitude and longitude
+            int commaPos = coords.find(',');
+            float lat = 0.0f, lon = 0.0f;
+            if (commaPos != string::npos) {
+                lat = stof(coords.substr(0, commaPos));
+                lon = stof(coords.substr(commaPos + 1));
+            }
 
-				Person* p = new Person(name, age, g, cnic, street, houseNo, occ, sector);
-				db->insertPerson(p);
-			}
+            // Determine sector
+            string sector;
+            if (name.size() >= 2 && name[1] == '-') {
+                int spacePos = name.find(' ');
+                if (spacePos != string::npos) {
+                    sector = name.substr(0, spacePos);
+                }
+                else {
+                    sector = name;
+                }
+            }
+            else {
+                sector = name;
+            }
 
-			// 2) Create 10 hospitals, each with 20 doctors
-			for (int h = 0; h < 10; ++h) {
-				string hid = "HOSP-" + to_string(h + 1);
-				string hname = "Hospital-" + to_string(h + 1);
-				string sector = sectors[randChoice(sectorsCount)];
-				int beds = randInt(10, 200);
-				int totalSpecs = randInt(1, 5);
-				Hospital* hosp = new Hospital(hname, hid, beds, sector, totalSpecs);
+            db->insertBusStop(*new BusStop(name, stopId, sector, lat, lon));
+        }
 
-				// Add placeholder specializations
-				for (int sIdx = 0; sIdx < totalSpecs; ++sIdx) {
-					if (hosp->specialization) hosp->specialization[sIdx] = "Spec-" + to_string(sIdx + 1);
-				}
+        fileStops.close();
 
-				// Create 20 doctors
-				for (int d = 0; d < 20; ++d) {
-					int globalIndex = h * 20 + d + 1;
-					string name = "Dr-" + to_string(globalIndex);
-					int age = randInt(28, 65);
-					char g = randGender();
-					string cnic = makeCNIC(globalIndex + 10000);
-					string street = streets[randChoice(20)];
-					int houseNo = randInt(1, 500);
-					string specialization = "Gen-" + to_string(randChoice(5) + 1);
+        cout << "Bus stops seeded successfully.\n";
+        
+        ifstream fileBus("buses.csv");
+        if (!fileBus.is_open()) {
+            cout << "Could not open bus.csv!\n";
+            return;
+        }
 
-					Doctor* doc = new Doctor(name, age, g, cnic, street, houseNo, "doctor", sector, specialization);
-					db->insertPerson(doc);
-					hosp->doctorsTable.insert(doc);
-				}
+        getline(fileBus, line);
 
-				medical.addHospital(hosp);
-			}
+        while (getline(fileBus, line)) {
+            if (line.empty()) continue;
 
-			// 3) Create 10 pharmacies, each with 50 medicines
-			for (int p = 0; p < 10; ++p) {
-				string pid = "PHARM-" + to_string(p + 1);
-				string pname = "Pharmacy-" + to_string(p + 1);
-				string sector = sectors[randChoice(sectorsCount)];
-				int medCount = 50;
-				Pharmacy* pharmacy = new Pharmacy(pid, pname, sector, medCount);
+            int pos1 = line.find(',');
+            int pos2 = line.find(',', pos1 + 1);
+            int pos3 = line.find(',', pos2 + 1);
 
-				medical.addPharmacy(pharmacy);
+            string busNo = line.substr(0, pos1);
+            string company = line.substr(pos1 + 1, pos2 - pos1 - 1);
+            string currentStopId = line.substr(pos2 + 1, pos3 - pos2 - 1);
+            string routeStr = line.substr(pos3 + 1);
 
-				Pharmacy* dbPharm = db->searchPharmacy(pid);
-				if (dbPharm) {
-					for (int m = 0; m < medCount; ++m) {
-						string medName = "Med-" + to_string(p + 1) + "-" + to_string(m + 1);
-						string formula = "Formula-" + to_string(m + 1);
-						float price = static_cast<float>(randInt(100, 2000));
-						Medicine* med = new Medicine(medName, formula, price);
-						medical.addMedicine(med, dbPharm);
-					}
-				}
-			}
+            if (!db->searchBusCompany(company)) {
+                db->insertBusCompany(new BusCompany(company));
+            }
 
-			// 4) Create 10 malls, each with 50 items
-			for (int m = 0; m < 10; ++m) {
-				string mid = "MALL-" + to_string(m + 1);
-				string mname = "Mall-" + to_string(m + 1);
-				string sector = sectors[randChoice(sectorsCount)];
-				Mall* mall = new Mall(mid, mname, sector);
+            Bus* bus = new Bus(busNo, company);
+            db->insertBusToCompany(company, bus);
 
-				commercial.addMall(mall);
+            // Parse route
+            int start = 0, end;
+            while ((end = routeStr.find('>', start)) != string::npos) {
+                string stopId = routeStr.substr(start, end - start);
+                // Remove whitespace
+                while (!stopId.empty() && stopId.front() == ' ') stopId.erase(0, 1);
+                while (!stopId.empty() && stopId.back() == ' ') stopId.pop_back();
 
-				Mall* dbMall = db->searchMall(mid);
-				if (dbMall) {
-					for (int it = 0; it < 50; ++it) {
-						string prodName = "Item-" + to_string(m + 1) + "-" + to_string(it + 1);
-						string category = "Category-" + to_string((it % 8) + 1);
-						float price = static_cast<float>(randInt(200, 15000));
-						Product prod(prodName, price, category);
-						commercial.addProduct(prod, dbMall);
-					}
-				}
-			}
+                bus->addStop(stopId);
+                start = end + 1;
+            }
 
-			// 5) Create 10 schools, each with 10 teachers and 10 students
-			for (int s = 0; s < 10; ++s) {
-				string sid = "SCH-" + to_string(s + 1);
-				string sname = "School-" + to_string(s + 1);
-				string sector = sectors[randChoice(sectorsCount)];
-				float rating = static_cast<float>(randInt(1, 5));
-				int numSubjects = randInt(1, 6);
-				School* school = new School(sid, sname, sector, rating, numSubjects);
+            // Add last stop
+            string lastStop = routeStr.substr(start);
+            while (!lastStop.empty() && lastStop.front() == ' ') lastStop.erase(0, 1);
+            while (!lastStop.empty() && lastStop.back() == ' ') lastStop.pop_back();
+            bus->addStop(lastStop);
+        }
 
-				// Fill subjects
-				for (int subj = 0; subj < numSubjects; ++subj) {
-					if (school->subjects) school->subjects[subj] = "Subject-" + to_string(subj + 1);
-				}
+        fileBus.close();
+        
+        cout << "Buses seeded successfully.\n";
+        ifstream fileHospitals("hospitals.csv");
 
-				// Add department and class
-				string deptName = "General";
-				school->addDepartment(deptName);
-				school->addClass(deptName, "Class-A");
+        if (!fileHospitals.is_open()) {
+            cout << "Could not open hospitals.csv!\n";
+            return;
+        }
 
-				// Create 10 teachers
-				for (int t = 0; t < 10; ++t) {
-					int idx = s * 20 + t + 1;
-					string fname = "Faculty-" + to_string(s + 1) + "-" + to_string(t + 1);
-					int age = randInt(25, 65);
-					char g = randGender();
-					string cnic = makeCNIC(idx + 30000);
-					string street = streets[randChoice(20)];
-					int houseNo = randInt(1, 400);
+        getline(fileHospitals, line);
 
-					Faculty* f = new Faculty(fname, age, g, cnic, street, houseNo, "faculty", sector,
-						"Subject-" + to_string(randChoice(6) + 1));
-					db->insertPerson(f);
-					Department* dept = school->searchDepartment(deptName);
-					if (dept) dept->insertFaculty(f);
-				}
+        while (getline(fileHospitals, line)) {
+            if (line.empty()) continue;
 
-				// Create 10 students
-				for (int st = 0; st < 10; ++st) {
-					int idx = s * 20 + 10 + st + 1;
-					string stname = "Student-" + to_string(s + 1) + "-" + to_string(st + 1);
-					int age = randInt(6, 25);
-					char g = randGender();
-					string cnic = makeCNIC(idx + 40000);
-					string street = streets[randChoice(20)];
-					int houseNo = randInt(1, 400);
-					double gpa = static_cast<double>(randInt(200, 400)) / 100.0;
+            string hospitalId, name, sector, specStr;
+            int beds = 0;
 
-					Student* stu = new Student(stname, age, g, cnic, street, houseNo, "student", gpa);
-					db->insertPerson(stu);
-					school->addStudent(stu, deptName, "Class-A");
-				}
+            int pos = 0, next;
 
-				education.registerSchool(school);
-			}
+            // HospitalID
+            next = line.find(',', pos);
+            hospitalId = line.substr(pos, next - pos);
+            pos = next + 1;
 
-			// 6) Create 10 public facilities
-			for (int f = 0; f < 10; ++f) {
-				string fid = "FAC-" + to_string(f + 1);
-				string fname = "Facility-" + to_string(f + 1);
-				string ftype = (f % 2 == 0) ? "Park" : "PowerPlant";
-				string sector = sectors[randChoice(sectorsCount)];
-				Facility fac(ftype, fid, fname, sector);
-				db->insertFacility(fac);
-			}
+            // Name
+            next = line.find(',', pos);
+            name = line.substr(pos, next - pos);
+            pos = next + 1;
 
-			// 7) Create 10 bus stops
-			string createdBusStopIds[10];
-			for (int b = 0; b < 10; ++b) {
-				string stopId = "BUSSTOP-" + to_string(b + 1);
-				string stopName = "BusStop-" + to_string(b + 1);
-				string sector = sectors[randChoice(sectorsCount)];
-				float lat = static_cast<float>(randInt(0, 1000));
-				float lon = static_cast<float>(randInt(0, 1000));
-				db->insertBusStop(*new BusStop(stopName, stopId, sector, lat, lon));
-				createdBusStopIds[b] = stopId;
-			}
+            // Sector
+            next = line.find(',', pos);
+            sector = line.substr(pos, next - pos);
+            pos = next + 1;
 
-			// 8) Create bus company and 10 buses with routes
-			string companyName = "CityTransit";
-			db->insertBusCompany(new BusCompany(companyName));
+            // EmergencyBeds
+            next = line.find(',', pos);
+            beds = stoi(line.substr(pos, next - pos));
+            pos = next + 1;
 
-			for (int bi = 0; bi < 10; ++bi) {
-				string busNo = "BUS-" + to_string(bi + 1);
-				db->insertBusToCompany(companyName, new Bus(busNo, companyName));
+            // Specializations
+            specStr = line.substr(pos);
+            if (!specStr.empty() && specStr.front() == '"') specStr.erase(0, 1);
+            if (!specStr.empty() && specStr.back() == '"') specStr.pop_back();
 
-				Bus* busPtr = db->searchBusInCompany(companyName, busNo);
-				if (busPtr) {
-					// Track which stop indices we've used
-					bool usedStops[10];
-					for (int i = 0; i < 10; ++i) usedStops[i] = false;
+            const int MAX_SPECS = 10;
+            string specializations[MAX_SPECS];
+            int specCount = 0;
 
-					int distinctCount = 0;
-					int attempts = 0;
+            int start = 0, end;
+            while ((end = specStr.find(',', start)) != string::npos && specCount < MAX_SPECS) {
+                string spec = specStr.substr(start, end - start);
+                while (!spec.empty() && spec.front() == ' ') spec.erase(0, 1);
+                while (!spec.empty() && spec.back() == ' ') spec.pop_back();
+                specializations[specCount++] = spec;
+                start = end + 1;
+            }
 
-					// Try to get 5 distinct stops
-					while (distinctCount < 5 && attempts < 50) {
-						int idx = randChoice(10);
-						if (!usedStops[idx]) {
-							usedStops[idx] = true;
-							distinctCount++;
-						}
-						attempts++;
-					}
+            // Last specialization
+            if (specCount < MAX_SPECS) {
+                string lastSpec = specStr.substr(start);
+                while (!lastSpec.empty() && lastSpec.front() == ' ') lastSpec.erase(0, 1);
+                while (!lastSpec.empty() && lastSpec.back() == ' ') lastSpec.pop_back();
+                if (!lastSpec.empty()) specializations[specCount++] = lastSpec;
+            }
 
-					// Collect selected indices
-					int selectedIndices[5];
-					int selectedCount = 0;
-					for (int i = 0; i < 10 && selectedCount < 5; ++i) {
-						if (usedStops[i]) {
-							selectedIndices[selectedCount] = i;
-							selectedCount++;
-						}
-					}
+            Hospital* hosp = new Hospital(name, hospitalId, beds, sector, specCount);
 
-					// Fill remaining slots if needed
-					while (selectedCount < 5) {
-						selectedIndices[selectedCount] = randChoice(10);
-						selectedCount++;
-					}
+            for (int i = 0; i < specCount; ++i) {
+                if (hosp->specialization) hosp->specialization[i] = specializations[i];
+            }
 
-					// Add stops to bus route
-					for (int k = 0; k < 5; ++k) {
-						int chosen = selectedIndices[k % 5];
-						string stopId = createdBusStopIds[chosen];
-						busPtr->addStop(stopId);
-					}
-				}
-			}
-		}
+            medical.addHospital(hosp);
+        }
+
+        fileHospitals.close();
+
+        cout << "Hospitals seeded successfully.\n";
+
+        ifstream filePharmacies("pharmacies.csv");
+        if (!filePharmacies.is_open()) {
+            cout << "Could not open pharmacies.csv!\n";
+            return;
+        }
+
+        getline(filePharmacies, line);
+
+        while (getline(filePharmacies, line)) {
+            if (line.empty()) continue;
+
+            int pos1 = line.find(',');
+            int pos2 = line.find(',', pos1 + 1);
+            int pos3 = line.find(',', pos2 + 1);
+            int pos4 = line.find(',', pos3 + 1);
+            int pos5 = line.find(',', pos4 + 1);
+
+            string pharmId = line.substr(0, pos1);
+            string name = line.substr(pos1 + 1, pos2 - pos1 - 1);
+            string sector = line.substr(pos2 + 1, pos3 - pos2 - 1);
+            string medName = line.substr(pos3 + 1, pos4 - pos3 - 1);
+            string formula = line.substr(pos4 + 1, pos5 - pos4 - 1);
+            string priceStr = line.substr(pos5 + 1);
+
+            float price = 0.0f;
+            if (!priceStr.empty()) price = stof(priceStr);
+
+            Pharmacy* pharmacy = db->searchPharmacy(pharmId);
+            if (!pharmacy) {
+                pharmacy = new Pharmacy(pharmId, name, sector, 0);
+                medical.addPharmacy(pharmacy);
+            }
+
+            Medicine* med = new Medicine(medName, formula, price);
+            medical.addMedicine(med, pharmacy);
+        }
+
+        filePharmacies.close();
+        cout << "Pharmacies seeded successfully.\n";
+
+        ifstream filePopulation("population.csv");
+        if (!filePopulation.is_open()) {
+            cout << "Could not open population.csv!\n";
+            return;
+        }
+
+        getline(filePopulation, line);
+
+        while (getline(filePopulation, line)) {
+            if (line.empty()) continue;
+
+            int pos1 = line.find(',');
+            int pos2 = line.find(',', pos1 + 1);
+            int pos3 = line.find(',', pos2 + 1);
+            int pos4 = line.find(',', pos3 + 1);
+            int pos5 = line.find(',', pos4 + 1);
+            int pos6 = line.find(',', pos5 + 1);
+
+            string cnic = line.substr(0, pos1);
+            string name = line.substr(pos1 + 1, pos2 - pos1 - 1);
+            string ageStr = line.substr(pos2 + 1, pos3 - pos2 - 1);
+            string sector = line.substr(pos3 + 1, pos4 - pos3 - 1);
+            string street = line.substr(pos4 + 1, pos5 - pos4 - 1);
+            string houseNoStr = line.substr(pos5 + 1, pos6 - pos5 - 1);
+            string occupation = line.substr(pos6 + 1);
+
+            int age = 0, houseNo = 0;
+            if (!ageStr.empty()) age = stoi(ageStr);
+            if (!houseNoStr.empty()) houseNo = stoi(houseNoStr);
+
+            char gender = 'M';
+
+            Person* person = nullptr;
+
+            if (occupation == "Doctor") {
+                person = new Doctor(name, age, gender, cnic, street, houseNo, "doctor", sector, "General");
+            }
+            else if (occupation == "Student") {
+                person = new Student(name, age, gender, cnic, street, houseNo, "student", 0.0);
+            }
+            else {
+                person = new Person(name, age, gender, cnic, street, houseNo, occupation, sector);
+            }
+
+            db->insertPerson(person);
+        }
+
+        filePopulation.close();
+        cout << "Population seeded successfully.\n";
+
+
+        ifstream fileSchools("schools.csv");
+        if (!fileSchools.is_open()) {
+            cout << "Could not open schools.csv!\n";
+            return;
+        }
+
+        getline(fileSchools, line);
+
+        while (getline(fileSchools, line)) {
+            if (line.empty()) continue;
+
+            int pos1 = line.find(',');
+            int pos2 = line.find(',', pos1 + 1);
+            int pos3 = line.find(',', pos2 + 1);
+            int pos4 = line.find(',', pos3 + 1);
+            int pos5 = line.find(',', pos4 + 1);
+
+            string schoolId = line.substr(0, pos1);
+            string name = line.substr(pos1 + 1, pos2 - pos1 - 1);
+            string sector = line.substr(pos2 + 1, pos3 - pos2 - 1);
+            string ratingStr = line.substr(pos3 + 1, pos4 - pos3 - 1);
+            string subjectsStr = line.substr(pos4 + 1);
+
+            float rating = 0.0f;
+            if (!ratingStr.empty()) rating = stof(ratingStr);
+
+            // Remove quotes from subjects
+            if (!subjectsStr.empty() && subjectsStr.front() == '"') subjectsStr.erase(0, 1);
+            if (!subjectsStr.empty() && subjectsStr.back() == '"') subjectsStr.pop_back();
+
+            // Parse subjects
+            const int MAX_SUBJECTS = 10;
+            string subjects[MAX_SUBJECTS];
+            int subjectCount = 0;
+            int start = 0, end;
+            while ((end = subjectsStr.find(',', start)) != string::npos && subjectCount < MAX_SUBJECTS) {
+                string subj = subjectsStr.substr(start, end - start);
+                while (!subj.empty() && subj.front() == ' ') subj.erase(0, 1);
+                while (!subj.empty() && subj.back() == ' ') subj.pop_back();
+                subjects[subjectCount++] = subj;
+                start = end + 1;
+            }
+
+            if (subjectCount < MAX_SUBJECTS) {
+                string lastSubj = subjectsStr.substr(start);
+                while (!lastSubj.empty() && lastSubj.front() == ' ') lastSubj.erase(0, 1);
+                while (!lastSubj.empty() && lastSubj.back() == ' ') lastSubj.pop_back();
+                if (!lastSubj.empty()) subjects[subjectCount++] = lastSubj;
+            }
+
+            School* school = new School(schoolId, name, sector, rating, subjectCount);
+
+            for (int i = 0; i < subjectCount; ++i) {
+                if (school->subjects) school->subjects[i] = subjects[i];
+            }
+
+            education.registerSchool(school);
+        }
+
+        fileSchools.close();
+        cout << "Schools seeded successfully.\n";
+
+    
+    }
+
+    void seedRandomCity() {
+        const int SECTORS = 20;
+        const int BUILDINGS_PER_SECTOR = 3;
+        const int TOTAL_PEOPLE = 1000;
+        const int DOCTORS = 200;
+        const int FACULTY = 200;
+        const int STUDENTS = 200;
+        const int MEDICINES_TOTAL = 1000;
+        const int ITEMS_TOTAL = 1000;
+
+        // Prepare sector names and ensure they exist in DB
+        string* sectorNames = new string[SECTORS];
+        for (int i = 0; i < SECTORS; i++) {
+            sectorNames[i] = "Sector-" + to_string(i + 1);
+            db->ensureSectorExists(sectorNames[i]);
+        }
+
+        // Arrays to collect created IDs for later assignment
+        int maxSlots = SECTORS * BUILDINGS_PER_SECTOR;
+        string* hospitalIds = new string[maxSlots];
+        int hospitalCount = 0;
+        string* schoolIds = new string[maxSlots];
+        int schoolCount = 0;
+        string* pharmacyIds = new string[maxSlots];
+        int pharmacyCount = 0;
+        string* mallIds = new string[maxSlots];
+        int mallCount = 0;
+
+        int medsRemaining = MEDICINES_TOTAL;
+        int itemsRemaining = ITEMS_TOTAL;
+
+        for (int s = 0; s < SECTORS; s++) {
+            string sector = sectorNames[s];
+            for (int b = 0; b < BUILDINGS_PER_SECTOR; b++) {
+                // type selection: 0 hospital,1 pharmacy,2 school,3 mall,4 busStop,5 public facility
+                int t = db->randomNumber() % 6;
+
+                if (t == 0) {
+                    // Hospital
+                    string id = "H-" + sector + "-" + to_string(b);
+                    string name = "Hospital " + id;
+                    int beds = 50 + (db->randomNumber() % 51); // 50-100
+                    int specs = 3 + (db->randomNumber() % 3); // 3-5
+                    Hospital* hosp = new Hospital(name, id, beds, sector, specs);
+                    // Fill specialization strings
+                    for (int k = 0; k < specs; k++) {
+                        if (hosp->specialization) hosp->specialization[k] = string("Spec-") + to_string(k + 1);
+                    }
+                    medical.addHospital(hosp);
+                    hospitalIds[hospitalCount++] = id;
+                }
+                else if (t == 1) {
+                    // Pharmacy
+                    string id = "PH-" + sector + "-" + to_string(b);
+                    string name = "Pharmacy " + id;
+                    Pharmacy* ph = new Pharmacy(id, name, sector, 0);
+                    db->insertPharmacy(*ph);
+                    pharmacyIds[pharmacyCount++] = id;
+
+                    // Add medicines immediately to this pharmacy
+                    if (medsRemaining > 0) {
+                        // choose up to 40 per pharmacy to try to exhaust medsRemaining across created pharmacies
+                        int cap = 40;
+                        int toAdd = (medsRemaining > cap) ? (int)(db->randomNumber() % cap + 10) : medsRemaining;
+                        if (toAdd <= 0) toAdd = 1;
+                        Pharmacy* regPh = db->searchPharmacy(id);
+                        for (int m = 0; m < toAdd; m++) {
+                            string medName = "Med-" + id + "-" + to_string(m);
+                            string formula = "Formula-" + to_string((db->randomNumber() % 999) + 1);
+                            float price = (float)((db->randomNumber() % 10000) + 50) / 10.0f;
+                            Medicine* med = new Medicine(medName, formula, price);
+                            medical.addMedicine(med, regPh);
+                        }
+                        medsRemaining -= toAdd;
+                    }
+                }
+                else if (t == 2) {
+                    // School - create and add default department/class immediately
+                    string id = "SC-" + sector + "-" + to_string(b);
+                    string name = "School " + id;
+                    float rating = (float)((db->randomNumber() % 50)) / 10.0f; // 0.0 - 4.9
+                    int subjects = 3;
+                    School* school = new School(id, name, sector, rating, subjects);
+                    // populate subjects
+                    for (int k = 0; k < subjects; k++) {
+                        if (school->subjects) school->subjects[k] = string("Sub-") + to_string(k + 1);
+                    }
+                    // create a default department and class so we can add faculty/students later
+                    school->addDepartment("Dept-1");
+                    school->addClass("Dept-1", "Class-A");
+                    education.registerSchool(school);
+                    schoolIds[schoolCount++] = id;
+                }
+                else if (t == 3) {
+                    // Mall
+                    string id = "MALL-" + sector + "-" + to_string(b);
+                    string name = "Mall " + id;
+                    Mall* mall = new Mall(id, name, sector);
+
+                    // Add items immediately to this mall to approach ITEMS_TOTAL
+                    if (itemsRemaining > 0) {
+                        int cap = 50;
+                        int toAdd = (itemsRemaining > cap) ? (int)(db->randomNumber() % cap + 10) : itemsRemaining;
+                        if (toAdd <= 0) toAdd = 1;
+                        for (int it = 0; it < toAdd; ++it) {
+                            string prodName = "Item-" + id + "-" + to_string(it);
+                            float price = (float)((db->randomNumber() % 20000) + 99) / 10.0f;
+                            string category = string("Cat-") + to_string((db->randomNumber() % 6) + 1);
+                            Product p(prodName, price, category);
+                            commercial.addProduct(p, mall);
+                        }
+                        itemsRemaining -= toAdd;
+                    }
+                    // now register mall
+                    commercial.addMall(mall);
+                    mallIds[mallCount++] = id;
+                }
+                else if (t == 4) {
+                    // Bus Stop
+                    string id = "BS-" + sector + "-" + to_string(b);
+                    string name = "BusStop " + id;
+                    db->insertBusStop(*new BusStop(name, id, sector, 0.0f, 0.0f));
+                }
+                else {
+                    // Public Facility
+                    string id = "F-" + sector + "-" + to_string(b);
+                    string name = "Facility " + id;
+                    string type = "Type" + to_string((db->randomNumber() % 6) + 1);
+                    Facility* f = new Facility(type, id, name, sector);
+                    db->insertFacility(*f);
+                }
+            }
+        }
+
+        // If any medicines or items remain unallocated
+        if (medsRemaining > 0 && pharmacyCount > 0) {
+            int idx = 0;
+            while (medsRemaining > 0) {
+                string targetId = pharmacyIds[idx % pharmacyCount];
+                Pharmacy* ph = db->searchPharmacy(targetId);
+                int toAdd = (medsRemaining > 20) ? 20 : medsRemaining;
+                for (int m = 0; m < toAdd; m++) {
+                    string medName = "Med-" + targetId + "-ext-" + to_string(medsRemaining);
+                    string formula = "Formula-ext";
+                    float price = (float)((db->randomNumber() % 10000) + 10) / 10.0f;
+                    Medicine* med = new Medicine(medName, formula, price);
+                    medical.addMedicine(med, ph);
+                }
+                medsRemaining -= toAdd;
+                idx++;
+            }
+        }
+
+        if (itemsRemaining > 0 && mallCount > 0) {
+            int idx = 0;
+            while (itemsRemaining > 0) {
+                string targetId = mallIds[idx % mallCount];
+                Mall* mall = db->searchMall(targetId);
+                int toAdd = (itemsRemaining > 30) ? 30 : itemsRemaining;
+                for (int it = 0; it < toAdd; ++it) {
+                    string prodName = "Item-" + targetId + "-ext-" + to_string(itemsRemaining);
+                    float price = (float)((db->randomNumber() % 10000) + 50) / 10.0f;
+                    string category = string("Cat-ext-") + to_string((db->randomNumber() % 5) + 1);
+                    Product p(prodName, price, category);
+                    commercial.addProduct(p, mall);
+                }
+                itemsRemaining -= toAdd;
+                idx++;
+            }
+        }
+
+        // Ensure at least one hospital and one school exist for assignment
+        if (hospitalCount == 0) {
+            string id = "H-Default-1";
+            Hospital* hosp = new Hospital("Hospital Default", id, 100, sectorNames[0], 2);
+            medical.addHospital(hosp);
+            hospitalIds[hospitalCount++] = id;
+        }
+        if (schoolCount == 0) {
+            string id = "SC-Default-1";
+            School* school = new School(id, "School Default", sectorNames[0], 3.5f, 3);
+            school->addDepartment("Dept-1");
+            school->addClass("Dept-1", "Class-A");
+            education.registerSchool(school);
+            schoolIds[schoolCount++] = id;
+        }
+        if (pharmacyCount == 0) {
+            string id = "PH-Default-1";
+            Pharmacy* ph = new Pharmacy(id, "Pharmacy Default", sectorNames[0], 0);
+            db->insertPharmacy(*ph);
+            pharmacyIds[pharmacyCount++] = id;
+        }
+        if (mallCount == 0) {
+            string id = "MALL-Default-1";
+            Mall* mall = new Mall(id, "Mall Default", sectorNames[0]);
+            for (int it = 0; it < 20; ++it) {
+                string prodName = "Item-" + id + "-" + to_string(it);
+                Product p(prodName, 9.99f + it, string("Cat-") + to_string(it % 3 + 1));
+                commercial.addProduct(p, mall);
+            }
+            commercial.addMall(mall);
+            mallIds[mallCount++] = id;
+        }
+
+        // Create people and assign them.
+        int totalCreated = 0;
+        int doctorCreated = 0;
+        int facultyCreated = 0;
+        int studentCreated = 0;
+        int otherCreated = 0;
+
+        for (int i = 0; i < TOTAL_PEOPLE; i++) {
+            string cnic = string("30000-") + string("1000000-") + to_string(i);
+            string name = string("Person-") + to_string(i + 1);
+            int age = 18 + (db->randomNumber() % 60);
+            char gender = (db->randomNumber() % 2 == 0) ? 'M' : 'F';
+            string street = string("Street-") + to_string((db->randomNumber() % 50) + 1);
+            int houseNo = (db->randomNumber() % 200) + 1;
+            Person* person = nullptr;
+
+            if (doctorCreated < DOCTORS) {
+                string specialization = "General";
+                person = new Doctor(name, age, gender, cnic, street, houseNo, "doctor", sectorNames[db->randomNumber() % SECTORS], specialization);
+                db->insertPerson(person);
+                // Assign to a hospital
+                string hid = hospitalIds[doctorCreated % hospitalCount];
+                medical.addDoctor(person, hid);
+                doctorCreated++;
+            }
+            else if (facultyCreated < FACULTY) {
+                // Faculty
+                person = new Faculty(name, age, 'F', cnic, street, houseNo, "faculty", sectorNames[0], "math");
+                db->insertPerson(person);
+                // Assign to a school
+                string sid = schoolIds[facultyCreated % schoolCount];
+                School* sch = db->searchSchool(sid);
+                if (!sch->searchDepartment("Dept-1")) sch->addDepartment("Dept-1");
+                Department* dept = sch->searchDepartment("Dept-1");
+                if (dept) dept->insertFaculty(dynamic_cast<Faculty*>(person));
+                facultyCreated++;
+            }
+            else if (studentCreated < STUDENTS) {
+                // Student
+                person = new Student(name, age, 'F', cnic, street, houseNo, "student", 4.0, sectorNames[0]);
+                db->insertPerson(person);
+                // Assign to a school class
+                string sid = schoolIds[studentCreated % schoolCount];
+                School* sch = db->searchSchool(sid);
+                if (!sch->searchDepartment("Dept-1")) sch->addDepartment("Dept-1");
+                if (!sch->searchClass("Dept-1", "Class-A")) sch->addClass("Dept-1", "Class-A");
+                sch->addStudent("Dept-1", "Class-A", dynamic_cast<Student*>(person));
+                studentCreated++;
+            }
+            else {
+                // general person
+                person = new Person(name, age, gender, cnic, street, houseNo, "citizen", sectorNames[db->randomNumber() % SECTORS]);
+                db->insertPerson(person);
+                otherCreated++;
+            }
+            totalCreated++;
+        }
+
+        // Final log
+        logger.Info("Seeded random city:");
+        logger.Info("  Sectors created: " + to_string(SECTORS));
+        logger.Info("  Hospitals created: " + to_string(hospitalCount));
+        logger.Info("  Pharmacies created: " + to_string(pharmacyCount));
+        logger.Info("  Schools created: " + to_string(schoolCount));
+        logger.Info("  Malls created: " + to_string(mallCount));
+        logger.Info("  People created: " + to_string(totalCreated) + " (Doctors: " + to_string(doctorCreated) + ", Faculty: " + to_string(facultyCreated) + ", Students: " + to_string(studentCreated) + ", Others: " + to_string(otherCreated) + ")");
+        logger.Info("  Medicines remaining unallocated (should be 0): " + to_string(medsRemaining));
+        logger.Info("  Items remaining unallocated (should be 0): " + to_string(itemsRemaining));
+
+        delete[] sectorNames;
+        delete[] hospitalIds;
+        delete[] schoolIds;
+        delete[] pharmacyIds;
+        delete[] mallIds;
+    }
+
 };

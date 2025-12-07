@@ -3,7 +3,6 @@
 #include "BusStop.h"
 using namespace std;
 
-
 class StopSimNode {
 public:
     string stopId;

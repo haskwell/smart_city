@@ -170,7 +170,6 @@
     <ClInclude Include="Medicine\PatientHashTable.h" />
     <ClInclude Include="Medicine\MedicineHashTable.h" />
     <ClInclude Include="Population\PopulationEntities.h" />
-    <ClInclude Include="Population\PopulationHashTable.h" />
     <ClInclude Include="Population\PopulationSystem.h" />
     <ClInclude Include="Public\FacilityEntities.h" />
     <ClInclude Include="Public\FacilitySystem.h" />

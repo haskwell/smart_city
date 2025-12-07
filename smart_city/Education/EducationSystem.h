@@ -18,6 +18,7 @@ private:
     void cls() {
         cout << "\033[2J\033[H";
     }
+
 public:
     MaxHeap schoolMaxHeap;
 

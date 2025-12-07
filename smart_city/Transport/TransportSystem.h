@@ -6,6 +6,7 @@ class TransportSystem {
 private:
     Database* db;
     CityLogger* logger;
+
     //0 -> success
     //1, 2 -> item missing
     int registerCompany(string companyName) {
@@ -132,7 +133,6 @@ public:
                         logger->Title("\nBus Number: " + currBus->data->busNum);
                         logger->Info("\t\t\tCurrent Stop: " + stopInfo[0]);
                         logger->Info("\t\t\tNextStop: " + stopInfo[1]);
-                        //load and unload people in each bus and each stop
                         currBus->data->unloadPassengers(random);                        
                         int count = 0;
                         string* names = db->getPeopleFromDB(count, 2);
@@ -142,6 +142,7 @@ public:
                         cout << endl;
                         currBus->data->queue.print();
                         cout << endl;
+                        currBus->data->stack.push(stopInfo[0]);
                         currBus = currBus->next;
                         delete[] stopInfo;
                     }
@@ -151,6 +152,30 @@ public:
             }
             i++;
         }
+        pressEnterToContinue();
+    }
+
+    void printBusHistory() {
+        cls();
+        logger->Title("Print Bus History");
+        logger->Prompt("Enter Company Name: ");
+        string company, busNo;
+        getline(cin, company);
+        logger->Prompt("Enter Bus Number: ");
+        getline(cin, busNo);
+        if (company == "" || busNo == "") {
+            logger->Warning("ALl fields must be filled");
+        }
+
+        Bus* bus = db->searchBusInCompany(company, busNo);
+        if (!bus) {
+            logger->Warning("Company or bus don't exist");
+        }
+        else {
+            logger->Info("Bus History: ");
+            bus->stack.print();
+        }
+
         pressEnterToContinue();
     }
 
@@ -281,7 +306,7 @@ public:
         for (int i = 0; i < busTable.tableSize; i++) {
             BusNode* current = busTable.table[i];
             while (current) {
-                logger->Info("Bus Number: " + current->data->busNum);
+                logger->Info("  Bus Number: " + current->data->busNum);
                 current = current->next;
             }
         }

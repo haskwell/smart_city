@@ -125,7 +125,6 @@ public:
         cityHierarchy.addPerson(person);
         ensureSectorExists(person->sector);
 		Sector* sec = sectors.search(person->sector);
-        sectorGrid.addSectorIntoGrid(sec->name);
     }
 
     void insertSector(Sector& sector) {

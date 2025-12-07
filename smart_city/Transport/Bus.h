@@ -3,27 +3,20 @@
 #include "PassengerQueue.h"
 #include "BusRouteList.h"
 #include "StopSimulator.h"
+#include "RouteHistoryStack.h"
 
 using namespace std;
 
 class Bus {
 public:
 	string busNum;
-
 	string companyName;
-
 	int currentStop = 0;
-
 	BusRouteList list;
-
 	PassengerQueue queue;
-
 	StopSimulator simulator;
-
 	int numPassengers = 0;
-
-
-
+	RouteHistoryStack stack;
 	Bus(string n, string company) : busNum(n), companyName(company) {}
 
 	void addStop(string stopID)
@@ -57,10 +50,6 @@ public:
 			string passengerName = passengerNames[i];
 			queue.enqueue(passengerName);
 		}
-	}
-
-	int abs(int a) {
-		return a > 0 ? a : -a;
 	}
 
 	void unloadPassengers(int numToUnload) {

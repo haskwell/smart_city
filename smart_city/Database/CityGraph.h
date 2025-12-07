@@ -52,7 +52,7 @@ public:
 
     GraphNode* adjacencyList;
 
-    GraphManager(double thresh = 1300.0f)
+    GraphManager(double thresh = 2500.0f)
         : threshold(thresh),
         schoolTag("school"),
         hospitalTag("hospital"),
@@ -407,7 +407,7 @@ public:
     }
 
     sf::Vector2f mapToScreen(double lat, double lon) const {
-        float scale = 0.12f;
+        float scale = 0.08f;
         float offsetX = 100.0f;
         float offsetY = 100.0f;
 
@@ -444,4 +444,3 @@ public:
     }
 
 };
-
