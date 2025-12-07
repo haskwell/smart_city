@@ -11,7 +11,7 @@ private:
     int registerCompany(string companyName) {
         if (db->searchBusCompany(companyName))
             return 1;
-        db->insertBusCompany(*new BusCompany(companyName));
+        db->insertBusCompany(new BusCompany(companyName));
         return 0;
     }
 
@@ -118,18 +118,30 @@ public:
             BusCompaniesNode* companyNode = companiesTable[i];
             while (companyNode)
             {
-                BusNode** busTable = companyNode->data.busTable.table;
-                int busTableSize = companyNode->data.busTable.tableSize;
+                BusNode** busTable = companyNode->data->busTable.table;
+                int busTableSize = companyNode->data->busTable.tableSize;
                 int j = 0;
                 while (j < busTableSize)
                 {
                     BusNode* currBus = busTable[j];
                     while (currBus)
                     {
+                        int random = db->randomNumber() % 20;
                         string* stopInfo = currBus->data->Simulate();
-                        logger->Info("Bus Number: " + currBus->data->busNum);
+                        BusStop* currStop = db->searchBusStop(stopInfo[0]);
+                        logger->Title("\nBus Number: " + currBus->data->busNum);
                         logger->Info("\t\t\tCurrent Stop: " + stopInfo[0]);
                         logger->Info("\t\t\tNextStop: " + stopInfo[1]);
+                        //load and unload people in each bus and each stop
+                        currBus->data->unloadPassengers(random);                        
+                        int count = 0;
+                        string* names = db->getPeopleFromDB(count, 2);
+                        currBus->data->loadPassengers(names, count);
+                        delete[] names;
+                        logger->Info("\nPassengers in bus: ");
+                        cout << endl;
+                        currBus->data->queue.print();
+                        cout << endl;
                         currBus = currBus->next;
                         delete[] stopInfo;
                     }
@@ -251,8 +263,8 @@ public:
         for (int i = 0; i < db->getBusCompaniesTableSize(); i++) {
             BusCompaniesNode* current = db->getBusCompanyAt(i);
             while (current) {
-                logger->Info("Company: " + current->data.companyName);
-                listAllBusesInCompany(current->data.companyName);
+                logger->Info("Company: " + current->data->companyName);
+                listAllBusesInCompany(current->data->companyName);
                 current = current->next;
             }
         }

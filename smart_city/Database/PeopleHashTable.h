@@ -15,6 +15,7 @@ class PeopleHashTable {
 public:
     PersonNode** table;
     int tableSize;
+    int count = 0;
 
     PeopleHashTable(int size = 10) : tableSize(size) {
         table = new PersonNode * [tableSize];
@@ -37,6 +38,7 @@ public:
             while (temp->next) temp = temp->next;
             temp->next = newNode;
         }
+        count++;
     }
 
     Person* search(const string& cnic) {

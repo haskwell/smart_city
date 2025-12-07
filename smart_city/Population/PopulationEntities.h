@@ -253,17 +253,6 @@ public:
 				return Coords(i, j);
 			}
 		}
-		//for (int i = 0; i < rows; i++)
-		//{
-		//	for (int j = 0; j < cols; j++)
-		//	{
-		//		if (buildingsGrid[i][j].buildingID == "")
-		//		{
-		//			buildingsGrid[i][j] = GridNode(i, j, ID, typeTag);
-		//			return Coords(i, j);
-		//		}
-		//	}
-		//}
 		return Coords(-1, -1);
 	}
 

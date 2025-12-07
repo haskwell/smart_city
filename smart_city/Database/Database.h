@@ -34,6 +34,13 @@ class Database {
 
 public:
 
+    unsigned int seed = 123456;
+    unsigned int randomNumber() {
+        //Linear Congruential Generator
+        seed = (21433103u * seed + 32183u) % 2143245289u;
+        return seed;
+    }
+
     Database() {
         pathFinder = new CityPathFinder(&cityGraph);
 		sectorGrid.setUpGrid(5, 5);
@@ -157,8 +164,38 @@ public:
         cityGraph.add(facility.id, facility.latitude, facility.longitude, cityGraph.publicFacilityTag);
     }
 
-    void insertBusCompany(BusCompany& company) {
+    void insertBusCompany(BusCompany* company) {
         busCompanies.insert(company);
+    }
+
+    string* getPeopleFromDB(int& c, int numPassengers = 10) {
+
+        int totalPeople = people.count;
+        if (totalPeople == 0) {
+            c = 0;
+            return nullptr;
+        }
+
+        Person** allPeople = new Person * [totalPeople];
+        int idx = 0;
+        for (int i = 0; i < people.tableSize; i++) {
+            PersonNode* node = people.table[i];
+            while (node) {
+                allPeople[idx++] = node->data;
+                node = node->next;
+            }
+        }
+
+        c= (totalPeople < numPassengers) ? totalPeople : numPassengers;
+        string* passengers = new string[c];
+
+        for (int i = 0; i < c; i++) {
+            int index = randomNumber() % totalPeople;
+            passengers[i] = allPeople[index]->name;
+        }
+
+        delete[] allPeople;
+        return passengers;
     }
 
     void insertBusStop(BusStop& busStop) {

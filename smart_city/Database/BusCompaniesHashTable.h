@@ -5,10 +5,10 @@ using namespace std;
 
 class BusCompaniesNode {
 public:
-    BusCompany data;
+    BusCompany* data;
     BusCompaniesNode* next;
 
-    BusCompaniesNode(const BusCompany& bc) : data(bc), next(nullptr) {}
+    BusCompaniesNode(BusCompany* bc) : data(bc), next(nullptr) {}
 };
 
 class BusCompaniesHashTable {
@@ -37,8 +37,8 @@ public:
         return (hashValue < 0) ? (hashValue + tableSize) : hashValue;
     }
 
-    void insert(const BusCompany& bc) {
-        int index = hash(bc.companyName);
+    void insert(BusCompany* bc) {
+        int index = hash(bc->companyName);
         BusCompaniesNode* newNode = new BusCompaniesNode(bc);
 
         if (table[index] == nullptr) {
@@ -56,8 +56,8 @@ public:
         BusCompaniesNode* current = table[index];
 
         while (current) {
-            if (current->data.companyName == companyName) {
-                return &current->data;
+            if (current->data->companyName == companyName) {
+                return current->data;
             }
             current = current->next;
         }
@@ -89,7 +89,7 @@ public:
             BusCompaniesNode* current = oldTable[i];
             while (current) {
                 BusCompaniesNode* nextNode = current->next;
-                int index = hash(current->data.companyName);
+                int index = hash(current->data->companyName);
                 current->next = table[index];
                 table[index] = current;
                 current = nextNode;

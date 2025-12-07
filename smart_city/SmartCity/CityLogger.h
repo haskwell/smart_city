@@ -29,7 +29,7 @@ public:
 	}
 
 	void Info(const string& message) {
-		cout << cyan << "[INFO] " << clear << message << endl;
+		cout << cyan << message << endl;
 	}
 
 	void Prompt(const string& message) {

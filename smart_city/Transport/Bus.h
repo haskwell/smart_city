@@ -20,6 +20,10 @@ public:
 
 	StopSimulator simulator;
 
+	int numPassengers = 0;
+
+
+
 	Bus(string n, string company) : busNum(n), companyName(company) {}
 
 	void addStop(string stopID)
@@ -48,6 +52,23 @@ public:
 		return stopInfo;
 	}
 
+	void loadPassengers(string* passengerNames, int count) {
+		for (int i = 0; i < count; i++) {
+			string passengerName = passengerNames[i];
+			queue.enqueue(passengerName);
+		}
+	}
 
+	int abs(int a) {
+		return a > 0 ? a : -a;
+	}
 
+	void unloadPassengers(int numToUnload) {
+		for (int i = 0; i < numToUnload; i++) {
+			if (!queue.isEmpty()) {
+				string name = queue.dequeue();
+				cout << name << " has left the bus.\n";
+			}
+		}
+	}
 };

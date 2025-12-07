@@ -1,101 +1,76 @@
 #include "SmartCity/SmartCity.h"
 #include <ctime>
 #include <vector>
-void seedTransport(SmartCity& city) {
-    Database& db = *city.db;
+#include <string>
+using namespace std;
 
-    std::vector<std::string> sectors = { "S1","S2","S3","S4","S5" };
-    int stopCounter = 1;
+void seed(SmartCity& city) {
+    // Seed random number generator
+    srand(static_cast<unsigned int>(time(0)));
 
-    for (int i = 0; i < sectors.size(); i++) {
-        for (int j = 1; j <= 5; j++) {
-            string sid = "BS" + to_string(stopCounter);
-            string sname = "Stop " + to_string(stopCounter);
-            float lat = 24.8600 + (stopCounter * 0.0005f);
-            float lon = 67.0100 + (stopCounter * 0.0005f);
+    // 10 sample company names
+    std::vector<std::string> companyNames = {
+        "CityTrans", "MetroBus", "UrbanLine", "RapidRide", "EcoBus",
+        "TransitPro", "SwiftMove", "BlueRoute", "GreenLine", "ExpressWay"
+    };
 
-            db.insertBusStop(*new BusStop(sname, sid, sectors[i], lat, lon));
-            stopCounter++;
+    // 10 sample bus stop names
+    std::vector<std::string> stopNames = {
+        "Central", "Parkside", "Hilltop", "Riverside", "EastEnd",
+        "WestGate", "NorthSquare", "SouthPoint", "OldTown", "NewCity"
+    };
+
+    // 1. Add bus companies
+    for (int i = 0; i < 10; i++) {
+        BusCompany* b = new BusCompany(companyNames[i]);
+        city.db->insertBusCompany(b);
+    }
+    // 3. Add bus stops
+    for (int i = 0; i < 10; i++) {
+        BusStop stop(stopNames[i], "S" + std::to_string(i + 1), "Sector" + std::to_string(i + 1));
+        city.db->insertBusStop(stop);
+    }
+    // 2. Add buses to random companies
+    for (int i = 0; i < 10; i++) {
+        std::string busNum = "B" + std::to_string(i + 1);
+        // Randomly pick a company
+        std::string company = companyNames[rand() % companyNames.size()];
+        Bus* bus = new Bus(busNum, company);
+        // Optionally, add stops to each bus
+        for (int j = 0; j < 3; j++) {
+            bus->addStop(stopNames[(i + j) % stopNames.size()]);
         }
+        city.db->insertBusToCompany(company, bus);
     }
 
-    vector<string> companies = { "GreenLine", "MetroTrans", "RapidMove", "CityRide", "UrbanWheels" };
-    for (auto& c : companies)
-        db.insertBusCompany(*new BusCompany(c));
+    // Optional: print confirmation
+    std::cout << "Seeded 10 companies, 10 buses, and 10 bus stops." << std::endl;
 
-    int busNum = 1;
-    for (auto& comp : companies)
-        for (int i = 0; i < 4; i++)
-            db.insertBusToCompany(comp, new Bus("B" + to_string(busNum++), comp));
+    int numPeople = 500;
+    std::vector<std::string> firstNames = { "Alice","Bob","Charlie","Diana","Eve","Frank","Grace","Hank","Ivy","Jack" };
+    std::vector<std::string> lastNames = { "Smith","Johnson","Brown","Lee","Garcia","Martinez","Davis","Lopez","Wilson","Clark" };
+    std::vector<std::string> sectors = { "Sector1","Sector2","Sector3","Sector4","Sector5" };
 
+    for (int i = 0; i < numPeople; i++) {
+        std::string name = firstNames[city.db->randomNumber() % firstNames.size()] + " " +
+            lastNames[city.db->randomNumber() % lastNames.size()];
+        int age = 10 + city.db->randomNumber() % 60; // age 10–69
+        char gender = (city.db->randomNumber() % 2 == 0) ? 'M' : 'F';
+        std::string cnic = std::to_string(100000000000 + city.db->randomNumber() % 900000000000);
+        std::string street = "Street" + std::to_string(city.db->randomNumber() % 50 + 1);
+        int houseNo = 1 + city.db->randomNumber() % 100;
+        std::string occupation = "Occupation" + std::to_string(city.db->randomNumber() % 20 + 1);
+        std::string sector = sectors[city.db->randomNumber() % sectors.size()];
 
-    // Each bus gets a route of 5 stops
-    int routeStart = 1;
-
-    for (auto& comp : companies) {
-        BusCompany* C = db.searchBusCompany(comp);
-
-        if (!C) continue;
-
-        for (int i = 0; i < C->busTable.tableSize; i++) {
-            BusNode* busNode = C->busTable.table[i];
-            while (busNode) {
-
-                Bus* b = busNode->data;
-
-                // Assign 5 stops sequentially
-                for (int j = 0; j < 5; j++) {
-                    string stopId = "BS" + to_string((routeStart + j - 1) % 25 + 1);
-                    BusStop* s = db.searchBusStop(stopId);
-                    if (s) b->addStop(s);
-                }
-
-                routeStart += 3; // Different route pattern per bus
-                busNode = busNode->next;
-            }
-        }
+        Person* p = new Person(name, age, gender, cnic, street, houseNo, occupation, sector);
+        city.db->insertPerson(p);
     }
-    db.makeEdges();
-    cout << "\n[?] Transport System Seeded Successfully!\n";
+
 }
-#include <cstdlib> // for rand
-
-void seedRandomHospital(SmartCity& city) {
-    Database& db = *city.db;
-
-    // Generate a new sector name that doesn't exist yet
-    string newSector = "S" + to_string(db.getSectorsTableSize() + 1);
-
-    // Create hospital with random name and ID
-    string hospitalName = "Hospital";
-    string hospitalID = "H1";
-    int beds = 20 + (rand() % 31); // Random between 20-50 beds
-    int specs = 3 + (rand() % 3);  // 3-5 specializations
-
-    Hospital* h = new Hospital(hospitalName, hospitalID, beds, newSector, specs);
-
-    // Optionally fill specializations with dummy values
-    for (int i = 0; i < specs; i++) {
-        h->specialization[i] = "Spec_" + to_string(i + 1);
-    }
-
-    // Insert the new sector (Database ensures it doesn't duplicate)
-    db.ensureSectorExists(newSector);
-
-    // Insert hospital into database
-    db.insertHospital(*h);
-
-    db.makeEdges();
-
-    cout << "\n[?] Random Hospital '" << hospitalName << "' added in sector " << newSector << "!\n";
-}
-
 
 int main() {
-	srand(static_cast<unsigned int>(time(0)));
-	SmartCity city;
-	seedTransport(city);
-	seedRandomHospital(city);
+    SmartCity city;
+    seed(city);
     city.run();
     return 0;
 }
