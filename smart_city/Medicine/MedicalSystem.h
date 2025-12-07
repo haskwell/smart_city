@@ -89,16 +89,16 @@ public:
         }
     }
 
-    bool addMedicine(const Medicine& m, Pharmacy* pharmacy) {
+    bool addMedicine(Medicine* m, Pharmacy* pharmacy) {
         if (!db) return false;
 
         if (pharmacy) {
-            if (pharmacy->medicineTable.search(m.name)) {
-                logger->Warning("Medicine '" + m.name + "' already exists in " + pharmacy->name + "!");
+            if (pharmacy->medicineTable.search(m->name)) {
+                logger->Warning("Medicine '" + m->name + "' already exists in " + pharmacy->name + "!");
                 return false;
             }
             pharmacy->medicineTable.insert(m);
-            logger->Ok("Medicine " + m.name + " added to Pharmacy " + pharmacy->name);
+            logger->Ok("Medicine " + m->name + " added to Pharmacy " + pharmacy->name);
             return true;
         }
         else {
@@ -252,7 +252,7 @@ public:
                 logger->Prompt("Medicine " + to_string(i + 1) + " Price: ");
                 cin >> price;
                 cin.ignore();
-                Medicine m(medName, formula, price);
+                Medicine* m = new Medicine(medName, formula, price);
                 addMedicine(m, newPharmacy);
             }
         }
@@ -408,7 +408,7 @@ public:
         getline(cin, formula);
         logger->Prompt("Enter Medicine Price: ");
         cin >> price;
-        Medicine m(name, formula, price);
+        Medicine* m = new Medicine(name, formula, price);
         cin.ignore();
         bool added = addMedicine(m, pharmacy);
         if (!added) {
@@ -508,7 +508,7 @@ public:
                 for (int j = 0; j < current->data.medicineTable.tableSize; j++) {
                     MedicineNode* medCurrent = current->data.medicineTable.table[j];
                     while (medCurrent) {
-                        logger->Info("  Medicine Name: " + medCurrent->data.name + ", Formula: " + medCurrent->data.formula + ", Price: " + to_string(medCurrent->data.price));
+                        logger->Info("  Medicine Name: " + medCurrent->data->name + ", Formula: " + medCurrent->data->formula + ", Price: " + to_string(medCurrent->data->price));
                         medCurrent = medCurrent->next;
                     }
                 }

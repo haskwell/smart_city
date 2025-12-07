@@ -113,10 +113,10 @@ private:
         "\t8. Search Medicine",
         "\t9. Nearest Hospital Lookup",
         "\t10. Nearest Pharmacy Lookup",
-        "\t12. List All Hospitals",
-        "\t13. List All Doctors",
-        "\t14. List All Pharmacies",
-        "\t15. List All Medicines",
+        "\t11. List All Hospitals",
+        "\t12. List All Doctors",
+        "\t13. List All Pharmacies",
+        "\t14. List All Medicines",
         "\t0. Back"
     };
 

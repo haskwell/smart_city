@@ -3,10 +3,10 @@
 
 class MedicineNode {
 public:
-    Medicine data;
+    Medicine* data;
     MedicineNode* next;
 
-    MedicineNode(const Medicine& b) : data(b), next(nullptr) {}
+    MedicineNode(Medicine* b) : data(b), next(nullptr) {}
 };
 
 class MedicineHashTable {
@@ -34,8 +34,8 @@ public:
     }
 
     // Insert a medicine
-    void insert(const Medicine& med) {
-        int index = hash(med.name);
+    void insert(Medicine* med) {
+        int index = hash(med->name);
 
         MedicineNode* medNode = new MedicineNode(med);
 
@@ -55,8 +55,8 @@ public:
 
         MedicineNode* current = table[index];
         while (current) {
-            if (current->data.name == medName)
-                return &current->data;
+            if (current->data->name == medName)
+                return current->data;
             current = current->next;
         }
         return nullptr;

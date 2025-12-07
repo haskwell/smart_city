@@ -84,7 +84,7 @@ public:
         heapArray[i] = new HeapNode();
         heapArray[i]->rating = rating;
         heapArray[i]->rating = rating;
-
+        heapArray[i]->schoolID = schoolId;
 
         while (i != 0 && heapArray[parent(i)]->rating < heapArray[i]->rating) {
             swap(i, parent(i));

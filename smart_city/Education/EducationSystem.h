@@ -25,6 +25,7 @@ public:
 
     int registerSchool(School* s) {
         db->insertSchool(*s);
+        schoolMaxHeap.insert(s->schoolID, s->rating);
         return 0;
     }
 
@@ -165,9 +166,7 @@ public:
         logger->Prompt("Enter Number of Subjects Offered: ");
         cin >> numSubjects;
         cin.ignore();
-        if (cin.fail() || numSubjects < 0) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        if (numSubjects < 0) {
             logger->Error("Invalid number of subjects.");
             pressEnterToContinue();
             return;
@@ -191,7 +190,6 @@ public:
         }
 
         registerSchool(newSchool);
-        schoolMaxHeap.insert(newSchool->schoolID, newSchool->rating);
         logger->Ok("\"" + name + "\" has been registered.");
 
         pressEnterToContinue();
