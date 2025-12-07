@@ -94,12 +94,9 @@ public:
 
         if (pharmacy) {
             if (pharmacy->medicineTable.search(m->name)) {
-                logger->Warning("Medicine '" + m->name + "' already exists in " + pharmacy->name + "!");
                 return false;
             }
             pharmacy->medicineTable.insert(m);
-            logger->Ok("Medicine " + m->name + " added to Pharmacy " + pharmacy->name);
-            return true;
         }
         else {
             logger->Error("Pharmacy not found.");

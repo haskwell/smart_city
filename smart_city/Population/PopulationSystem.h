@@ -92,6 +92,7 @@ public:
         else logger->Error("Database missing!");
         pressEnterToContinue();
     }
+
     void searchByCNICHandler() {
         cls();
         logger->Title("SEARCH PERSON BY CNIC");
@@ -155,11 +156,6 @@ public:
 
     }
 
-    void occupationSummaryReport() {
-
-
-    }
-
     void genderRatioReport() {
         int maleCount = 0;
         int femaleCount = 0;
@@ -188,9 +184,7 @@ public:
         generateAgeReport();
         logger->Info("\n");
         logger->Info("\n");
-        logger->Info("\n");
         genderRatioReport();
-
         pressEnterToContinue();
 
     }
