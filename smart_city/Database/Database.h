@@ -32,6 +32,9 @@ class Database {
 
     CityPathFinder* pathFinder;
 
+    static const int SECTOR_SPACING = 1800;   // total sector width/height
+    static const int BUILDING_SPACING = 600;   // total sector width/height
+
 public:
 
     unsigned int seed = 123456;
@@ -47,9 +50,15 @@ public:
     }
 
     void convertToGlobal(int &x, int &y, int gX, int gY) {
-        x = gX * 625 + x * 25;
-        y = gY * 625 + y * 25;
+        //x = gX * 625 + x * 25;
+        //y = gY * 625 + y * 25;
+        int jitterX = randomNumber() % 500;
+        int jitterY = randomNumber() % 500;
+
+        x = gX * SECTOR_SPACING + x * BUILDING_SPACING + jitterX;
+        y = gY * SECTOR_SPACING + y * BUILDING_SPACING + jitterY;
     }
+
 
     ~Database() {}
 

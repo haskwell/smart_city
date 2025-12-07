@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include <iostream>
+#include <SFML/Graphics.hpp>
 using namespace std;
 
 //forward declaration
@@ -51,7 +52,7 @@ public:
 
     GraphNode* adjacencyList;
 
-    GraphManager(double thresh = 100.0f)
+    GraphManager(double thresh = 1300.0f)
         : threshold(thresh),
         schoolTag("school"),
         hospitalTag("hospital"),
@@ -62,7 +63,6 @@ public:
         adjacencyList(nullptr)
     {
     }
-
 
     void add(GraphNode* toAdd)
     {
@@ -306,6 +306,134 @@ public:
             }
 
             typeHead = typeHead->next;
+        }
+
+        showGraph();
+    }
+
+    void drawGraph(GraphManager& gm, sf::RenderWindow& window) {
+        float nodeRadius = 12.0f;
+        float scale = 0.1f;
+        float offsetX = 100.0f;
+        float offsetY = 100.0f;
+        // First, draw edges
+        GraphNode* typeHead = gm.adjacencyList;
+        while (typeHead) {
+            GraphNode* node = typeHead;
+            while (node) {
+                sf::Vector2f srcPos = mapToScreen(node->latitude, node->longitude);
+
+                EdgeNode* edge = node->edgeHead;
+                while (edge) {
+                    sf::Vector2f dstPos = mapToScreen(edge->to->latitude, edge->to->longitude);
+
+                    sf::Vertex line[] = {
+                        sf::Vertex(srcPos, sf::Color::White),
+                        sf::Vertex(dstPos, sf::Color::White)
+                    };
+
+                    window.draw(line, 2, sf::Lines);
+                    edge = edge->nextEdge;
+                }
+
+                node = node->nextType;
+            }
+            typeHead = typeHead->next;
+        }
+
+        // Then draw nodes on top of edges
+        typeHead = gm.adjacencyList;
+        while (typeHead) {
+            GraphNode* node = typeHead;
+            while (node) {
+                sf::Vector2f pos = mapToScreen(node->latitude, node->longitude);
+
+                sf::CircleShape c(nodeRadius);
+                c.setOrigin(nodeRadius, nodeRadius);
+                c.setFillColor(getColor(node->type));
+                c.setPosition(pos);
+                window.draw(c);
+
+                node = node->nextType;
+            }
+            typeHead = typeHead->next;
+        }
+
+        // Draw legend/key in bottom-right
+        static sf::Font font;
+        static bool loaded = false;
+        if (!loaded) {
+            font.loadFromFile("arial.ttf"); // make sure arial.ttf is in your project folder
+            loaded = true;
+        }
+
+        float keyX = 1050.0f; // bottom-right x
+        float keyY = 700.0f;  // bottom-right y
+        float spacing = 30.0f;
+
+        struct LegendItem { string type; sf::Color color; };
+        LegendItem items[] = {
+            {schoolTag, getColor(schoolTag)},
+            {hospitalTag, getColor(hospitalTag)},
+            {busStopTag, getColor(busStopTag)},
+            {commercialTag, getColor(commercialTag)},
+            {publicFacilityTag, getColor(publicFacilityTag)},
+            {pharmacyTag, getColor(pharmacyTag)}
+        };
+
+        for (int i = 0; i < 6; ++i) {
+            // Draw colored circle
+            sf::CircleShape c(nodeRadius / 2);
+            c.setOrigin(nodeRadius / 2, nodeRadius / 2);
+            c.setFillColor(items[i].color);
+            c.setPosition(keyX, keyY + i * spacing);
+            window.draw(c);
+
+            // Draw label
+            sf::Text label;
+            label.setFont(font);
+            label.setString(items[i].type);
+            label.setCharacterSize(18);
+            label.setFillColor(sf::Color::White);
+            label.setPosition(keyX + nodeRadius + 10, keyY + i * spacing - nodeRadius / 2);
+            window.draw(label);
+        }
+    }
+
+    sf::Vector2f mapToScreen(double lat, double lon) const {
+        float scale = 0.1f;
+        float offsetX = 100.0f;
+        float offsetY = 100.0f;
+
+        return sf::Vector2f(
+            static_cast<float>(lat * scale + offsetX),
+            static_cast<float>(lon * scale + offsetY)
+        );
+    }
+
+    sf::Color getColor(const string& type) const {
+        if (type == schoolTag) return sf::Color::Blue;
+        if (type == hospitalTag) return sf::Color::Red;
+        if (type == busStopTag) return sf::Color::Yellow;
+        if (type == commercialTag) return sf::Color::Magenta;
+        if (type == publicFacilityTag) return sf::Color::Green;
+        if (type == pharmacyTag) return sf::Color::Cyan;
+        return sf::Color::White;
+    }
+
+    void showGraph() {
+        sf::RenderWindow window(sf::VideoMode(1200, 900), "Graph Viewer");
+
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+            }
+            window.clear(sf::Color(30, 50, 70));
+
+            drawGraph(*this, window);
+            window.display();
         }
     }
 

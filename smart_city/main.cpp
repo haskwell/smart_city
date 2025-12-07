@@ -3,7 +3,7 @@ using namespace std;
 
 int main() {
     SmartCity city;
-    city.seedData();
+    //city.seedData();
     city.run();
     return 0;
 }
