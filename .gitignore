@@ -22,10 +22,13 @@ mono_crash.*
 [Rr]elease/
 [Rr]eleases/
 
-# Ignore everything in x64
+# Ignore everything in x64 and subfolders
 x64/**
 
-# But allow DLLs (recursively)
+# Force-track all directories inside x64 so structure stays
+!x64/**/
+
+# Track only .dll files, no matter how deep
 !x64/**/*.dll
 
 x86/
