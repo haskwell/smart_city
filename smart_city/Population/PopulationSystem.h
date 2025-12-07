@@ -29,7 +29,9 @@ private:
     }
 
 public:
+    
     PopulationSystem(Database* database, CityLogger* log) : db(database), logger(log) {}
+    
     void addPeopleHandler() {
         cls();
         logger->Title("ADD NEW PERSON");
@@ -74,11 +76,11 @@ public:
             logger->Ok("Doctor '" + name + "' registered with specialization: " + specialization);
         }
         else if (occupation == "student" || occupation == "Student" || occupation == "STUDENT") {
-            newPerson = new Student(name, age, gender, CNIC, street, houseNo, occupation);
+            newPerson = new Student(name, age, gender, CNIC, street, houseNo, occupation, 0.0, sector);
             logger->Ok("Student '" + name + "' added to population.");
         }
         else if (occupation == "faculty" || occupation == "Faculty" || occupation == "FACULTY") {
-            newPerson = new Faculty(name, age, gender, CNIC, street, houseNo, occupation);
+            newPerson = new Faculty(name, age, gender, CNIC, street, houseNo, occupation, sector);
             logger->Ok("Faculty '" + name + "' added to population.");
         }
         else {
@@ -87,8 +89,7 @@ public:
         }
 
         int code = addPerson(newPerson);
-        if (code == 0) {}
-        else if (code == 1) logger->Warning("Person already exists!");
+        if (code == 1) logger->Warning("Person already exists!");
         else logger->Error("Database missing!");
         pressEnterToContinue();
     }
@@ -430,20 +431,24 @@ public:
         pressEnterToContinue();
     }
 
-    void drawPopulationHeatmap() {
-        sf::RenderWindow window(sf::VideoMode(1000, 600), "City Population Heatmap");
+    sf::Color getColorFromDensity(int count, int maxCount) {
+        if (maxCount == 0) return sf::Color(255, 255, 204);
+        int intensity = (count * 255) / maxCount;
+        if (intensity > 255) intensity = 255;
+        return sf::Color(intensity, 0, 0);
+    }
 
-        // Load font
+    void drawPopulationHeatmap() {
+        sf::RenderWindow window(sf::VideoMode(1000, 900), "City Population Heatmap");
+
         sf::Font font;
         if (!font.loadFromFile("arial.ttf")) {
-            // handle error
             return;
         }
-
         // Count max population first for color normalization
         int maxPopulation = 0;
         Sector* s = db->getCityHierarchySectors();
-        while (s) {
+        while (s->nextSector) {
             int total = 0;
             Street* street = s->streets;
             while (street) {
@@ -462,13 +467,6 @@ public:
             s = s->nextSector;
         }
 
-        auto getColorFromDensity = [](int count, int maxCount) {
-            if (maxCount == 0) return sf::Color(255, 255, 204);
-            int intensity = (count * 255) / maxCount;
-            if (intensity > 255) intensity = 255;
-            return sf::Color(intensity, 0, 0);
-            };
-
         int sectorWidth = 150;
         int sectorHeight = 150;
         int margin = 20;
@@ -486,12 +484,11 @@ public:
 
             int xOffset = 0;
             int yOffset = 0;
-            int sectorsPerRow = 5; // adjust depending on window size
+            int sectorsPerRow = 5;
 
             s = db->getCityHierarchySectors();
             int idx = 0;
-            while (s) {
-                // Count total people in this sector
+            while (s->nextSector) {
                 int total = 0;
                 Street* street = s->streets;
                 while (street) {

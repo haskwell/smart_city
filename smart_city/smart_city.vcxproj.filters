@@ -56,9 +56,6 @@
     <ClInclude Include="Education\EducationSystem.h">
       <Filter>Header Files\Education</Filter>
     </ClInclude>
-    <ClInclude Include="Population\PopulationHashTable.h">
-      <Filter>Header Files\Population</Filter>
-    </ClInclude>
     <ClInclude Include="Population\PopulationSystem.h">
       <Filter>Header Files\Population</Filter>
     </ClInclude>

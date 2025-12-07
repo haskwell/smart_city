@@ -22,6 +22,7 @@ class PublicSystem {
 
 public:
     PublicSystem(Database* database = nullptr, CityLogger* log = nullptr) : db(database), logger(log) {}
+    
     void addFacilityHandler() {
         cls();
         logger->Title("REGISTER NEW FACILITY");
@@ -89,4 +90,5 @@ public:
         logger->Info(path);
         pressEnterToContinue();
     }
+
 };

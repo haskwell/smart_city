@@ -15,8 +15,9 @@ public:
         string s = "",
         int house = 0,
         string o = "",
-        double gpaVal = 0.0)
-        : Person(n, a, g, cnic, s, house, o), gpa(gpaVal), nextStudent(nullptr)
+        double gpaVal = 0.0,
+        string sec = "")
+        : Person(n, a, g, cnic, s, house, o, sec), gpa(gpaVal), nextStudent(nullptr)
     {
     }
 };

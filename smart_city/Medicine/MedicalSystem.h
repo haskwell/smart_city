@@ -120,10 +120,6 @@ public:
         return db->searchPerson(cnic);
     }
 
-    void requestEmergencyBeds(int numBeds) {
-
-    }
-
     void searchHospitalGraph(const string& hospitalName) {
         logger->Info(">>> Search Hospital Graph - Not implemented yet");
     }

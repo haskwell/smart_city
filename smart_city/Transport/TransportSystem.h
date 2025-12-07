@@ -6,6 +6,7 @@ class TransportSystem {
 private:
     Database* db;
     CityLogger* logger;
+
     //0 -> success
     //1, 2 -> item missing
     int registerCompany(string companyName) {
@@ -132,7 +133,6 @@ public:
                         logger->Title("\nBus Number: " + currBus->data->busNum);
                         logger->Info("\t\t\tCurrent Stop: " + stopInfo[0]);
                         logger->Info("\t\t\tNextStop: " + stopInfo[1]);
-                        //load and unload people in each bus and each stop
                         currBus->data->unloadPassengers(random);                        
                         int count = 0;
                         string* names = db->getPeopleFromDB(count, 2);
@@ -306,7 +306,7 @@ public:
         for (int i = 0; i < busTable.tableSize; i++) {
             BusNode* current = busTable.table[i];
             while (current) {
-                logger->Info("Bus Number: " + current->data->busNum);
+                logger->Info("  Bus Number: " + current->data->busNum);
                 current = current->next;
             }
         }

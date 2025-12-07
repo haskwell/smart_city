@@ -10,8 +10,4 @@ public:
 	BusHashTable busTable;
 
 	BusCompany(string name = "") : companyName(name) {}
-
-	~BusCompany() {
-
-	}
 };
