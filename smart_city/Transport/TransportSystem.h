@@ -142,6 +142,7 @@ public:
                         cout << endl;
                         currBus->data->queue.print();
                         cout << endl;
+                        currBus->data->stack.push(stopInfo[0]);
                         currBus = currBus->next;
                         delete[] stopInfo;
                     }
@@ -151,6 +152,30 @@ public:
             }
             i++;
         }
+        pressEnterToContinue();
+    }
+
+    void printBusHistory() {
+        cls();
+        logger->Title("Print Bus History");
+        logger->Prompt("Enter Company Name: ");
+        string company, busNo;
+        getline(cin, company);
+        logger->Prompt("Enter Bus Number: ");
+        getline(cin, busNo);
+        if (company == "" || busNo == "") {
+            logger->Warning("ALl fields must be filled");
+        }
+
+        Bus* bus = db->searchBusInCompany(company, busNo);
+        if (!bus) {
+            logger->Warning("Company or bus don't exist");
+        }
+        else {
+            logger->Info("Bus History: ");
+            bus->stack.print();
+        }
+
         pressEnterToContinue();
     }
 

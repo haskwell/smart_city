@@ -71,6 +71,7 @@ private:
             case 7: transport.searchBusHandler(); break;
             case 8: transport.listAllCompanies(); break;
             case 9: transport.listAllBusStops(); break;
+            case 10: transport.printBusHistory(); break;
             }
         } while (tChoice != 0);
     }
@@ -157,6 +158,7 @@ private:
             case 7: population.printHierarchyHandler(); break;
             case 8: population.printSectorGridHandler(); break;
             case 9: population.printBuildingsGridHandler(); break;
+            case 10: population.drawPopulationHeatmap(); break;
             }
         } while (popChoice != 0);
     }

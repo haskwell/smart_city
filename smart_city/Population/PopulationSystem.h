@@ -435,4 +435,113 @@ public:
         sector->printBuildingsGrid();
         pressEnterToContinue();
     }
+
+    void drawPopulationHeatmap() {
+        sf::RenderWindow window(sf::VideoMode(1000, 600), "City Population Heatmap");
+
+        // Load font
+        sf::Font font;
+        if (!font.loadFromFile("arial.ttf")) {
+            // handle error
+            return;
+        }
+
+        // Count max population first for color normalization
+        int maxPopulation = 0;
+        Sector* s = db->getCityHierarchySectors();
+        while (s) {
+            int total = 0;
+            Street* street = s->streets;
+            while (street) {
+                House* house = street->houses;
+                while (house) {
+                    Person* p = house->occupants;
+                    while (p) {
+                        total++;
+                        p = p->next;
+                    }
+                    house = house->nextHouse;
+                }
+                street = street->nextStreet;
+            }
+            if (total > maxPopulation) maxPopulation = total;
+            s = s->nextSector;
+        }
+
+        auto getColorFromDensity = [](int count, int maxCount) {
+            if (maxCount == 0) return sf::Color(255, 255, 204);
+            int intensity = (count * 255) / maxCount;
+            if (intensity > 255) intensity = 255;
+            return sf::Color(intensity, 0, 0);
+            };
+
+        int sectorWidth = 150;
+        int sectorHeight = 150;
+        int margin = 20;
+        int startX = 50;
+        int startY = 50;
+
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+            }
+
+            window.clear(sf::Color::White);
+
+            int xOffset = 0;
+            int yOffset = 0;
+            int sectorsPerRow = 5; // adjust depending on window size
+
+            s = db->getCityHierarchySectors();
+            int idx = 0;
+            while (s) {
+                // Count total people in this sector
+                int total = 0;
+                Street* street = s->streets;
+                while (street) {
+                    House* house = street->houses;
+                    while (house) {
+                        Person* p = house->occupants;
+                        while (p) {
+                            total++;
+                            p = p->next;
+                        }
+                        house = house->nextHouse;
+                    }
+                    street = street->nextStreet;
+                }
+
+                // Position
+                xOffset = (idx % sectorsPerRow) * (sectorWidth + margin);
+                yOffset = (idx / sectorsPerRow) * (sectorHeight + margin);
+
+                // Draw rectangle
+                sf::RectangleShape rect(sf::Vector2f(sectorWidth, sectorHeight));
+                rect.setPosition(startX + xOffset, startY + yOffset);
+                rect.setFillColor(getColorFromDensity(total, maxPopulation));
+                rect.setOutlineColor(sf::Color::Black);
+                rect.setOutlineThickness(2);
+                window.draw(rect);
+
+                // Draw sector name
+                sf::Text text(s->name, font, 14);
+                text.setPosition(startX + xOffset + 5, startY + yOffset - 20);
+                text.setFillColor(sf::Color::Black);
+                window.draw(text);
+
+                // Draw population count
+                sf::Text popText(std::to_string(total), font, 16);
+                popText.setPosition(startX + xOffset + 50, startY + yOffset + sectorHeight / 2 - 10);
+                popText.setFillColor(sf::Color::Black);
+                window.draw(popText);
+
+                s = s->nextSector;
+                idx++;
+            }
+
+            window.display();
+        }
+    }
 };

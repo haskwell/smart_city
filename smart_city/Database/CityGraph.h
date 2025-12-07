@@ -407,7 +407,7 @@ public:
     }
 
     sf::Vector2f mapToScreen(double lat, double lon) const {
-        float scale = 0.12f;
+        float scale = 0.1f;
         float offsetX = 100.0f;
         float offsetY = 100.0f;
 
@@ -444,4 +444,3 @@ public:
     }
 
 };
-

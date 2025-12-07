@@ -3,6 +3,7 @@
 #include "PassengerQueue.h"
 #include "BusRouteList.h"
 #include "StopSimulator.h"
+#include "RouteHistoryStack.h"
 
 using namespace std;
 
@@ -22,7 +23,7 @@ public:
 
 	int numPassengers = 0;
 
-
+	RouteHistoryStack stack;
 
 	Bus(string n, string company) : busNum(n), companyName(company) {}
 
