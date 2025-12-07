@@ -311,13 +311,20 @@ public:
         showGraph();
     }
 
-    void drawGraph(GraphManager& gm, sf::RenderWindow& window) {
+    void drawGraph(sf::RenderWindow& window) {
         float nodeRadius = 12.0f;
         float scale = 0.1f;
         float offsetX = 100.0f;
         float offsetY = 100.0f;
-        // First, draw edges
-        GraphNode* typeHead = gm.adjacencyList;
+
+        static sf::Font font;
+        static bool fontLoaded = false;
+        if (!fontLoaded) {
+            font.loadFromFile("arial.ttf");
+            fontLoaded = true;
+        }
+
+        GraphNode* typeHead = adjacencyList;
         while (typeHead) {
             GraphNode* node = typeHead;
             while (node) {
@@ -341,8 +348,7 @@ public:
             typeHead = typeHead->next;
         }
 
-        // Then draw nodes on top of edges
-        typeHead = gm.adjacencyList;
+        typeHead = adjacencyList;
         while (typeHead) {
             GraphNode* node = typeHead;
             while (node) {
@@ -354,21 +360,23 @@ public:
                 c.setPosition(pos);
                 window.draw(c);
 
+                sf::Text nodeLabel;
+                nodeLabel.setFont(font);
+                nodeLabel.setString(node->ID);
+                nodeLabel.setCharacterSize(12);
+                nodeLabel.setFillColor(sf::Color::White);
+
+                float textWidth = nodeLabel.getLocalBounds().width;
+                nodeLabel.setPosition(pos.x - textWidth / 2, pos.y + nodeRadius + 5);
+                window.draw(nodeLabel);
+
                 node = node->nextType;
             }
             typeHead = typeHead->next;
         }
 
-        // Draw legend/key in bottom-right
-        static sf::Font font;
-        static bool loaded = false;
-        if (!loaded) {
-            font.loadFromFile("arial.ttf"); // make sure arial.ttf is in your project folder
-            loaded = true;
-        }
-
-        float keyX = 1050.0f; // bottom-right x
-        float keyY = 700.0f;  // bottom-right y
+        float keyX = 1050.0f;
+        float keyY = 700.0f;
         float spacing = 30.0f;
 
         struct LegendItem { string type; sf::Color color; };
@@ -382,14 +390,12 @@ public:
         };
 
         for (int i = 0; i < 6; ++i) {
-            // Draw colored circle
             sf::CircleShape c(nodeRadius / 2);
             c.setOrigin(nodeRadius / 2, nodeRadius / 2);
             c.setFillColor(items[i].color);
             c.setPosition(keyX, keyY + i * spacing);
             window.draw(c);
 
-            // Draw label
             sf::Text label;
             label.setFont(font);
             label.setString(items[i].type);
@@ -401,7 +407,7 @@ public:
     }
 
     sf::Vector2f mapToScreen(double lat, double lon) const {
-        float scale = 0.1f;
+        float scale = 0.12f;
         float offsetX = 100.0f;
         float offsetY = 100.0f;
 
@@ -432,7 +438,7 @@ public:
             }
             window.clear(sf::Color(30, 50, 70));
 
-            drawGraph(*this, window);
+            drawGraph(window);
             window.display();
         }
     }
