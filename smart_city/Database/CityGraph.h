@@ -112,6 +112,7 @@ public:
         newNode->longitude = longi;
 
         add(newNode); // insert into graph
+        makeEdge(newNode);
     }
 
     //void add(Hospital* toAdd) {

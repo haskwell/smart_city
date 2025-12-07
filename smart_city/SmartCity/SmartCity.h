@@ -422,6 +422,6 @@ private:
 		}
 
 		// Done seeding - build graph edges after all nodes are present so pathfinding works reasonably
-		db->makeEdges();
+		//db->makeEdges();
 	}
 };
