@@ -4,7 +4,7 @@ using namespace std;
 int main() {
     SmartCity city;
     //city.seedFromCSV();
-    //city.seedRandomCity();
+    city.seedRandomCity();
     city.run();
     return 0;
 }
